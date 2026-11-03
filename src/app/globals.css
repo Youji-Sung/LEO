@@ -23,6 +23,7 @@ button, input, select, textarea { font: inherit; }
 .site-header .brand { font-weight: 700; text-decoration: none; color: var(--text); }
 .site-header nav { display: flex; gap: 12px; flex-wrap: wrap; }
 .site-header nav a { color: var(--muted); text-decoration: none; font-size: 14px; }
+.site-header .user-name { margin-left: auto; font-size: 14px; white-space: nowrap; }
 .site-header nav a:hover { color: var(--text); }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
 .muted { color: var(--muted); }
@@ -96,3 +97,9 @@ h2 { font-size: 18px; margin: 16px 0 8px; }
   .call-timer { font-size: 22px; }
   .call-transcript { max-height: none; }
 }
+
+/* banners */
+.banner { padding: 8px 16px; font-size: 14px; text-align: center; }
+.banner-info { background: #eef3ff; color: #2a4aa0; }
+.banner-warn { background: #fff4e5; color: #8a4b00; }
+.banner code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }

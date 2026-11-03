@@ -26,6 +26,7 @@ export default async function CallPage({ params }: { params: Promise<{ id: strin
       themeLabel={theme?.label ?? conv.theme}
       openingLine={theme?.openingLine ?? "Hello! Let's get started."}
       durationSec={conv.durationSec ?? 600}
+      startedAtMs={conv.startedAt.getTime()}
       extendable={canExtend(conv.durationSec ?? 600)}
       ttsVoice={settings?.ttsVoice ?? null}
       initialMessages={conv.messages.map((m) => ({ id: m.id, role: m.role, content: m.content }))}

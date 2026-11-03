@@ -6,7 +6,13 @@ import { apiJson } from "@/lib/client-fetch";
 import { streamMessage } from "@/lib/ndjson-client";
 import type { Report } from "@/services/claude/schemas/report";
 
-export type ChatMessageView = { id: string; role: string; content: string; hint: string | null; index: number };
+export type ChatMessageView = {
+  id: string;
+  role: string;
+  content: string;
+  hint: string | null;
+  index: number;
+};
 
 type Props = {
   conversationId: string;
@@ -43,25 +49,23 @@ export function ChatView(props: Props) {
     const tempId = `tmp-${Date.now()}`;
     setMessages((m) => [...m, { id: tempId, role: "user", content, hint: null, index: m.length }]);
     setStreaming("");
-    let gotDone = false;
     try {
       await streamMessage(props.conversationId, content, (ev) => {
         if (ev.type === "delta") setStreaming((s) => (s ?? "") + ev.text);
         else if (ev.type === "done") {
-          gotDone = true;
           setMessages((m) => [...m, { ...ev.message }]);
         } else if (ev.type === "error") {
           setError(ev.message);
+          // 서버가 사용자 턴을 지웠으므로 화면에서도 내린다
+          setMessages((m) => m.filter((x) => x.id !== tempId));
           if (ev.code !== "refusal") setLastFailed(content);
         }
       });
-      if (!gotDone && !error) {
-        // 서버가 done 없이 끝났으면 입력을 되살린다.
-      }
     } catch (e) {
-      setError((e as Error).message);
-      setLastFailed(content);
+      // 네트워크가 끊긴 경우: 서버가 답변을 이미 저장했을 수 있으므로 재전송 대신 다시 불러온다.
+      setError(`${(e as Error).message} 화면을 새로고침해 대화 상태를 확인하세요.`);
       setMessages((m) => m.filter((x) => x.id !== tempId));
+      router.refresh();
     } finally {
       setStreaming(null);
       setBusy(false);
@@ -81,7 +85,10 @@ export function ChatView(props: Props) {
     const next = !hints;
     setHints(next);
     try {
-      await apiJson(`/api/conversations/${props.conversationId}`, { method: "PATCH", body: JSON.stringify({ hintsEnabled: next }) });
+      await apiJson(`/api/conversations/${props.conversationId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ hintsEnabled: next }),
+      });
     } catch (e) {
       setHints(!next);
       setError((e as Error).message);
@@ -92,7 +99,9 @@ export function ChatView(props: Props) {
     setReportBusy(true);
     setError(null);
     try {
-      await apiJson<{ report: Report }>(`/api/conversations/${props.conversationId}/report`, { method: "POST" });
+      await apiJson<{ report: Report }>(`/api/conversations/${props.conversationId}/report`, {
+        method: "POST",
+      });
       setEnded(true);
       router.push(`/history/${props.conversationId}/report`);
     } catch (e) {
@@ -111,7 +120,12 @@ export function ChatView(props: Props) {
           <input type="checkbox" checked={hints} onChange={toggleHints} disabled={ended} />
           교정 힌트
         </label>
-        <button type="button" className="btn" onClick={makeReport} disabled={reportBusy || busy || messages.filter((m) => m.role === "user").length === 0}>
+        <button
+          type="button"
+          className="btn"
+          onClick={makeReport}
+          disabled={reportBusy || busy || messages.filter((m) => m.role === "user").length === 0}
+        >
           {reportBusy ? "리포트 생성 중…" : props.hasReport ? "리포트 다시 생성" : "리포트 생성"}
         </button>
         {props.hasReport && (
@@ -122,7 +136,11 @@ export function ChatView(props: Props) {
       </div>
 
       <div className="chat-messages" role="log" aria-live="polite" aria-label="대화">
-        {messages.length === 0 && <p className="muted">영어로 첫 메시지를 보내 보세요. 예: &quot;Hi! Can I tell you about my week?&quot;</p>}
+        {messages.length === 0 && (
+          <p className="muted">
+            영어로 첫 메시지를 보내 보세요. 예: &quot;Hi! Can I tell you about my week?&quot;
+          </p>
+        )}
         {messages.map((m) => (
           <div key={m.id} className={`bubble bubble-${m.role}`} data-testid={`msg-${m.role}`}>
             <div className="bubble-text">{m.content}</div>

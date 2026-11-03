@@ -1,10 +1,13 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/AuthForm";
+import { getCurrentUser } from "@/lib/auth/current-user";
 
 export const metadata = { title: "회원가입 — LEO" };
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  if (await getCurrentUser()) redirect("/");
   return (
     <main className="container" style={{ maxWidth: 420 }}>
       <h1>회원가입</h1>

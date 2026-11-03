@@ -6,7 +6,8 @@ import { PrismaClient } from "@/generated/prisma/client";
 export function resolveSqlitePath(databaseUrl: string): string {
   const raw = databaseUrl.replace(/^file:/, "");
   if (raw === ":memory:") return raw;
-  return path.isAbsolute(raw) ? raw : path.resolve(process.cwd(), raw);
+  // path.resolve(process.cwd(), …) 는 Turbopack 의 파일 추적 경고를 내므로 문자열로 합친다.
+  return path.isAbsolute(raw) ? raw : `${process.cwd()}/${raw.replace(/^\.\//, "")}`;
 }
 
 function createClient(): PrismaClient {
@@ -21,4 +22,8 @@ export const prisma: PrismaClient = globalForPrisma.leoPrisma ?? createClient();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.leoPrisma = prisma;
+}
+
+export function isUniqueViolation(e: unknown): boolean {
+  return typeof e === "object" && e !== null && (e as { code?: string }).code === "P2002";
 }

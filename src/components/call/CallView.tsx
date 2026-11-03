@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
-import { apiJson } from "@/lib/client-fetch";
+import { ApiError, apiJson } from "@/lib/client-fetch";
 import { formatDuration } from "@/lib/format";
 import { streamMessage } from "@/lib/ndjson-client";
 import { getVoiceAdapter } from "@/lib/voice";
@@ -17,6 +17,8 @@ type Props = {
   themeLabel: string;
   openingLine: string;
   durationSec: number;
+  // 서버에 기록된 통화 시작 시각. 새로고침 시 남은 시간 계산에 쓴다.
+  startedAtMs: number;
   extendable: boolean;
   ttsVoice: string | null;
   initialMessages: Entry[];
@@ -50,26 +52,32 @@ export function CallView(props: Props) {
   const speakGenRef = useRef(0);
   const endingRef = useRef(false);
   const restartListeningRef = useRef<() => void>(() => undefined);
+  const restartTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sttDisabledRef = useRef(false);
+  const inflightRef = useRef<Promise<void> | null>(null);
+  const extendBusyRef = useRef(false);
 
   const setPhaseBoth = (p: Phase) => {
     phaseRef.current = p;
     setPhase(p);
   };
 
+  // gen 은 응답(또는 인사)이 시작될 때의 세대. 끼어들기로 세대가 바뀌면 같은 응답의 뒤 문장도 모두 버린다.
   const speakSentence = useCallback(
-    (sentence: string) => {
+    (sentence: string, gen: number) => {
       const adapter = adapterRef.current;
       if (!adapter || !adapter.isSupported().tts) return;
-      const gen = speakGenRef.current;
-      speakChainRef.current = speakChainRef.current.then(async () => {
-        if (gen !== speakGenRef.current || phaseRef.current !== "live") return;
-        setSpeaking(true);
-        try {
-          await adapter.speak(sentence, { voiceId: props.ttsVoice });
-        } finally {
-          if (!adapter.isSpeaking()) setSpeaking(false);
-        }
-      });
+      speakChainRef.current = speakChainRef.current
+        .then(async () => {
+          if (gen !== speakGenRef.current || phaseRef.current !== "live") return;
+          setSpeaking(true);
+          try {
+            await adapter.speak(sentence, { voiceId: props.ttsVoice });
+          } finally {
+            if (!adapter.isSpeaking()) setSpeaking(false);
+          }
+        })
+        .catch(() => undefined);
     },
     [props.ttsVoice],
   );
@@ -91,8 +99,14 @@ export function CallView(props: Props) {
       setPhaseBoth("ending");
       const adapter = adapterRef.current;
       adapter?.stopListening();
+      if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
       speakGenRef.current += 1;
       adapter?.cancelSpeech();
+      queueRef.current = [];
+      // 진행 중인 답변이 있으면 저장될 때까지(최대 30초) 기다려 리포트에 포함한다.
+      if (inflightRef.current) {
+        await Promise.race([inflightRef.current, new Promise((r) => setTimeout(r, 30_000))]);
+      }
       try {
         await apiJson(`/api/conversations/${props.conversationId}`, {
           method: "PATCH",
@@ -119,10 +133,16 @@ export function CallView(props: Props) {
     busyRef.current = true;
     setBusy(true);
     setError(null);
-    setEntries((e) => [...e, { id: `tmp-${Date.now()}`, role: "user", content: next }]);
+    const tempId = `tmp-${Date.now()}`;
+    setEntries((e) => [...e, { id: tempId, role: "user", content: next }]);
     setPartial("");
-    const splitter = new SentenceSplitter((s) => speakSentence(s));
+    const gen = speakGenRef.current;
+    const splitter = new SentenceSplitter((s) => speakSentence(s, gen));
     let done = false;
+    let finishInflight: () => void = () => undefined;
+    inflightRef.current = new Promise<void>((r) => {
+      finishInflight = r;
+    });
     try {
       await streamMessage(props.conversationId, next, (ev) => {
         if (ev.type === "delta") {
@@ -137,16 +157,21 @@ export function CallView(props: Props) {
           ]);
         } else if (ev.type === "error") {
           setError(ev.message);
+          setEntries((e) => e.filter((x) => x.id !== tempId));
           if (ev.code === "turn_cap") void endCall("turn_cap");
         }
       });
       if (!done) splitter.flush();
     } catch (e) {
       setError((e as Error).message);
+      setEntries((en) => en.filter((x) => x.id !== tempId));
+      if (e instanceof ApiError && e.code === "turn_cap") void endCall("turn_cap");
     } finally {
       setPartial(null);
       busyRef.current = false;
       setBusy(false);
+      finishInflight();
+      inflightRef.current = null;
       if (queueRef.current.length > 0) void processQueue();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,7 +189,13 @@ export function CallView(props: Props) {
 
   const startListening = useCallback(() => {
     const adapter = adapterRef.current;
-    if (!adapter || !adapter.isSupported().stt || mutedRef.current || phaseRef.current !== "live")
+    if (
+      !adapter ||
+      !adapter.isSupported().stt ||
+      sttDisabledRef.current ||
+      mutedRef.current ||
+      phaseRef.current !== "live"
+    )
       return;
     adapter.startListening({
       onInterim: (text) => {
@@ -176,11 +207,21 @@ export function CallView(props: Props) {
         bargeIn();
         enqueueUtterance(text);
       },
-      onError: (message) => setError(message),
+      onError: (message, fatal) => {
+        setError(message);
+        if (fatal) {
+          // 권한 거부·마이크 없음: 재시작하지 않고 텍스트 입력으로 바꾼다.
+          sttDisabledRef.current = true;
+          adapter.stopListening();
+          setSupport((sup) => ({ ...sup, stt: false }));
+        }
+      },
       onEnd: () => {
         // 브라우저가 무음 등으로 인식을 멈추면 다시 켠다.
-        if (phaseRef.current === "live" && !mutedRef.current)
-          setTimeout(() => restartListeningRef.current(), 300);
+        if (phaseRef.current === "live" && !mutedRef.current && !sttDisabledRef.current) {
+          if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+          restartTimerRef.current = setTimeout(() => restartListeningRef.current(), 300);
+        }
       },
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -195,10 +236,19 @@ export function CallView(props: Props) {
     adapterRef.current = adapter;
     const sup = adapter.isSupported();
     setSupport(sup);
-    startedAtRef.current = Date.now();
+    const resuming = props.initialMessages.length > 0;
+    startedAtRef.current = resuming ? props.startedAtMs : Date.now();
     setPhaseBoth("live");
-    setRemaining(durationRef.current);
-    speakSentence(props.openingLine);
+    setRemaining(
+      Math.max(0, durationRef.current - Math.floor((Date.now() - startedAtRef.current) / 1000)),
+    );
+    if (!resuming) {
+      void apiJson(`/api/conversations/${props.conversationId}`, {
+        method: "PATCH",
+        body: JSON.stringify({ started: true }),
+      }).catch(() => undefined);
+      speakSentence(props.openingLine, speakGenRef.current);
+    }
     startListening();
   }
 
@@ -216,6 +266,8 @@ export function CallView(props: Props) {
 
   useEffect(() => {
     return () => {
+      phaseRef.current = "ended";
+      if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
       adapterRef.current?.stopListening();
       adapterRef.current?.cancelSpeech();
     };
@@ -232,6 +284,8 @@ export function CallView(props: Props) {
   }
 
   async function extend() {
+    if (extendBusyRef.current) return;
+    extendBusyRef.current = true;
     try {
       const r = await apiJson<{ durationSec: number; canExtend: boolean }>(
         `/api/conversations/${props.conversationId}/extend`,
@@ -242,6 +296,8 @@ export function CallView(props: Props) {
       setExtendable(r.canExtend);
     } catch (e) {
       setError((e as Error).message);
+    } finally {
+      extendBusyRef.current = false;
     }
   }
 

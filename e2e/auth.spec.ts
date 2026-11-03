@@ -22,7 +22,9 @@ test("잘못된 비밀번호는 오류를 보여 준다", async ({ page }) => {
   await page.getByLabel("이메일").fill("dev1@leo.local");
   await page.getByLabel("비밀번호").fill("wrong-password");
   await page.getByRole("button", { name: "로그인" }).click();
-  await expect(page.getByRole("form", { name: "로그인" }).getByRole("alert")).toContainText("올바르지 않습니다");
+  await expect(page.getByRole("form", { name: "로그인" }).getByRole("alert")).toContainText(
+    "올바르지 않습니다",
+  );
 });
 
 test("회원가입 후 바로 로그인 상태가 된다", async ({ page }) => {
@@ -33,4 +35,17 @@ test("회원가입 후 바로 로그인 상태가 된다", async ({ page }) => {
   await page.getByRole("button", { name: "가입하기" }).click();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { name: "안녕하세요, 신규님" })).toBeVisible();
+});
+
+test("만료된 세션 쿠키가 있어도 로그인 화면이 열린다 (리다이렉트 루프 없음)", async ({
+  page,
+  context,
+}) => {
+  await context.addCookies([
+    { name: "leo_session", value: "stale-token-value", url: "http://localhost:3100" },
+  ]);
+  await page.goto("/");
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.getByRole("heading", { name: "로그인" })).toBeVisible();
+  await login(page);
 });

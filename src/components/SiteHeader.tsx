@@ -25,7 +25,7 @@ export function SiteHeader({ userName }: { userName: string }) {
             </Link>
           ))}
         </nav>
-        <span className="muted" style={{ marginLeft: "auto", fontSize: 14 }}>
+        <span className="muted user-name">
           {userName}
         </span>
         <LogoutButton />

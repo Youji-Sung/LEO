@@ -20,14 +20,14 @@ test("포트폴리오 등록(텍스트·PDF) → 포트폴리오 면접 통화 �
   await page.getByLabel("제목").fill(title);
   await page.getByLabel("내용").fill("# Chat service\nI built a real-time chat backend with Node.js and Redis. Handled 10k concurrent users.");
   await page.getByRole("button", { name: "등록" }).click();
-  await expect(page.getByRole("status")).toContainText("등록 완료");
+  await expect(page.getByRole("form", { name: "포트폴리오 등록" }).getByRole("status")).toContainText("등록 완료");
   await expect(page.getByTestId("portfolio-list")).toContainText(title);
 
   // PDF 업로드
   await page.getByLabel("PDF 업로드").check();
   await page.getByLabel("PDF 파일").setInputFiles(path.join(__dirname, "fixtures/sample.pdf"));
   await page.getByRole("button", { name: "등록" }).click();
-  await expect(page.getByRole("status")).toContainText('"sample" 등록 완료');
+  await expect(page.getByRole("form", { name: "포트폴리오 등록" }).getByRole("status")).toContainText('"sample" 등록 완료');
 
   // 포트폴리오 면접 통화
   await page.goto("/call");

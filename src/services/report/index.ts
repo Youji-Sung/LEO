@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/db";
 import { HttpError } from "@/lib/http";
 import { getClaudeProvider } from "@/services/claude";
+import { describeClaudeError } from "@/services/claude/errors";
 import { recordUsage } from "@/services/claude/usage";
 import { reportSchema, type Report } from "@/services/claude/schemas/report";
 import type { ChatMessage, ThemeId } from "@/services/claude/types";
@@ -48,7 +49,7 @@ export async function generateAndSaveReport(userId: string, conversationId: stri
     });
   } catch (e) {
     console.error("generateReport failed", e);
-    throw new ReportGenerationError("리포트 생성 중 오류가 발생했습니다. 다시 시도하세요.", "provider");
+    throw new ReportGenerationError(`리포트 생성 실패: ${describeClaudeError(e)}`, "provider");
   }
   await recordUsage({ userId, feature: "report", model: result.model, usage: result.usage, latencyMs: result.latencyMs });
   if (result.stopReason === "refusal") {

@@ -6,7 +6,8 @@ export type VoiceInfo = { id: string; name: string; lang: string };
 export type ListenHandlers = {
   onInterim?: (text: string) => void;
   onFinal: (text: string) => void;
-  onError?: (message: string) => void;
+  // fatal 이면 다시 시작해도 소용없는 오류(권한 거부, 마이크 없음)
+  onError?: (message: string, fatal?: boolean) => void;
   // 브라우저가 인식을 스스로 멈췄을 때(무음 등). 호출자가 다시 startListening 할 수 있다.
   onEnd?: () => void;
 };

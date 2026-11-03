@@ -49,19 +49,19 @@ function getSynthesis(): SpeechSynthesis | undefined {
   return window.speechSynthesis ?? undefined;
 }
 
-function errorMessage(error: string): string | null {
+function errorMessage(error: string): { message: string; fatal: boolean } | null {
   switch (error) {
     case "not-allowed":
     case "service-not-allowed":
-      return "마이크 권한이 거부되었습니다.";
+      return { message: "마이크 권한이 거부되었습니다.", fatal: true };
     case "no-speech":
       return null;
     case "network":
-      return "음성 인식 네트워크 오류입니다.";
+      return { message: "음성 인식 네트워크 오류입니다.", fatal: false };
     case "audio-capture":
-      return "마이크를 찾을 수 없습니다.";
+      return { message: "마이크를 찾을 수 없습니다.", fatal: true };
     default:
-      return `음성 인식 오류: ${error}`;
+      return { message: `음성 인식 오류: ${error}`, fatal: false };
   }
 }
 
@@ -116,8 +116,8 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
     };
     recognition.onerror = (event) => {
       if (this.recognition !== recognition) return;
-      const message = errorMessage(event.error);
-      if (message) this.handlers?.onError?.(message);
+      const mapped = errorMessage(event.error);
+      if (mapped) this.handlers?.onError?.(mapped.message, mapped.fatal);
     };
     recognition.onend = () => {
       if (this.recognition !== recognition) return;
@@ -151,9 +151,23 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
     }
   }
 
-  speak(text: string, options: SpeakOptions = {}): Promise<void> {
+  // Chrome 은 voiceschanged 전에 getVoices() 가 빈 배열이라 첫 발화가 기본 음성으로 나간다. 잠깐 기다린다.
+  private voicesReady(synth: SpeechSynthesis): Promise<void> {
+    if (synth.getVoices().length > 0) return Promise.resolve();
+    return new Promise<void>((resolve) => {
+      const done = () => {
+        synth.removeEventListener?.("voiceschanged", done);
+        resolve();
+      };
+      synth.addEventListener?.("voiceschanged", done);
+      setTimeout(done, 500);
+    });
+  }
+
+  async speak(text: string, options: SpeakOptions = {}): Promise<void> {
     const synth = getSynthesis();
-    if (!synth) return Promise.resolve();
+    if (!synth) return;
+    await this.voicesReady(synth);
     return new Promise<void>((resolve) => {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = "en-US";
