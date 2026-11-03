@@ -51,3 +51,10 @@
 - [x] 스키마 검증 실패 시 오류와 재시도 버튼(테스트 포함) — `e2e/report.spec.ts` 2번: `MOCK_INVALID_REPORT` 발화 후 채팅 화면에서 "리포트 형식이 올바르지 않아…" 오류, 리포트 페이지에서도 오류 + "다시 시도" 버튼, 정상 발화 추가 후 재시도 성공 — 통과. API 단에서는 `tests/integration/chat.test.ts` 가 502 `report_invalid` 와 미저장 확인
 - [x] 기록 페이지(통화·채팅 목록, 리포트·트랜스크립트 열람) — `/history`, `/history/{id}`, `/history/{id}/report` 구현, E2E 로 이동 확인
 - [x] 긴 트랜스크립트 처리 방식 결정 — DECISIONS 에 기록(전체 입력, 120,000자 초과 시 오래된 턴 제거), `trimTranscript` 구현
+
+## 7단계. 확장 기능
+
+- [x] E2E 포트폴리오 등록→포트폴리오 면접 통화→리포트에 면접 항목 — `e2e/portfolio.spec.ts` 1번: 텍스트 등록, PDF 업로드(`e2e/fixtures/sample.pdf`, 제목을 파일명에서 추출), 포트폴리오 면접 테마로 통화·발화 1회·끊기 → 리포트에 면접 피드백 + "기술 설명의 명확성" 포함 점수 5개 + 포트폴리오 제목, 삭제 — 통과
+- [x] 연장 버튼 동작 테스트 — 같은 spec 2번: 20초 테스트 통화에서 "10분 연장" 표시 → 클릭 → 타이머 10:xx·"10:20 통화" 표시·버튼 숨김 — 통과. 단위: `tests/unit/call-duration.test.ts`(10/20/30 정규화, 테스트용 20초, 30분 상한)
+- [x] API 통합 테스트 — `tests/integration/portfolio.test.ts`(5개): 텍스트 생성/목록/삭제/재삭제 404, 빈 내용·제목 400, PDF 추출(unpdf, Node 22 에서 동작 확인)과 multipart 업로드, 깨진 PDF 400, 포트폴리오 테마에 포트폴리오 필수·타인 포트폴리오 404, 시스템 프롬프트 고정 블록 — 통과 (`npm test` 70개)
+- [x] 리포트 면접 전용 항목 — 면접·포트폴리오 테마에서 `interview`(구조 피드백, 예상 질문 3개), 포트폴리오에서 `technicalClarity` 추가 (5단계 렌더 테스트에 포함)
