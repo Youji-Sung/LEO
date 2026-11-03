@@ -1,0 +1,217 @@
+import type {
+  ListenHandlers,
+  SpeakOptions,
+  VoiceAdapter,
+  VoiceInfo,
+  VoiceSupport,
+} from "@/lib/voice/types";
+
+// DOM lib 에 SpeechRecognition 생성자 타입이 없어 필요한 부분만 정의한다.
+interface SpeechRecognitionAlternativeLike {
+  transcript: string;
+}
+interface SpeechRecognitionResultLike {
+  isFinal: boolean;
+  length: number;
+  [index: number]: SpeechRecognitionAlternativeLike | undefined;
+}
+interface SpeechRecognitionEventLike {
+  resultIndex: number;
+  results: { length: number; [index: number]: SpeechRecognitionResultLike | undefined };
+}
+interface SpeechRecognitionErrorEventLike {
+  error: string;
+}
+interface SpeechRecognitionLike {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+}
+type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
+
+function getRecognitionCtor(): SpeechRecognitionCtor | undefined {
+  if (typeof window === "undefined") return undefined;
+  const w = window as unknown as {
+    SpeechRecognition?: SpeechRecognitionCtor;
+    webkitSpeechRecognition?: SpeechRecognitionCtor;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition;
+}
+
+function getSynthesis(): SpeechSynthesis | undefined {
+  if (typeof window === "undefined") return undefined;
+  return window.speechSynthesis ?? undefined;
+}
+
+function errorMessage(error: string): string | null {
+  switch (error) {
+    case "not-allowed":
+    case "service-not-allowed":
+      return "마이크 권한이 거부되었습니다.";
+    case "no-speech":
+      return null;
+    case "network":
+      return "음성 인식 네트워크 오류입니다.";
+    case "audio-capture":
+      return "마이크를 찾을 수 없습니다.";
+    default:
+      return `음성 인식 오류: ${error}`;
+  }
+}
+
+function isEnglish(lang: string): boolean {
+  return lang === "en-US" || lang.startsWith("en-") || lang.startsWith("en_");
+}
+
+export class WebSpeechVoiceAdapter implements VoiceAdapter {
+  readonly name = "web-speech";
+  private recognition: SpeechRecognitionLike | null = null;
+  private handlers: ListenHandlers | null = null;
+  private speaking = 0;
+  // Chrome 은 참조가 끊긴 utterance 를 GC 해서 end 가 안 오므로 끝날 때까지 붙잡는다.
+  private pendingUtterances = new Map<SpeechSynthesisUtterance, () => void>();
+
+  isSupported(): VoiceSupport {
+    if (typeof window === "undefined") return { stt: false, tts: false };
+    return { stt: getRecognitionCtor() !== undefined, tts: getSynthesis() !== undefined };
+  }
+
+  startListening(handlers: ListenHandlers): void {
+    if (this.recognition) this.stopListening();
+    const Ctor = getRecognitionCtor();
+    if (!Ctor) {
+      handlers.onError?.("이 브라우저는 음성 인식을 지원하지 않습니다.");
+      return;
+    }
+    const recognition = new Ctor();
+    recognition.lang = "en-US";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.maxAlternatives = 1;
+    this.recognition = recognition;
+    this.handlers = handlers;
+
+    recognition.onresult = (event) => {
+      if (this.recognition !== recognition) return;
+      let interim = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (!result) continue;
+        const transcript = result[0]?.transcript ?? "";
+        if (result.isFinal) {
+          const text = transcript.trim();
+          if (text) this.handlers?.onFinal(text);
+        } else {
+          interim += transcript;
+        }
+      }
+      const interimText = interim.trim();
+      if (interimText) this.handlers?.onInterim?.(interimText);
+    };
+    recognition.onerror = (event) => {
+      if (this.recognition !== recognition) return;
+      const message = errorMessage(event.error);
+      if (message) this.handlers?.onError?.(message);
+    };
+    recognition.onend = () => {
+      if (this.recognition !== recognition) return;
+      const current = this.handlers;
+      this.recognition = null;
+      this.handlers = null;
+      current?.onEnd?.();
+    };
+
+    try {
+      recognition.start();
+    } catch (e) {
+      this.recognition = null;
+      this.handlers = null;
+      handlers.onError?.(`음성 인식 오류: ${e instanceof Error ? e.message : String(e)}`);
+    }
+  }
+
+  stopListening(): void {
+    const recognition = this.recognition;
+    this.recognition = null;
+    this.handlers = null;
+    if (!recognition) return;
+    recognition.onresult = null;
+    recognition.onerror = null;
+    recognition.onend = null;
+    try {
+      recognition.stop();
+    } catch {
+      // 이미 멈춘 경우는 무시한다.
+    }
+  }
+
+  speak(text: string, options: SpeakOptions = {}): Promise<void> {
+    const synth = getSynthesis();
+    if (!synth) return Promise.resolve();
+    return new Promise<void>((resolve) => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "en-US";
+      utterance.rate = options.rate ?? 1;
+      const voice = this.pickVoice(synth, options.voiceId);
+      if (voice) utterance.voice = voice;
+
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        this.pendingUtterances.delete(utterance);
+        this.speaking = Math.max(0, this.speaking - 1);
+        resolve();
+      };
+      utterance.onend = finish;
+      utterance.onerror = finish;
+
+      this.pendingUtterances.set(utterance, finish);
+      this.speaking += 1;
+      if (synth.paused) synth.resume();
+      synth.speak(utterance);
+    });
+  }
+
+  cancelSpeech(): void {
+    const synth = getSynthesis();
+    this.speaking = 0;
+    if (!synth) return;
+    synth.cancel();
+    // cancel 뒤 error/end 이벤트가 오지 않는 브라우저가 있어 직접 resolve 한다.
+    for (const finish of [...this.pendingUtterances.values()]) finish();
+    this.pendingUtterances.clear();
+  }
+
+  isSpeaking(): boolean {
+    return this.speaking > 0;
+  }
+
+  listVoices(): VoiceInfo[] {
+    const synth = getSynthesis();
+    if (!synth) return [];
+    const voices = synth.getVoices().map((v) => ({ id: v.voiceURI, name: v.name, lang: v.lang }));
+    return [
+      ...voices.filter((v) => isEnglish(v.lang)),
+      ...voices.filter((v) => !isEnglish(v.lang)),
+    ];
+  }
+
+  private pickVoice(
+    synth: SpeechSynthesis,
+    voiceId: string | null | undefined,
+  ): SpeechSynthesisVoice | undefined {
+    const voices = synth.getVoices();
+    if (voiceId) {
+      const match = voices.find((v) => v.voiceURI === voiceId || v.name === voiceId);
+      if (match) return match;
+    }
+    return voices.find((v) => v.lang === "en-US") ?? voices.find((v) => isEnglish(v.lang));
+  }
+}

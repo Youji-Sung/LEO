@@ -9,7 +9,7 @@ test("로그인하지 않으면 로그인 화면으로 보낸다", async ({ page
 
 test("로그인 → 홈 → 로그아웃", async ({ page }) => {
   await login(page);
-  await expect(page.getByText("개발자 1님")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "안녕하세요, 개발자 1님" })).toBeVisible();
 
   await page.getByRole("button", { name: "로그아웃" }).click();
   await expect(page).toHaveURL(/\/login$/);
@@ -32,5 +32,5 @@ test("회원가입 후 바로 로그인 상태가 된다", async ({ page }) => {
   await page.getByLabel("비밀번호").fill("password-123");
   await page.getByRole("button", { name: "가입하기" }).click();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByText("신규님")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "안녕하세요, 신규님" })).toBeVisible();
 });

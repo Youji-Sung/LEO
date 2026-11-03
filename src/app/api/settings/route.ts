@@ -1,0 +1,39 @@
+import type { NextRequest } from "next/server";
+import { z } from "zod";
+import { prisma } from "@/lib/db";
+import { handler, parseBody, requireRequestUser } from "@/lib/http";
+import { CALL_DURATION_OPTIONS_MIN } from "@/services/call/duration";
+
+const schema = z.object({
+  hintsDefault: z.boolean().optional(),
+  ttsVoice: z.string().max(200).nullable().optional(),
+  defaultCallMinutes: z
+    .number()
+    .int()
+    .refine(
+      (n) => (CALL_DURATION_OPTIONS_MIN as readonly number[]).includes(n),
+      "10, 20, 30 중 하나",
+    )
+    .optional(),
+});
+
+export const GET = handler(async (req: NextRequest) => {
+  const user = await requireRequestUser(req);
+  const settings = await prisma.userSettings.upsert({
+    where: { userId: user.id },
+    update: {},
+    create: { userId: user.id },
+  });
+  return Response.json({ settings });
+});
+
+export const PATCH = handler(async (req: NextRequest) => {
+  const user = await requireRequestUser(req);
+  const body = await parseBody(req, schema);
+  const settings = await prisma.userSettings.upsert({
+    where: { userId: user.id },
+    update: body,
+    create: { userId: user.id, ...body },
+  });
+  return Response.json({ settings });
+});
