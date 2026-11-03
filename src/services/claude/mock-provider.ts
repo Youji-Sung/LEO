@@ -110,7 +110,8 @@ export class MockClaudeProvider implements ClaudeProvider {
 
   async generateReport(input: ReportInput): Promise<ReportResult> {
     const started = Date.now();
-    const joined = input.transcript.map((m) => m.content).join("\n");
+    // 트리거는 마지막 사용자 발화만 본다(재시도 시나리오: 정상 발화를 하나 더 보내면 성공).
+    const joined = [...input.transcript].reverse().find((m) => m.role === "user")?.content ?? "";
     const usage = { inputTokens: 900 + input.transcript.length * 30, outputTokens: 1200, cacheReadTokens: 600, cacheWriteTokens: 0 };
     if (joined.includes(MOCK_TRIGGERS.error)) throw new Error("모의 API 오류");
     if (joined.includes(MOCK_TRIGGERS.refusal)) {
