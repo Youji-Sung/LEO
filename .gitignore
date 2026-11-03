@@ -37,3 +37,8 @@ Thumbs.db
 
 # local Claude Code state
 .claude/settings.local.json
+
+# prisma generated client
+src/generated/
+next-env.d.ts
+*.tsbuildinfo

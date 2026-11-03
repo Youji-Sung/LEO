@@ -7,13 +7,40 @@
 - 구현 계획: `docs/PLAN.md`
 - 진행 기록: `docs/PROGRESS.md`
 
-## 상태
+## 기술 스택
 
-구현 전. 이 저장소는 Claude Code 클라우드 세션 한 번으로 `docs/PLAN.md`를 끝까지 수행하도록 준비된 상태다. 클라우드 세션을 시작하는 방법은 `docs/CLOUD_TASK.md`를 본다.
+- Next.js 16 (App Router, React 19) — 프론트와 API 라우트가 한 프로세스에서 동작
+- Prisma 7 + SQLite (`better-sqlite3` 드라이버 어댑터)
+- Vitest(단위·통합), Playwright(E2E)
+- `@anthropic-ai/sdk`
 
 ## 로컬 실행
 
-(0단계가 끝나면 세션이 이 절을 채운다.)
+요구 사항: Node.js 22 이상, npm.
+
+```bash
+bash scripts/bootstrap.sh   # .env 생성, 의존성 설치, Prisma 생성, 마이그레이션, 시드
+npm run dev                 # http://localhost:3000
+```
+
+`bootstrap.sh`는 `.env`가 없으면 `.env.example`을 복사하고 `AUTH_SECRET`을 자동 생성한다. Claude API를 실제로 쓰려면 `.env`의 `LEO_ANTHROPIC_API_KEY`를 채운다. 비워 두면 채팅·통화에서 안내 문구가 뜬다. `CLAUDE_MOCK=1`이면 API 없이 가짜 응답으로 전체 흐름을 써 볼 수 있다.
+
+## 스크립트
+
+| 명령 | 설명 |
+|---|---|
+| `npm run dev` | 개발 서버 |
+| `npm run build` / `npm start` | 프로덕션 빌드 / 실행 |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm test` | Vitest 단위·통합 테스트 (항상 `CLAUDE_MOCK=1`) |
+| `npm run test:e2e` | Playwright E2E. 별도 포트(3100)와 별도 DB(`prisma/e2e.db`)로 모의 모드 서버를 띄운다 |
+| `npm run check` | lint → typecheck → test → build |
+| `npm run db:migrate` | `prisma migrate deploy` |
+| `npm run db:migrate:dev` | `prisma migrate dev` (스키마 변경 시) |
+| `npm run db:seed` | 개발용 사용자 2명 시드 |
+
+E2E는 Playwright가 설치한 Chromium을 쓰고, 없으면 `CHROME_PATH`의 Chrome을 헤드리스로 쓴다.
 
 ## 환경 변수
 

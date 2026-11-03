@@ -1,0 +1,9 @@
+// 스키마는 Postgres 호환으로 유지한다 (SQLite 전용 타입 금지).
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
