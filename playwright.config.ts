@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import { chromium } from "@playwright/test";
 
 const port = Number(process.env.LEO_E2E_PORT ?? 3100);
-const baseURL = `http://127.0.0.1:${port}`;
+const baseURL = `http://localhost:${port}`;
 // 플레이라이트 자체 브라우저가 없으면 CHROME_PATH 의 Chrome 으로 헤드리스 실행한다.
 const bundled = chromium.executablePath();
 const executablePath = existsSync(bundled) ? undefined : process.env.CHROME_PATH;

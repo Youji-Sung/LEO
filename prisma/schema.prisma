@@ -1,4 +1,4 @@
-// 스키마는 Postgres 호환으로 유지한다 (SQLite 전용 타입 금지).
+// 스키마는 Postgres 호환으로 유지한다 (SQLite 전용 타입 금지, JSON 은 문자열로 저장).
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -6,4 +6,111 @@ generator client {
 
 datasource db {
   provider = "sqlite"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  name          String
+  createdAt     DateTime       @default(now())
+  sessions      Session[]
+  conversations Conversation[]
+  usageRecords  UsageRecord[]
+  portfolios    Portfolio[]
+  settings      UserSettings?
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// kind: chat | call. theme: free | interview | daily | work | business | portfolio
+model Conversation {
+  id           String     @id @default(cuid())
+  userId       String
+  kind         String
+  theme        String
+  title        String?
+  durationSec  Int?
+  hintsEnabled Boolean    @default(false)
+  startedAt    DateTime   @default(now())
+  endedAt      DateTime?
+  portfolioId  String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  portfolio    Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
+  messages     Message[]
+  report       Report?
+
+  @@index([userId, updatedAt])
+}
+
+// role: user | assistant. hint: 교정 힌트(사용자 발화에 대한 한 줄), assistant 메시지에 붙는다.
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  role           String
+  content        String
+  hint           String?
+  index          Int
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, index])
+}
+
+model Report {
+  id             String       @id @default(cuid())
+  conversationId String       @unique
+  json           String
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+// feature: chat | call | report | portfolio
+model UsageRecord {
+  id               String   @id @default(cuid())
+  userId           String
+  feature          String
+  model            String
+  inputTokens      Int
+  outputTokens     Int
+  cacheReadTokens  Int      @default(0)
+  cacheWriteTokens Int      @default(0)
+  costUsd          Float
+  latencyMs        Int
+  createdAt        DateTime @default(now())
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}
+
+model Portfolio {
+  id            String         @id @default(cuid())
+  userId        String
+  title         String
+  content       String
+  createdAt     DateTime       @default(now())
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  conversations Conversation[]
+
+  @@index([userId])
+}
+
+model UserSettings {
+  id                 String  @id @default(cuid())
+  userId             String  @unique
+  hintsDefault       Boolean @default(false)
+  ttsVoice           String?
+  defaultCallMinutes Int     @default(10)
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -1,11 +1,10 @@
 #!/bin/bash
-# E2E 전용 서버: 모의 Claude, 별도 SQLite 파일, 짧은 통화 시간 허용.
+# E2E 전용 서버: 모의 Claude, 별도 SQLite 파일(프로젝트 루트의 e2e.db), 짧은 통화 시간 허용.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 port="${1:-3100}"
-# 이전 실행의 E2E DB 를 비운다 (prisma/e2e.db 고정 경로).
-if [ -f prisma/e2e.db ]; then rm -f prisma/e2e.db; fi
-if [ -f prisma/e2e.db-journal ]; then rm -f prisma/e2e.db-journal; fi
+if [ -f e2e.db ]; then rm -f e2e.db; fi
+if [ -f e2e.db-journal ]; then rm -f e2e.db-journal; fi
 export DATABASE_URL="file:./e2e.db"
 export CLAUDE_MOCK=1
 export AUTH_SECRET="${AUTH_SECRET:-e2e-secret-e2e-secret-e2e-secret-0000}"
