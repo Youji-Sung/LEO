@@ -24,3 +24,10 @@
 - [x] 사용량 기록·턴 상한 — `tests/integration/usage-and-turncap.test.ts`: `recordUsage` 가 토큰 4종·추정 비용·지연 저장, `assertTurnAllowed` 가 상한 도달 시 `TurnCapError`, `LEO_MAX_TURNS` 파싱 — 통과 (`npm test` 26개 통과)
 - [x] 실제 API 스모크(1회) — `npx tsx scripts/smoke-claude.ts`, 6줄 면접 트랜스크립트로 `generateReport` 1회 — `stop_reason=end_turn`, `model=claude-opus-5`, 지연 49.6초, usage input 258 / output 3360 / cache_write 3237 / cache_read 0, 추정 비용 $0.1055. 리포트 파싱 성공: 교정 8개, 어휘 10개, 과제 3개, 면접 항목 포함, 요약·코멘트 한국어
 - 미확인: 실제 API 로 `chatTurn`(effort low, 힌트 형식) 은 호출하지 않았다(스모크 1회 규칙). 리포트 호출로 스트리밍·`fallbacks: "default"`·`cache_control`·구조화 출력은 검증됨
+
+## 3단계. 텍스트 채팅
+
+- [x] 모의 모드 E2E 로그인→새 채팅→메시지 3회→리포트 생성 — `e2e/chat.spec.ts`: 면접 테마·힌트 켬으로 새 채팅, 메시지 3회(스트리밍 말풍선이 사라지고 저장된 답변 3개 확인, 힌트 표시), 새로고침 후 사용자·상대 메시지 3개씩 유지, "리포트 생성" → `/history/{id}/report` 로 이동해 요약·점수 4개·면접 피드백 렌더, 채팅으로 돌아가면 종료 표시 — 통과. 힌트 끔 시 힌트 없음도 통과 (2개, 18초)
+- [x] API 통합 테스트 — `tests/integration/chat.test.ts`(10개): 대화 생성/목록/조회, 잘못된 테마 400, 타인 대화 404, NDJSON 스트림(델타 합 = 최종 답변, 힌트·제목·사용량 저장), 힌트 끔, 거부→error(refusal) 이벤트와 사용자 메시지 유지, 제공자 오류→error 이벤트, 턴 상한 429, 리포트 생성·조회·대화 종료·사용량 기록, 스키마 실패 502, 클라이언트가 스트림을 끊어도 답변 저장 — 통과
+- [x] `npm run check` 통과 후 커밋
+- 발견한 버그: 스트림 제너레이터가 클라이언트 연결 종료 시 중간에 닫혀 답변이 저장되지 않았다(E2E 새로고침에서 발견). 제공자 호출을 큐 기반 파이프라인으로 분리해 소비자와 무관하게 끝까지 저장하도록 고침
