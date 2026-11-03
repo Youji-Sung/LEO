@@ -39,3 +39,7 @@
 - 2026-11-03 · 비밀번호 해시 / 세션 · **Node 내장 `crypto.scrypt`**(의존성 없음) + DB `Session` 테이블에 토큰 해시 저장, `httpOnly` 쿠키 · 대안: bcrypt(네이티브), argon2(네이티브)
 - 2026-11-03 · 디렉터리 구조 · `src/app`(화면·API), `src/services/claude`(Claude 호출 전부), `src/services/*`(도메인 서비스), `src/lib`(db·auth·유틸), `src/config`(단가표), `prisma/`, `tests/{unit,integration}`, `e2e/`
 - 2026-11-03 · 환경 변수 로딩 · Next는 자체 `.env` 로딩, Prisma CLI·시드·스크립트는 `dotenv/config`. 둘 다 이미 설정된 프로세스 환경 변수를 덮어쓰지 않으므로 클라우드 환경 변수(`LEO_ANTHROPIC_API_KEY`)가 `.env`의 빈 값에 가려지지 않는다
+- 2026-11-03 · 교정 힌트 전달 방식 · **같은 호출, 응답 마지막 줄 `[HINT] …` 구획** · 호출 1회로 끝나 비용·지연이 절반. 스트리밍 중 `HintSplitter` 가 마커 접두사를 보류해 힌트가 화면에 새지 않게 하고, 마커가 없으면 힌트 없음으로 처리 · 대안: 별도 저비용 호출(지연·비용 2배, 캐시 접두사 추가 관리)
+- 2026-11-03 · 스모크 스크립트 호출 종류 · **`generateReport` 1회(짧은 면접 트랜스크립트)** · 한 번의 호출로 스트리밍 SDK 경로, `fallbacks: "default"` + 베타 헤더, `cache_control`, `output_config.format`(구조화 출력), `effort: high` 를 모두 실제로 검증할 수 있어 위험이 큰 경로를 우선함 · 대안: `chatTurn` 1회(구조화 출력 미검증)
+- 2026-11-03 · Claude 호출 파라미터 · 모델 `claude-opus-5`(`LEO_CLAUDE_MODEL`), `thinking: {type:"adaptive"}`, 대화 `effort: low` / `max_tokens 2048`, 리포트 `effort: high` / `max_tokens 16000`, 둘 다 `client.beta.messages.stream` + `fallbacks: "default"` + `server-side-fallback-2026-07-01`. 리포트 JSON 은 `betaZodOutputFormat(reportSchema)` 로 받고 서버에서 zod 로 재검증한 뒤 정규화(점수 클램프, 배열 길이 제한). 스키마에 `minimum/maxItems` 같은 제약 키워드는 넣지 않아 구조화 출력 호환 문제를 피한다
+- 2026-11-03 · 모의 구현 · `MockClaudeProvider` 는 결정적 응답을 7자 단위로 스트리밍하고, 사용자 메시지의 `MOCK_REFUSAL` / `MOCK_INVALID_REPORT` / `MOCK_ERROR` 문구로 거부·스키마 실패·API 오류를 재현한다(5·8단계 테스트용)

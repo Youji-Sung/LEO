@@ -16,3 +16,11 @@
 - [x] 마이그레이션이 깨끗한 DB 에 적용 — 빈 경로에 `DATABASE_URL=file:…/clean.db prisma migrate deploy` 후 `migrate status` 와 sqlite_master 조회 — "Database schema is up to date", 테이블 8개(Conversation, Message, Portfolio, Report, Session, UsageRecord, User, UserSettings)
 - [x] 시드 — `npm run db:seed` 가 dev1@leo.local, dev2@leo.local 2명을 upsert(비밀번호 `SEED_USER_PASSWORD`, 기본 leo-pass-1234)
 - 메모: Next 16 개발 서버는 `127.0.0.1` 로 접근하면 HMR/RSC 요청을 교차 출처로 차단해 하이드레이션이 끝나지 않는다. `next.config.ts` 의 `allowedDevOrigins` 에 127.0.0.1 을 넣고 E2E 는 `localhost` 를 쓴다. 프로덕션(`next start`)은 영향 없음(하이드레이션 214ms 확인).
+
+## 2단계. Claude 서비스 계층
+
+- [x] `/claude-api` 스킬 로드 후 TypeScript README·streaming·structured outputs·모델 마이그레이션(Opus 5 fallbacks) 문서 확인, 설치된 SDK 1.4.0 타입 정의로 `fallbacks: "default"`, `output_config.format`, `betaZodOutputFormat` 시그니처 대조
+- [x] 단위 테스트 — `tests/unit/{hint-splitter,mock-provider,report-schema,pricing}.test.ts`: 모의 스트리밍 조립(델타 합 = 최종 텍스트, 힌트 분리), 리포트 스키마 검증·정규화(점수 1~10 클램프, 항목 수 제한), 단가 계산, 거부/오류/스키마 실패 트리거 — 통과
+- [x] 사용량 기록·턴 상한 — `tests/integration/usage-and-turncap.test.ts`: `recordUsage` 가 토큰 4종·추정 비용·지연 저장, `assertTurnAllowed` 가 상한 도달 시 `TurnCapError`, `LEO_MAX_TURNS` 파싱 — 통과 (`npm test` 26개 통과)
+- [x] 실제 API 스모크(1회) — `npx tsx scripts/smoke-claude.ts`, 6줄 면접 트랜스크립트로 `generateReport` 1회 — `stop_reason=end_turn`, `model=claude-opus-5`, 지연 49.6초, usage input 258 / output 3360 / cache_write 3237 / cache_read 0, 추정 비용 $0.1055. 리포트 파싱 성공: 교정 8개, 어휘 10개, 과제 3개, 면접 항목 포함, 요약·코멘트 한국어
+- 미확인: 실제 API 로 `chatTurn`(effort low, 힌트 형식) 은 호출하지 않았다(스모크 1회 규칙). 리포트 호출로 스트리밍·`fallbacks: "default"`·`cache_control`·구조화 출력은 검증됨
