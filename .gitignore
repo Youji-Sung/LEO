@@ -42,3 +42,4 @@ Thumbs.db
 src/generated/
 next-env.d.ts
 *.tsbuildinfo
+shots.db*
