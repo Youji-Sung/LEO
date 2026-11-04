@@ -54,6 +54,7 @@ export const auth = {
   signupTitle: "회원가입",
   loginIntro: "영어로 말하는 연습, 끝나면 교정 리포트까지.",
   signupIntro: "초대받은 분만 가입할 수 있어요.",
+  signupClosed: "지금은 가입을 받지 않아요. 운영자에게 계정을 요청하세요.",
   name: "이름",
   email: "이메일",
   password: "비밀번호",
@@ -384,6 +385,8 @@ export const errors = {
     nameRequired: "이름을 입력하세요.",
     emailTaken: "이미 가입한 이메일이에요. 로그인하세요.",
     badCredentials: "이메일이나 비밀번호가 맞지 않아요.",
+    tooManyAttempts: (minutes: number) => `로그인 시도가 너무 많아요. ${minutes}분 뒤에 다시 시도하세요.`,
+    signupClosed: "지금은 가입을 받지 않아요.",
   },
   conversation: {
     notFound: "대화를 찾을 수 없어요.",

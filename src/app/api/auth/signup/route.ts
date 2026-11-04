@@ -6,6 +6,7 @@ import { createSession, sessionCookieHeader } from "@/lib/auth/session";
 import { handler, HttpError, parseBody } from "@/lib/http";
 import { isUniqueViolation } from "@/lib/db";
 import { errors } from "@/content/ko";
+import { isSignupAllowed } from "@/lib/auth/signup-gate";
 
 const schema = z.object({
   email: z.email(errors.auth.emailFormat).max(200),
@@ -14,6 +15,7 @@ const schema = z.object({
 });
 
 export const POST = handler(async (req: NextRequest) => {
+  if (!isSignupAllowed()) throw new HttpError(403, errors.auth.signupClosed, "signup_closed");
   const body = await parseBody(req, schema);
   const email = body.email.toLowerCase();
   const existing = await prisma.user.findUnique({ where: { email } });
