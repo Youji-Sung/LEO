@@ -1,12 +1,21 @@
 "use client";
 
-import Link from "next/link";
+import { Send } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { chat, common } from "@/content/ko";
 import { apiJson } from "@/lib/client-fetch";
 import { streamMessage } from "@/lib/ndjson-client";
 import type { Report } from "@/services/claude/schemas/report";
+import {
+  Badge,
+  Bubble,
+  Button,
+  ButtonLink,
+  Dialog,
+  EmptyState,
+  StatusMessage,
+} from "@/components/ui";
 
 export type ChatMessageView = {
   id: string;
@@ -36,13 +45,23 @@ export function ChatView(props: Props) {
   const [error, setError] = useState<string | null>(null);
   const [lastFailed, setLastFailed] = useState<string | null>(null);
   const [reportBusy, setReportBusy] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [ended, setEnded] = useState(props.ended);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const reportHref = `/history/${props.conversationId}/report`;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
   }, [messages, streaming]);
+
+  // 입력창 높이는 내용만큼 자라고 상한(CSS max-height)에서 스크롤한다.
+  useEffect(() => {
+    const el = inputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [input]);
 
   async function send(content: string) {
     setBusy(true);
@@ -83,6 +102,12 @@ export function ChatView(props: Props) {
     await send(content);
   }
 
+  function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key !== "Enter" || e.shiftKey || e.nativeEvent.isComposing) return;
+    e.preventDefault();
+    if (!busy) void onSubmit(e);
+  }
+
   async function toggleHints() {
     const next = !hints;
     setHints(next);
@@ -105,84 +130,128 @@ export function ChatView(props: Props) {
         method: "POST",
       });
       setEnded(true);
-      router.push(`/history/${props.conversationId}/report`);
+      router.push(reportHref);
     } catch (e) {
       setError((e as Error).message);
+      setConfirmOpen(false);
     } finally {
       setReportBusy(false);
     }
   }
 
+  const userCount = messages.filter((m) => m.role === "user").length;
+  const reportDisabled = reportBusy || busy || userCount === 0;
+
   return (
     <div className="chat">
-      <div className="chat-toolbar row">
-        <strong>{props.themeLabel}</strong>
-        {props.title && <span className="muted">· {props.title}</span>}
-        <label className="row" style={{ marginLeft: "auto", gap: 6 }}>
+      <div className="chat-toolbar">
+        <Badge tone="accent">{props.themeLabel}</Badge>
+        {props.title && (
+          <span
+            className="muted"
+            style={{
+              flex: "1 1 8rem",
+              minWidth: 0,
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {props.title}
+          </span>
+        )}
+        <span className="spacer" />
+        <label className="check-row">
           <input type="checkbox" checked={hints} onChange={toggleHints} disabled={ended} />
-          {chat.hintsToggle}
+          <span>{chat.hintsToggle}</span>
         </label>
-        <button
-          type="button"
-          className="btn"
-          onClick={makeReport}
-          disabled={reportBusy || busy || messages.filter((m) => m.role === "user").length === 0}
+        <Button
+          variant="secondary"
+          onClick={props.hasReport ? () => setConfirmOpen(true) : makeReport}
+          disabled={reportDisabled}
+          loading={reportBusy}
+          loadingLabel={chat.makingReport}
         >
-          {reportBusy ? chat.makingReport : props.hasReport ? chat.remakeReport : chat.makeReport}
-        </button>
+          {props.hasReport ? chat.remakeReport : chat.makeReport}
+        </Button>
         {props.hasReport && (
-          <a className="btn" href={`/history/${props.conversationId}/report`}>
+          <ButtonLink href={reportHref} variant="ghost">
             {chat.viewReport}
-          </a>
+          </ButtonLink>
         )}
       </div>
 
+      {props.hasReport && (
+        <Dialog
+          open={confirmOpen}
+          title={chat.remakeConfirmTitle}
+          description={chat.remakeConfirmBody}
+          confirmLabel={chat.remakeConfirmAction}
+          onConfirm={makeReport}
+          onClose={() => setConfirmOpen(false)}
+          busy={reportBusy}
+        />
+      )}
+
       <div className="chat-messages" role="log" aria-live="polite" aria-label={chat.logLabel}>
         {messages.length === 0 && (
-          <p className="muted">
-            {chat.emptyTitle}
-            <br />
-            <span lang="en">{chat.emptyExample}</span>
-          </p>
+          // 예문은 영어라 lang="en" 이 필요해 EmptyState 의 body 대신 행동 자리에 둔다.
+          <EmptyState
+            title={chat.emptyTitle}
+            action={
+              <p lang="en" className="muted">
+                {chat.emptyExample}
+              </p>
+            }
+          />
         )}
         {messages.map((m) => (
-          <div key={m.id} className={`bubble bubble-${m.role}`} data-testid={`msg-${m.role}`}>
-            <div className="bubble-text">{m.content}</div>
-            {m.hint && (
-              <div className="bubble-hint" data-testid="hint">
-                {chat.hintLabel}: {m.hint}
-              </div>
-            )}
-          </div>
+          <Bubble
+            key={m.id}
+            speaker={m.role === "user" ? "me" : "partner"}
+            hint={m.hint}
+            hintLabel={chat.hintLabel}
+            data-testid={`msg-${m.role}`}
+          >
+            {m.content}
+          </Bubble>
         ))}
         {streaming !== null && (
-          <div className="bubble bubble-assistant" data-testid="streaming">
-            <div className="bubble-text">{streaming || chat.waiting}</div>
-          </div>
+          <Bubble speaker="partner" waiting={!streaming} data-testid="streaming">
+            {streaming || chat.waiting}
+          </Bubble>
         )}
         <div ref={bottomRef} />
       </div>
 
       {error && (
-        <div className="error row" role="alert">
-          <span>{error}</span>
-          {lastFailed && (
-            <button type="button" className="btn" onClick={() => send(lastFailed)} disabled={busy}>
-              {common.retrySend}
-            </button>
-          )}
-        </div>
+        <StatusMessage
+          tone="error"
+          action={
+            lastFailed ? (
+              <Button onClick={() => send(lastFailed)} disabled={busy}>
+                {common.retrySend}
+              </Button>
+            ) : undefined
+          }
+        >
+          {error}
+        </StatusMessage>
       )}
 
       {ended ? (
-        <p className="muted">
-          {chat.endedNotice}{" "}
-          <Link className="btn" href="/chat">
-            {chat.endedAction}
-          </Link>
-        </p>
+        <StatusMessage
+          tone="info"
+          action={
+            <ButtonLink href="/chat" variant="secondary">
+              {chat.endedAction}
+            </ButtonLink>
+          }
+        >
+          {chat.endedNotice}
+        </StatusMessage>
       ) : (
-        <form onSubmit={onSubmit} className="chat-input row">
+        <form onSubmit={onSubmit} className="chat-input">
           <label htmlFor="chat-input" className="sr-only">
             {chat.inputLabel}
           </label>
@@ -191,19 +260,18 @@ export function ChatView(props: Props) {
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
-                e.preventDefault();
-                void onSubmit(e);
-              }
-            }}
+            onKeyDown={onKeyDown}
             placeholder={chat.inputPlaceholder}
-            rows={2}
-            disabled={busy}
+            rows={1}
           />
-          <button type="submit" className="btn btn-primary" disabled={busy || !input.trim()}>
+          <Button
+            type="submit"
+            variant="primary"
+            icon={<Send size={18} />}
+            disabled={busy || !input.trim()}
+          >
             {chat.send}
-          </button>
+          </Button>
         </form>
       )}
     </div>

@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/current-user";
 import { ReportView } from "@/components/report/ReportView";
 import { ReportRetry } from "@/components/report/ReportRetry";
+import { ButtonLink } from "@/components/ui";
 import { common, report as text } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { getOwnedReport } from "@/services/report";
@@ -21,29 +21,38 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   }
   const { conversation, report } = data;
   const theme = THEMES[conversation.theme as keyof typeof THEMES];
-  const backHref = conversation.kind === "chat" ? `/chat/${conversation.id}` : `/history/${conversation.id}`;
+  const kind = conversation.kind === "call" ? "call" : "chat";
+  const backHref = kind === "chat" ? `/chat/${conversation.id}` : `/history/${conversation.id}`;
+  const meta = [
+    theme?.label ?? conversation.theme,
+    kind === "call" ? common.callLabel : common.chatLabel,
+    formatDateTime(conversation.startedAt),
+    conversation.portfolio ? text.portfolioMeta(conversation.portfolio.title) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <>
-      <div className="row" style={{ justifyContent: "space-between" }}>
-        <h1 style={{ margin: 0 }}>{text.pageTitle}</h1>
+      <div className="page-head">
+        <div>
+          <h1>{text.pageTitle}</h1>
+          <p>{meta}</p>
+        </div>
         <div className="row">
-          <Link className="btn" href={`/history/${conversation.id}`}>
-            {text.transcript}
-          </Link>
-          <Link className="btn" href={backHref}>
-            {conversation.kind === "chat" ? text.backToChat : text.backToHistory}
-          </Link>
+          <ButtonLink href={`/history/${conversation.id}`}>{text.transcript}</ButtonLink>
+          <ButtonLink href={backHref}>
+            {kind === "chat" ? text.backToChat : text.backToHistory}
+          </ButtonLink>
         </div>
       </div>
-      <p className="muted">
-        {theme?.label ?? conversation.theme} · {conversation.kind === "call" ? common.callLabel : common.chatLabel} · {formatDateTime(conversation.startedAt)}
-        {conversation.portfolio ? ` · ${text.portfolioMeta(conversation.portfolio.title)}` : ""}
-      </p>
       {report ? (
-        <ReportView report={report} isInterview={Boolean(theme?.isInterview)} />
+        <ReportView report={report} isInterview={Boolean(theme?.isInterview)} kind={kind} />
       ) : (
-        <ReportRetry conversationId={conversation.id} initialError={conversation.report ? text.corrupted : null} />
+        <ReportRetry
+          conversationId={conversation.id}
+          initialError={conversation.report ? text.corrupted : null}
+        />
       )}
     </>
   );

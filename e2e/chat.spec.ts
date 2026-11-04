@@ -1,19 +1,23 @@
 import { expect, test } from "@playwright/test";
-import { chat, report, themes } from "../src/content/ko";
-import { login } from "./helpers";
+import { chat, report } from "../src/content/ko";
+import { login, selectTheme } from "./helpers";
 
 test("로그인 → 새 채팅 → 메시지 3회 → 리포트 생성, 새로고침 후 대화 유지", async ({ page }) => {
   await login(page);
   await page.goto("/chat");
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await page.getByLabel(themes.label).selectOption("interview");
+  await selectTheme(page, "interview");
   await page.getByRole("checkbox", { name: chat.hintsToggle }).check();
   await page.getByRole("button", { name: chat.start }).click();
   await expect(page).toHaveURL(/\/chat\/[a-z0-9]+$/);
   const url = page.url();
 
   const input = page.getByLabel(chat.inputLabel);
-  const sayings = ["Hi, I am backend developer for five years.", "I go to school yesterday.", "There was very much people."];
+  const sayings = [
+    "Hi, I am backend developer for five years.",
+    "I go to school yesterday.",
+    "There was very much people.",
+  ];
   for (const [i, s] of sayings.entries()) {
     await input.fill(s);
     await page.getByRole("button", { name: chat.send }).click();

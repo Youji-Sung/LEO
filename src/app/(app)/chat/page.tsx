@@ -2,7 +2,8 @@ import Link from "next/link";
 import { requireUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db";
 import { NewChatForm } from "@/components/chat/NewChatForm";
-import { chat, common } from "@/content/ko";
+import { Badge, ButtonLink, EmptyState } from "@/components/ui";
+import { chat, common, home } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { listConversations } from "@/services/conversation";
 import { formatDateTime } from "@/lib/format";
@@ -20,26 +21,48 @@ export default async function ChatListPage() {
     .map((t) => ({ id: t.id, label: t.label, description: t.description }));
 
   return (
-    <>
-      <h1>{chat.pageTitle}</h1>
+    <div className="container-narrow stack-lg" style={{ margin: 0 }}>
+      <div className="page-head" style={{ marginBottom: 0 }}>
+        <h1>{chat.pageTitle}</h1>
+      </div>
       <NewChatForm themes={themes} hintsDefault={settings?.hintsDefault ?? false} />
-      <h2>{chat.previousTitle}</h2>
-      {conversations.length === 0 ? (
-        <p className="muted">{chat.previousEmpty}</p>
-      ) : (
-        <ul className="list">
-          {conversations.map((c) => (
-            <li key={c.id} className="list-item">
-              <Link href={`/chat/${c.id}`}>{c.title ?? chat.untitled}</Link>
-              <span className="muted">
-                {THEMES[c.theme as keyof typeof THEMES]?.label ?? c.theme} · {common.messagesCount(c._count.messages)} · {formatDateTime(c.updatedAt)}
-                {c.report ? ` · ${common.hasReport}` : ""}
-                {c.endedAt ? ` · ${common.ended}` : ""}
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </>
+      <section className="stack">
+        <h2>{chat.previousTitle}</h2>
+        {conversations.length === 0 ? (
+          <EmptyState title={chat.previousEmpty} />
+        ) : (
+          <ul className="list">
+            {conversations.map((c) => {
+              const ended = Boolean(c.endedAt);
+              return (
+                <li key={c.id} className="list-item">
+                  <div className="list-main">
+                    <Link href={`/chat/${c.id}`}>{c.title ?? chat.untitled}</Link>
+                    <div className="list-meta">
+                      <Badge>{THEMES[c.theme as keyof typeof THEMES]?.label ?? c.theme}</Badge>
+                      <span>{common.messagesCount(c._count.messages)}</span>
+                      <span>{formatDateTime(c.updatedAt)}</span>
+                      {c.report ? <Badge tone="positive">{common.hasReport}</Badge> : null}
+                      {ended ? <Badge>{common.ended}</Badge> : null}
+                    </div>
+                  </div>
+                  <div className="list-actions">
+                    {!ended ? (
+                      <ButtonLink href={`/chat/${c.id}`} variant="secondary">
+                        {home.continueChat}
+                      </ButtonLink>
+                    ) : c.report ? (
+                      <ButtonLink href={`/history/${c.id}/report`} variant="secondary">
+                        {home.viewReport}
+                      </ButtonLink>
+                    ) : null}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+    </div>
   );
 }

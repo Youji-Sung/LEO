@@ -1,14 +1,17 @@
 "use client";
 
+import { Mic, MicOff, PhoneOff, Plus, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
-import { callLive, chat } from "@/content/ko";
+import { callLive, chat, common } from "@/content/ko";
 import { ApiError, apiJson } from "@/lib/client-fetch";
-import { formatDuration } from "@/lib/format";
+import { formatDurationWords } from "@/lib/format";
 import { streamMessage } from "@/lib/ndjson-client";
 import { getVoiceAdapter } from "@/lib/voice";
 import { SentenceSplitter } from "@/lib/voice/sentence-splitter";
 import type { VoiceAdapter, VoiceSupport } from "@/lib/voice/types";
+import { Bubble, Button, CallStatus, Card, StatusMessage, Timer } from "@/components/ui";
+import type { CallState } from "@/components/ui/CallStatus";
 
 type Entry = { id: string; role: string; content: string };
 type Phase = "idle" | "live" | "ending" | "ended";
@@ -24,6 +27,8 @@ type Props = {
   ttsVoice: string | null;
   initialMessages: Entry[];
 };
+
+const WARN_AT_SEC = 60;
 
 export function CallView(props: Props) {
   const router = useRouter();
@@ -57,6 +62,7 @@ export function CallView(props: Props) {
   const sttDisabledRef = useRef(false);
   const inflightRef = useRef<Promise<void> | null>(null);
   const extendBusyRef = useRef(false);
+  const logRef = useRef<HTMLDivElement>(null);
 
   const setPhaseBoth = (p: Phase) => {
     phaseRef.current = p;
@@ -274,6 +280,12 @@ export function CallView(props: Props) {
     };
   }, []);
 
+  // 새 말풍선이 생기면 대화 영역 끝으로 스크롤한다.
+  useEffect(() => {
+    const el = logRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [entries, partial, interim]);
+
   function toggleMute() {
     const next = !mutedRef.current;
     mutedRef.current = next;
@@ -311,116 +323,137 @@ export function CallView(props: Props) {
     enqueueUtterance(t);
   }
 
-  const showExtend = phase === "live" && extendable && remaining <= 60;
+  const showExtend = phase === "live" && extendable && remaining <= WARN_AT_SEC;
+  const warn = phase === "live" && remaining <= WARN_AT_SEC;
+  const state: CallState =
+    phase === "ending"
+      ? "ending"
+      : phase === "ended"
+        ? "ended"
+        : speaking
+          ? "speaking"
+          : busy
+            ? "thinking"
+            : muted
+              ? "muted"
+              : support.stt
+                ? "listening"
+                : "waiting";
+  const statusSub =
+    phase === "ending"
+      ? callLive.status.endingHint
+      : state === "speaking"
+        ? callLive.idleTips[0]
+        : state === "muted"
+          ? callLive.unmute
+          : undefined;
+  const showOpening = entries.length === 0 && partial === null;
 
   return (
-    <div className="call">
-      <div className="call-head">
-        <div>
-          <strong>{props.themeLabel}</strong>
-          <span className="muted"> · {callLive.totalDuration(formatDuration(durationSec))}</span>
+    <main className="call-shell">
+      <h1 className="sr-only">{callLive.pageTitle}</h1>
+      <div className="call-top">
+        <div className="stack-sm" style={{ gap: 0 }}>
+          <span className="t-label">{common.brand}</span>
+          <span className="muted">
+            {callLive.callOf(props.themeLabel, formatDurationWords(durationSec))}
+          </span>
         </div>
-        <div
-          className="call-timer"
-          role="timer"
-          aria-live="off"
-          aria-label={callLive.timerLabel}
-          data-testid="timer"
-        >
-          {formatDuration(remaining)}
-        </div>
+        <Timer remainingSec={remaining} totalSec={durationSec} warnAtSec={WARN_AT_SEC} />
       </div>
 
-      {phase === "idle" && (
-        <div className="card stack call-start">
-          <h2 style={{ marginTop: 0 }}>{callLive.idleTitle}</h2>
-          <p>{callLive.idleBody}</p>
-          <ul>
-            {callLive.idleTips.map((tip) => (
-              <li key={tip}>{tip}</li>
-            ))}
-          </ul>
-          <div>
-            <button
-              type="button"
-              className="btn btn-primary"
+      <div className="call-main">
+        {phase === "idle" && (
+          <Card
+            as="section"
+            className="call-idle"
+            title={callLive.idleTitle}
+            titleId="call-idle-title"
+          >
+            <p>{callLive.idleBody}</p>
+            <ul>
+              {callLive.idleTips.map((tip) => (
+                <li key={tip}>{tip}</li>
+              ))}
+            </ul>
+            <Button
+              variant="primary"
+              size="lg"
               onClick={startCall}
               data-testid="start-call"
+              icon={<Mic size={20} />}
             >
               {callLive.start}
-            </button>
-          </div>
-        </div>
-      )}
+            </Button>
+          </Card>
+        )}
+
+        {phase !== "idle" && (
+          <>
+            <CallStatus state={state} sub={statusSub} />
+
+            {!support.stt && (
+              <StatusMessage tone="info">
+                {callLive.textModeNotice}
+                {!support.tts ? ` ${callLive.noTtsNotice}` : ""}
+              </StatusMessage>
+            )}
+
+            {warn && (
+              <StatusMessage tone="warning" polite data-testid="one-minute">
+                {callLive.status.oneMinuteLeft}
+              </StatusMessage>
+            )}
+
+            <div
+              ref={logRef}
+              className="chat-messages call-transcript"
+              role="log"
+              aria-label={callLive.logLabel}
+            >
+              {showOpening && (
+                <Bubble speaker="partner" data-testid="opening-line">
+                  {props.openingLine}
+                </Bubble>
+              )}
+              {entries.map((m) => (
+                <Bubble
+                  key={m.id}
+                  speaker={m.role === "user" ? "me" : "partner"}
+                  data-testid={`msg-${m.role}`}
+                >
+                  {m.content}
+                </Bubble>
+              ))}
+              {partial !== null && (
+                <Bubble speaker="partner" waiting={!partial} data-testid="streaming">
+                  {partial || chat.waiting}
+                </Bubble>
+              )}
+              {interim && (
+                <Bubble
+                  speaker="me"
+                  interim
+                  interimLabel={callLive.interimLabel}
+                  data-testid="interim"
+                >
+                  {interim}
+                </Bubble>
+              )}
+            </div>
+
+            {error && <StatusMessage tone="error">{error}</StatusMessage>}
+            {endReason === "turn_cap" && (
+              <StatusMessage tone="info">{callLive.turnCapEnd}</StatusMessage>
+            )}
+          </>
+        )}
+      </div>
 
       {phase !== "idle" && (
-        <>
-          {!support.stt && (
-            <p className="muted" role="status">
-              {callLive.textModeNotice}
-              {!support.tts ? ` ${callLive.noTtsNotice}` : ""}
-            </p>
-          )}
-          <div className="call-status row" aria-live="polite">
-            {phase === "live" && (
-              <>
-                <span className={`pill ${speaking ? "pill-on" : ""}`}>
-                  {speaking
-                    ? callLive.status.speaking
-                    : busy
-                      ? callLive.status.thinking
-                      : muted
-                        ? callLive.status.muted
-                        : support.stt
-                          ? callLive.status.listening
-                          : callLive.status.waitingInput}
-                </span>
-                {phase === "live" && (
-                  <span className="muted" data-testid="opening-line">
-                    {entries.length === 0 && !partial ? props.openingLine : ""}
-                  </span>
-                )}
-              </>
-            )}
-            {phase === "ending" && (
-              <span role="status">
-                {callLive.status.ending} · {callLive.status.endingHint}
-              </span>
-            )}
-            {phase === "ended" && <span role="status">{callLive.status.ended}</span>}
-          </div>
-
-          <div
-            className="chat-messages call-transcript"
-            role="log"
-            aria-label={callLive.logLabel}
-          >
-            {entries.map((m) => (
-              <div key={m.id} className={`bubble bubble-${m.role}`} data-testid={`msg-${m.role}`}>
-                {m.content}
-              </div>
-            ))}
-            {partial !== null && (
-              <div className="bubble bubble-assistant" data-testid="streaming">
-                {partial || chat.waiting}
-              </div>
-            )}
-            {interim && (
-              <div className="bubble bubble-user interim" data-testid="interim">
-                <span className="sr-only">{callLive.interimLabel}: </span>
-                {interim}
-              </div>
-            )}
-          </div>
-
-          {error && (
-            <p className="error" role="alert">
-              {error}
-            </p>
-          )}
-
+        <div className="call-controls">
           {phase === "live" && !support.stt && (
-            <form onSubmit={onTextSubmit} className="chat-input row">
+            <form onSubmit={onTextSubmit} className="call-text-form">
               <label htmlFor="call-text" className="sr-only">
                 {callLive.textInputLabel}
               </label>
@@ -437,43 +470,58 @@ export function CallView(props: Props) {
                   }
                 }}
               />
-              <button type="submit" className="btn btn-primary" disabled={!textInput.trim()}>
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={!textInput.trim()}
+                icon={<Send size={18} />}
+              >
                 {callLive.say}
-              </button>
+              </Button>
             </form>
           )}
-
-          <div className="call-controls row">
-            {support.stt && (
-              <button
-                type="button"
-                className="btn"
-                onClick={toggleMute}
-                disabled={phase !== "live"}
-                aria-pressed={muted}
-              >
-                {muted ? callLive.unmute : callLive.mute}
-              </button>
-            )}
-            {showExtend && (
-              <button type="button" className="btn" onClick={extend} data-testid="extend">
-                {callLive.extend}
-              </button>
-            )}
-            <button
-              type="button"
-              className="btn btn-danger"
+          <div className="call-buttons">
+            <div className="controls-left">
+              {support.stt && (
+                <Button
+                  variant={muted ? "primary" : "secondary"}
+                  size="lg"
+                  onClick={toggleMute}
+                  disabled={phase !== "live"}
+                  aria-pressed={muted}
+                  icon={muted ? <MicOff size={22} /> : <Mic size={22} />}
+                >
+                  {muted ? callLive.unmute : callLive.mute}
+                </Button>
+              )}
+            </div>
+            <Button
+              variant="danger"
+              size="lg"
               onClick={() => endCall("hangup")}
               disabled={phase !== "live"}
               data-testid="hangup"
               aria-label={callLive.hangupLabel}
+              icon={<PhoneOff size={22} />}
             >
               {callLive.hangup}
-            </button>
-            {endReason === "turn_cap" && <span className="muted">{callLive.turnCapEnd}</span>}
+            </Button>
+            <div className="controls-right">
+              {showExtend && (
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={extend}
+                  data-testid="extend"
+                  icon={<Plus size={22} />}
+                >
+                  {callLive.extend}
+                </Button>
+              )}
+            </div>
           </div>
-        </>
+        </div>
       )}
-    </div>
+    </main>
   );
 }

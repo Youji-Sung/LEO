@@ -130,12 +130,14 @@ export const chat = {
   viewReport: "리포트 보기",
   endedNotice: "끝난 대화예요.",
   endedAction: "새 채팅 시작하기",
-  networkError: "연결이 끊겨 답변을 받지 못했어요. 화면을 새로고침하면 지금까지의 대화를 볼 수 있어요.",
+  networkError:
+    "연결이 끊겨 답변을 받지 못했어요. 화면을 새로고침하면 지금까지의 대화를 볼 수 있어요.",
 } as const;
 
 export const callSetup = {
   pageTitle: "전화 영어",
-  intro: "테마를 고르고 마이크를 확인한 뒤 통화를 시작해요. 상대 말은 소리로 들리고, 내 말은 글로 적혀요.",
+  intro:
+    "테마를 고르고 마이크를 확인한 뒤 통화를 시작해요. 상대 말은 소리로 들리고, 내 말은 글로 적혀요.",
   formLabel: "통화 설정",
   portfolioLabel: "포트폴리오",
   portfolioEmpty: "아직 포트폴리오가 없어요. 먼저 추가해야 이 테마로 통화할 수 있어요.",
@@ -147,9 +149,11 @@ export const callSetup = {
   micUnknown: "아직 확인하지 않았어요. 통화 시작 전에 한 번 확인하면 첫 인사를 놓치지 않아요.",
   micChecking: "마이크를 확인하는 중",
   micGranted: "마이크를 쓸 수 있어요.",
-  micDenied: "마이크 권한이 꺼져 있어요. 주소창 왼쪽 자물쇠에서 마이크를 허용하거나, 글로 통화할 수도 있어요.",
+  micDenied:
+    "마이크 권한이 꺼져 있어요. 주소창 왼쪽 자물쇠에서 마이크를 허용하거나, 글로 통화할 수도 있어요.",
   micUnavailable: "이 브라우저에서는 마이크를 쓸 수 없어요. 글로 통화해요.",
-  sttUnsupported: "이 브라우저는 음성 인식을 지원하지 않아요. Chrome 을 권하고, 지금은 글로 통화할 수 있어요.",
+  sttUnsupported:
+    "이 브라우저는 음성 인식을 지원하지 않아요. Chrome 을 권하고, 지금은 글로 통화할 수 있어요.",
   nextHint: "다음 화면에서 통화를 시작해요.",
   next: "다음",
   creating: "통화를 준비하는 중",
@@ -161,8 +165,12 @@ export const callLive = {
   totalDuration: (duration: string) => `${duration} 통화`,
   timerLabel: "남은 시간",
   idleTitle: "통화를 시작할 준비가 됐어요",
-  idleBody: "상대가 먼저 인사해요. 영어로 편하게 답하면 돼요. 통화가 끝나면 교정 리포트가 만들어져요.",
-  idleTips: ["상대가 말하는 중에 말을 시작하면 상대가 멈추고 들어요.", "끝나기 1분 전에 10분 연장 버튼이 나타나요."],
+  idleBody:
+    "상대가 먼저 인사해요. 영어로 편하게 답하면 돼요. 통화가 끝나면 교정 리포트가 만들어져요.",
+  idleTips: [
+    "상대가 말하는 중에 말을 시작하면 상대가 멈추고 들어요.",
+    "끝나기 1분 전에 10분 연장 버튼이 나타나요.",
+  ],
   start: "통화 시작하기",
   textModeNotice: "이 브라우저는 음성 인식을 지원하지 않아 글로 대화해요.",
   noTtsNotice: "소리 재생도 지원하지 않아 상대 답변은 글로만 보여요.",
@@ -216,7 +224,8 @@ export const report = {
   },
   scoreOf: (score: number) => `${score}/10`,
   scoreAria: (label: string, score: number) => `${label} ${score}점, 10점 만점`,
-  scoreBand: (score: number) => (score >= 8 ? "좋아요" : score >= 5 ? "괜찮아요" : "연습이 필요해요"),
+  scoreBand: (score: number) =>
+    score >= 8 ? "좋아요" : score >= 5 ? "괜찮아요" : "연습이 필요해요",
   original: "내가 한 말",
   corrected: "이렇게 말해요",
   why: "이유",
@@ -261,7 +270,8 @@ export const history = {
 
 export const portfolio = {
   pageTitle: "포트폴리오",
-  intro: "포트폴리오 면접 테마에서 상대가 질문의 근거로 써요. 여러 개를 추가하고 통화를 시작할 때 고를 수 있어요.",
+  intro:
+    "포트폴리오 면접 테마에서 상대가 질문의 근거로 써요. 여러 개를 추가하고 통화를 시작할 때 고를 수 있어요.",
   formLabel: "포트폴리오 추가",
   modeLabel: "입력 방식",
   modeText: "텍스트나 마크다운 붙여넣기",
@@ -277,7 +287,7 @@ export const portfolio = {
   added: (title: string, chars: string) => `${title} 을(를) 추가했어요 (${chars}).`,
   fileRequired: "PDF 파일을 고르세요.",
   listTitle: "추가한 포트폴리오",
-  empty: "아직 포트폴리오가 없어요. 위에서 추가하면 포트폴리오 면접에서 쓸 수 있어요.",
+  empty: "아직 포트폴리오가 없어요. 아래에서 추가하면 포트폴리오 면접에서 쓸 수 있어요.",
   deleteLabel: (title: string) => `${title} 삭제`,
   deleteTitle: "포트폴리오를 삭제할까요?",
   deleteBody: (title: string) => `${title} 을(를) 삭제하면 되돌릴 수 없어요.`,
@@ -363,7 +373,8 @@ export const errors = {
     ended: "이미 끝난 대화예요.",
     emptyMessage: "메시지를 입력하세요.",
     tooLong: "메시지는 4,000자까지 보낼 수 있어요.",
-    turnCap: (limit: number) => `이 대화는 ${limit}번까지 보낼 수 있어요. 리포트를 만들거나 새 대화를 시작하세요.`,
+    turnCap: (limit: number) =>
+      `이 대화는 ${limit}번까지 보낼 수 있어요. 리포트를 만들거나 새 대화를 시작하세요.`,
     refusal: "상대가 이 주제에는 답하지 않기로 했어요. 다른 주제로 이어가 보세요.",
     portfolioRequired: "포트폴리오 면접 테마는 포트폴리오를 골라야 해요.",
     notACall: "통화만 연장할 수 있어요.",
@@ -373,7 +384,8 @@ export const errors = {
   report: {
     empty: "내가 한 말이 하나는 있어야 리포트를 만들 수 있어요.",
     provider: (reason: string) => `리포트를 만들지 못했어요. ${reason}`,
-    refusal: "상대가 이 대화의 리포트는 만들지 않기로 했어요. 다시 시도하거나 새 대화를 시작하세요.",
+    refusal:
+      "상대가 이 대화의 리포트는 만들지 않기로 했어요. 다시 시도하거나 새 대화를 시작하세요.",
     invalid: "리포트 형식이 맞지 않아 저장하지 못했어요. 다시 시도하면 대부분 해결돼요.",
     notFound: "아직 리포트가 없어요.",
   },

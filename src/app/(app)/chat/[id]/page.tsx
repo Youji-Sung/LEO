@@ -16,14 +16,23 @@ export default async function ChatPage({ params }: { params: Promise<{ id: strin
   });
   if (!conv) notFound();
   return (
-    <ChatView
-      conversationId={conv.id}
-      themeLabel={THEMES[conv.theme as keyof typeof THEMES]?.label ?? conv.theme}
-      title={conv.title}
-      initialMessages={conv.messages.map((m) => ({ id: m.id, role: m.role, content: m.content, hint: m.hint, index: m.index }))}
-      initialHints={conv.hintsEnabled}
-      ended={Boolean(conv.endedAt)}
-      hasReport={Boolean(conv.report)}
-    />
+    <>
+      <h1 className="sr-only">{chat.pageTitle}</h1>
+      <ChatView
+        conversationId={conv.id}
+        themeLabel={THEMES[conv.theme as keyof typeof THEMES]?.label ?? conv.theme}
+        title={conv.title}
+        initialMessages={conv.messages.map((m) => ({
+          id: m.id,
+          role: m.role,
+          content: m.content,
+          hint: m.hint,
+          index: m.index,
+        }))}
+        initialHints={conv.hintsEnabled}
+        ended={Boolean(conv.endedAt)}
+        hasReport={Boolean(conv.report)}
+      />
+    </>
   );
 }

@@ -1,10 +1,19 @@
 "use client";
 
-import Link from "next/link";
+import { ArrowRight, Mic } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore, type FormEvent } from "react";
 import { callSetup, common, themes as themeText } from "@/content/ko";
 import { apiJson } from "@/lib/client-fetch";
+import {
+  Button,
+  ButtonLink,
+  Card,
+  Choice,
+  ChoiceGroup,
+  Select,
+  StatusMessage,
+} from "@/components/ui";
 
 type Theme = { id: string; label: string; description: string };
 type Portfolio = { id: string; title: string };
@@ -94,87 +103,108 @@ export function CallSetupForm({
     denied: callSetup.micDenied,
     unavailable: callSetup.micUnavailable,
   };
+  const micTone = mic === "granted" ? "success" : mic === "denied" ? "error" : "info";
+  const portfolioMissing = theme === "portfolio" && portfolios.length === 0;
 
   return (
-    <form onSubmit={onSubmit} className="card stack" aria-label={callSetup.formLabel}>
-      <div className="field">
-        <label htmlFor="call-theme">{themeText.label}</label>
-        <select id="call-theme" value={theme} onChange={(e) => setTheme(e.target.value)}>
+    <form onSubmit={onSubmit} className="stack-lg" aria-label={callSetup.formLabel}>
+      <Card as="section">
+        <ChoiceGroup legend={themeText.legend} stack>
           {themes.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.label} — {t.description}
-            </option>
+            <Choice
+              key={t.id}
+              kind="radio"
+              name="theme"
+              value={t.id}
+              checked={theme === t.id}
+              onChange={() => setTheme(t.id)}
+              title={t.label}
+              description={t.description}
+            />
           ))}
-        </select>
-      </div>
-      {theme === "portfolio" && (
-        <div className="field">
-          <label htmlFor="call-portfolio">{callSetup.portfolioLabel}</label>
-          {portfolios.length === 0 ? (
-            <>
-              <p className="muted">{callSetup.portfolioEmpty}</p>
-              <Link className="btn" href="/portfolios">
-                {callSetup.portfolioAdd}
-              </Link>
-            </>
-          ) : (
-            <select
-              id="call-portfolio"
-              value={portfolioId}
-              onChange={(e) => setPortfolioId(e.target.value)}
-            >
-              {portfolios.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.title}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-      )}
-      <fieldset className="field" style={{ border: 0, padding: 0 }}>
-        <legend>{callSetup.durationLegend}</legend>
-        <div className="row">
+        </ChoiceGroup>
+        {theme === "portfolio" && (
+          <div className="stack-sm" style={{ marginTop: "var(--space-4)" }}>
+            {portfolios.length === 0 ? (
+              <StatusMessage
+                tone="warning"
+                polite
+                action={
+                  <ButtonLink href="/portfolios" variant="secondary">
+                    {callSetup.portfolioAdd}
+                  </ButtonLink>
+                }
+              >
+                {callSetup.portfolioEmpty}
+              </StatusMessage>
+            ) : (
+              <Select
+                id="call-portfolio"
+                label={callSetup.portfolioLabel}
+                value={portfolioId}
+                onChange={(e) => setPortfolioId(e.target.value)}
+              >
+                {portfolios.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title}
+                  </option>
+                ))}
+              </Select>
+            )}
+          </div>
+        )}
+      </Card>
+
+      <Card as="section">
+        <ChoiceGroup legend={callSetup.durationLegend}>
           {durationOptions.map((m) => (
-            <label key={m} className="row" style={{ gap: 4 }}>
-              <input
-                type="radio"
-                name="minutes"
-                value={m}
-                checked={minutes === m}
-                onChange={() => setMinutes(m)}
-              />
-              {m <= 0 ? callSetup.durationTest : common.minutes(m)}
-            </label>
+            <Choice
+              key={m}
+              kind="radio"
+              name="minutes"
+              value={m}
+              compact
+              checked={minutes === m}
+              onChange={() => setMinutes(m)}
+              title={m <= 0 ? callSetup.durationTest : common.minutes(m)}
+            />
           ))}
-        </div>
-      </fieldset>
-      <div className="field">
-        <span>{callSetup.micLegend}</span>
-        <div className="row">
-          <button type="button" className="btn" onClick={checkMic} disabled={mic === "checking"}>
+        </ChoiceGroup>
+      </Card>
+
+      <Card as="section" title={callSetup.micLegend} titleId="call-mic-title" className="stack">
+        <div>
+          <Button
+            variant="secondary"
+            icon={<Mic size={18} />}
+            onClick={checkMic}
+            loading={mic === "checking"}
+            loadingLabel={callSetup.micChecking}
+          >
             {callSetup.micCheck}
-          </button>
-          <span className={mic === "denied" ? "error" : "muted"} role="status">
-            {micLabel[mic]}
-          </span>
+          </Button>
         </div>
-        {!sttSupported && <p className="muted">{callSetup.sttUnsupported}</p>}
-      </div>
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      <p className="muted">{callSetup.nextHint}</p>
-      <div>
-        <button
+        <StatusMessage tone={micTone} polite data-testid="mic-status">
+          {micLabel[mic]}
+        </StatusMessage>
+        {!sttSupported && <StatusMessage tone="warning">{callSetup.sttUnsupported}</StatusMessage>}
+      </Card>
+
+      {error && <StatusMessage tone="error">{error}</StatusMessage>}
+
+      <div className="row">
+        <Button
           type="submit"
-          className="btn btn-primary"
-          disabled={busy || (theme === "portfolio" && !portfolioId)}
+          variant="primary"
+          size="lg"
+          icon={<ArrowRight size={20} />}
+          disabled={busy || portfolioMissing || (theme === "portfolio" && !portfolioId)}
+          loading={busy}
+          loadingLabel={callSetup.creating}
         >
-          {busy ? callSetup.creating : callSetup.next}
-        </button>
+          {callSetup.next}
+        </Button>
+        <span className="muted">{callSetup.nextHint}</span>
       </div>
     </form>
   );

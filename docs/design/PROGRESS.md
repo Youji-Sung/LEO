@@ -46,3 +46,14 @@
 - [x] 테마 전환 — `UserSettings.theme` + 마이그레이션 `20261104020000_add_theme`, `/api/settings` 가 `theme` 을 받아 쿠키 `leo_theme` 설정, 루트 레이아웃이 쿠키로 `<html data-theme>` 서버 렌더(FOUC 없음), 설정 화면의 ThemeSelect 가 즉시 미리보기. 다크 모드는 토큰 CSS 로 전 화면에 적용(스크린샷 확인은 4단계 after 촬영에서)
 - [x] 전역 헤더 — 데스크톱 가로 메뉴 + 현재 페이지 `aria-current`, 768px 미만은 메뉴 버튼(aria-expanded/controls)으로 여닫는 세로 메뉴. 로그아웃은 ghost 버튼
 - [x] 검증 — `npm run check` 종료 코드 0(lint·typecheck·vitest 33파일 248개·build). `npm run test:e2e` 는 같은 작업 트리에 4단계 통화 설정 재설계가 섞여 있어 18개 중 17개 통과, 실패 1개(포트폴리오 스펙의 `getByLabel("포트폴리오")` 가 테마 카드와 select 두 요소에 걸림)는 셀렉터를 `select#call-portfolio` 로 좁혀 재실행 2/2 통과. 전체 재실행은 4단계 끝에서
+
+## 4단계. 화면별 재설계
+
+- [x] `SCREENS.md` — 7개 영역(통화 중, 리포트·대화 내용, 통화 설정, 채팅, 홈, 기록·포트폴리오·사용량·설정·로그인, 전역) 모두 "문제(AUDIT) → 결정 → 근거 → 대안 → after" 로 기록. 통화·통화 설정·전역·설정은 메인 세션이, 리포트·채팅·홈 등은 서브에이전트 3개가 병렬로 구현하고 메인 세션이 통합·검증
+- [x] 통화 중(핵심) — `(call)` 라우트 그룹으로 전역 헤더 제거, CallStatus(아이콘+글자+펄스), Timer(링+숫자, 60초 이하 주의색 + "1분 남았어요" status), 끊기 56px 중앙 고정·연장은 오른쪽 칸(`1fr auto 1fr` 격자라 끊기 위치 불변), Bubble 화자 라벨, 첫 인사 말풍선, 텍스트 폼을 고정 영역 안으로(C8 해결)
+- [x] after 스크린샷 — `npx tsx scripts/screenshots.ts --phase after --axe`: before 와 같은 34개 상태 × 4변형 = 136장 + index.md + axe. 실패 0
+- [x] axe(after) — 위반 3종 68노드가 모두 통화 화면(`(call)` 레이아웃)의 `landmark-one-main`·`page-has-heading-one`·`region` 였고, `<main>` + sr-only h1 + 배너를 `<header>` 에 넣어 수정(재검사는 6단계 전수 재검사에서). before 의 `color-contrast` 64건·`scrollable-region-focusable` 10건·채팅/통화 h1 44건은 0
+- [x] E2E — 18개 통과(1.6분). 셀렉터 변경: 테마 select → `selectTheme()`(라디오 카드), 마이크 상태 testid, 포트폴리오 삭제 `window.confirm` → Dialog 버튼, 포트폴리오 select 범위 지정, 연장 후 총 길이 "10분 20초 통화". `npm run check` 종료 코드 0(vitest 33파일 251개)
+- [x] 흐름 변경 없음. 홈 최근 목록에서 메시지 0개인 미완 통화를 숨기고 기록에서만 보이게 한 것(D1·K2)과 포트폴리오 목록을 폼 위로 올린 것(P2)은 화면 구성 변경이며 SCREENS 에 근거 기록
+- 메모: 서브에이전트가 `portfolio.empty` 문구를 "위에서" → "아래에서" 로 고쳤다(폼이 목록 아래로 이동). STRINGS-REVISED 의 신규 문구 표 값과 ko.ts 가 이 한 건에서 다르다 — 8단계 전수 재확인 때 반영
+- 미확인: 전체 페이지 스크린샷에서 sticky 헤더가 스크롤 위치에 따라 중간에 찍히는 문제(chat-hints 390)는 촬영 스크립트에 "맨 위로 스크롤" 을 추가해 다음 촬영부터 해결. 이번 after 세트는 그대로 둔다(최종 세트는 5·6단계 뒤 재촬영)

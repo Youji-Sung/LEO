@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import { callLive, callSetup, report, themes } from "../src/content/ko";
-import { login } from "./helpers";
+import { callLive, callSetup, report } from "../src/content/ko";
+import { login, selectTheme } from "./helpers";
 
 async function say(page: Page, text: string) {
   await page.evaluate((t) => window.__leoFakeVoice!.say(t), text);
@@ -16,10 +16,10 @@ test("통화 시작 → 발화 3회 → 타이머 만료 → 리포트 화면", 
   await login(page);
   await page.goto("/call");
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await page.getByLabel(themes.label).selectOption("interview");
+  await selectTheme(page, "interview");
   await page.getByLabel(callSetup.durationTest).check();
   await page.getByRole("button", { name: callSetup.micCheck }).click();
-  await expect(page.getByRole("status").filter({ hasText: callSetup.micGranted })).toBeVisible();
+  await expect(page.getByTestId("mic-status")).toContainText(callSetup.micGranted);
   await page.getByRole("button", { name: callSetup.next }).click();
   await expect(page).toHaveURL(/\/call\/[a-z0-9]+$/);
 
@@ -51,7 +51,7 @@ test("음소거와 끊기", async ({ page }) => {
   await login(page);
   await page.goto("/call");
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await page.getByLabel(themes.label).selectOption("daily");
+  await selectTheme(page, "daily");
   await page.getByRole("button", { name: callSetup.next }).click();
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
   await page.getByTestId("start-call").click();

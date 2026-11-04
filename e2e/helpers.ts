@@ -18,3 +18,8 @@ export async function login(page: Page, email = SEED_EMAIL, password = SEED_PASS
   await page.getByRole("button", { name: auth.loginButton }).click();
   await expect(page).toHaveURL(/\/$/);
 }
+
+// 테마 카드(라디오)를 고른다. input 은 시각적으로 숨겨져 있어 value 로 찾는다.
+export async function selectTheme(page: Page, themeId: string): Promise<void> {
+  await page.locator(`input[name="theme"][value="${themeId}"]`).check();
+}

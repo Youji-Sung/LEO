@@ -502,6 +502,9 @@ fieldset.field > legend {
 .choice-list-stack {
   flex-direction: column;
 }
+.choice-list-stack .choice {
+  flex: 0 0 auto;
+}
 .choice {
   position: relative;
   display: flex;
@@ -799,6 +802,9 @@ fieldset.field > legend {
   to {
     transform: rotate(360deg);
   }
+}
+.spinner-icon {
+  animation: spin 1.2s linear infinite;
 }
 .skeleton {
   display: block;
@@ -1295,13 +1301,21 @@ fieldset.field > legend {
   position: sticky;
   bottom: 0;
   z-index: 10;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4) max(var(--space-4), env(safe-area-inset-bottom));
   background: var(--color-canvas);
   border-top: 1px solid var(--color-divider);
+}
+.call-buttons {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 46rem;
+  margin: 0 auto;
 }
 .call-controls .controls-left {
   display: flex;
@@ -1326,7 +1340,9 @@ fieldset.field > legend {
   display: flex;
   gap: var(--space-2);
   align-items: flex-end;
-  padding: var(--space-2) 0;
+  width: 100%;
+  max-width: 46rem;
+  margin: 0 auto;
 }
 .call-text-form textarea {
   flex: 1;
@@ -1429,8 +1445,11 @@ fieldset.field > legend {
   .call-status-icon::after {
     display: none;
   }
-  .spinner {
+  .spinner,
+  .spinner-icon {
     animation: none;
+  }
+  .spinner {
     border-top-color: var(--color-accent);
     border-style: dotted;
   }

@@ -1,11 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
-import { chat, common, errors, report, themes, transcript } from "../src/content/ko";
-import { login } from "./helpers";
+import { chat, common, errors, report, transcript } from "../src/content/ko";
+import { login, selectTheme } from "./helpers";
 
 async function newChat(page: Page, theme: string): Promise<string> {
   await page.goto("/chat");
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await page.getByLabel(themes.label).selectOption(theme);
+  await selectTheme(page, theme);
   await page.getByRole("button", { name: chat.start }).click();
   await expect(page).toHaveURL(/\/chat\/[a-z0-9]+$/);
   return page.url().split("/").pop()!;
@@ -26,7 +26,15 @@ test("리포트가 모든 항목을 렌더하고 기록에서 다시 열 수 있
   await expect(page).toHaveURL(new RegExp(`/history/${id}/report$`), { timeout: 30_000 });
 
   const s = report.sections;
-  for (const h of [s.summary, s.scores, s.grammar, s.vocabulary, s.better, s.nextTasks, s.interview]) {
+  for (const h of [
+    s.summary,
+    s.scores,
+    s.grammar,
+    s.vocabulary,
+    s.better,
+    s.nextTasks,
+    s.interview,
+  ]) {
     await expect(page.getByRole("heading", { name: h })).toBeVisible();
   }
   await expect(page.getByTestId("score")).toHaveCount(4);
@@ -37,7 +45,11 @@ test("리포트가 모든 항목을 렌더하고 기록에서 다시 열 수 있
   // 기록 → 트랜스크립트 → 리포트
   await page.goto("/history");
   await expect(page.getByTestId("history-list")).toBeVisible();
-  await page.getByTestId("history-list").getByRole("link", { name: /면접 · I go to school/ }).first().click();
+  await page
+    .getByTestId("history-list")
+    .getByRole("link", { name: /면접 · I go to school/ })
+    .first()
+    .click();
   await expect(page).toHaveURL(new RegExp(`/history/${id}$`));
   await expect(page.getByRole("heading", { name: transcript.pageTitle })).toBeVisible();
   await expect(page.getByText("There was very much people.")).toBeVisible();
@@ -50,7 +62,9 @@ test("스키마 검증 실패 시 오류와 재시도 버튼을 보여 주고, �
   const id = await newChat(page, "free");
   await sendAndWait(page, "Please break it MOCK_INVALID_REPORT", 1);
   await page.getByRole("button", { name: chat.makeReport }).click();
-  await expect(page.locator(".chat").getByRole("alert")).toContainText(errors.report.invalid, { timeout: 30_000 });
+  await expect(page.locator(".chat").getByRole("alert")).toContainText(errors.report.invalid, {
+    timeout: 30_000,
+  });
   await expect(page).toHaveURL(new RegExp(`/chat/${id}$`));
 
   // 리포트 페이지에서도 오류 + 재시도
@@ -68,5 +82,7 @@ test("스키마 검증 실패 시 오류와 재시도 버튼을 보여 주고, �
   await page.goto(`/history/${id}/report`);
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
   await page.getByRole("button", { name: report.make }).click();
-  await expect(page.getByRole("heading", { name: report.sections.summary })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("heading", { name: report.sections.summary })).toBeVisible({
+    timeout: 30_000,
+  });
 });

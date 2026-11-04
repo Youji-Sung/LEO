@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/current-user";
+import { Bubble, ButtonLink, EmptyState } from "@/components/ui";
 import { common, transcript } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { getOwnedReport } from "@/services/report";
@@ -19,44 +19,53 @@ export default async function TranscriptPage({ params }: { params: Promise<{ id:
   }
   const { conversation, report } = data;
   const theme = THEMES[conversation.theme as keyof typeof THEMES];
+  const meta = [
+    theme?.label ?? conversation.theme,
+    conversation.kind === "call" ? common.callLabel : common.chatLabel,
+    formatDateTime(conversation.startedAt),
+    conversation.durationSec ? formatDuration(conversation.durationSec) : null,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
     <>
-      <div className="row" style={{ justifyContent: "space-between" }}>
-        <h1 style={{ margin: 0 }}>{transcript.pageTitle}</h1>
+      <div className="page-head">
+        <div>
+          <h1>{transcript.pageTitle}</h1>
+          <p>{meta}</p>
+        </div>
         <div className="row">
           {report ? (
-            <Link className="btn btn-primary" href={`/history/${conversation.id}/report`}>
+            <ButtonLink variant="primary" href={`/history/${conversation.id}/report`}>
               {transcript.viewReport}
-            </Link>
+            </ButtonLink>
           ) : (
-            <Link className="btn" href={`/history/${conversation.id}/report`}>
+            <ButtonLink variant="primary" href={`/history/${conversation.id}/report`}>
               {transcript.makeReport}
-            </Link>
+            </ButtonLink>
           )}
           {conversation.kind === "chat" && (
-            <Link className="btn" href={`/chat/${conversation.id}`}>
-              {transcript.toChat}
-            </Link>
+            <ButtonLink href={`/chat/${conversation.id}`}>{transcript.toChat}</ButtonLink>
           )}
         </div>
       </div>
-      <p className="muted">
-        {theme?.label ?? conversation.theme} · {conversation.kind === "call" ? common.callLabel : common.chatLabel} · {formatDateTime(conversation.startedAt)}
-        {conversation.durationSec ? ` · ${formatDuration(conversation.durationSec)}` : ""}
-      </p>
-      <div className="chat-messages" role="log" aria-label={transcript.logLabel}>
-        {conversation.messages.length === 0 && <p className="muted">{transcript.empty}</p>}
-        {conversation.messages.map((m) => (
-          <div key={m.id} className={`bubble bubble-${m.role}`}>
-            <div className="bubble-text">{m.content}</div>
-            {m.hint && (
-              <div className="bubble-hint">
-                {transcript.hintLabel}: {m.hint}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
+      {conversation.messages.length === 0 ? (
+        <EmptyState title={transcript.empty} />
+      ) : (
+        <div className="chat-messages" role="log" aria-label={transcript.logLabel}>
+          {conversation.messages.map((m) => (
+            <Bubble
+              key={m.id}
+              speaker={m.role === "user" ? "me" : "partner"}
+              hint={m.hint}
+              hintLabel={transcript.hintLabel}
+            >
+              {m.content}
+            </Bubble>
+          ))}
+        </div>
+      )}
     </>
   );
 }

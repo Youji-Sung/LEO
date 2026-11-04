@@ -13,7 +13,7 @@ import path from "node:path";
 import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import type { AxeResults } from "axe-core";
-import { auth, callLive, callSetup, chat, common, portfolio, report, themes } from "../src/content/ko";
+import { auth, callLive, callSetup, chat, common, portfolio, report } from "../src/content/ko";
 
 type Phase = "before" | "after";
 type Scheme = "light" | "dark";
@@ -251,7 +251,7 @@ const STATES: State[] = [
     auth: "auth",
     run: async (c) => {
       await go(c.page, "/call");
-      await c.page.getByLabel(themes.label).selectOption("portfolio");
+      await c.page.locator('input[name="theme"][value="portfolio"]').check();
     },
   },
   { id: "__fixtures__", title: "", auth: "auth", run: async () => undefined },
@@ -308,7 +308,7 @@ const STATES: State[] = [
     run: async (c) => {
       await go(c.page, "/call");
       await c.page.getByRole("button", { name: callSetup.micCheck }).click();
-      await c.page.getByRole("status").filter({ hasText: callSetup.micGranted }).waitFor();
+      await c.page.getByTestId("mic-status").filter({ hasText: callSetup.micGranted }).waitFor();
     },
   },
   {
@@ -437,6 +437,8 @@ async function runStates(browser: Browser, states: State[], fixturesRef: { curre
         const file = `${name}--${v.name}.png`;
         // Next 개발 도구 표시(좌하단 N 버튼)는 제품 화면이 아니므로 가린다.
         await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" }).catch(() => undefined);
+        // 전체 페이지 캡처가 스크롤 위치에 따라 sticky 요소를 중간에 그리지 않도록 맨 위로 올린다.
+        await page.evaluate(() => window.scrollTo(0, 0));
         await page.screenshot({ path: path.join(OUT, file), fullPage: true, animations: "disabled" });
         if (v.name === VARIANTS[0]!.name) index.push({ name, title: state.title });
         if (runAxe) {

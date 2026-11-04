@@ -1,134 +1,154 @@
+import { ButtonLink, Card, DiffText, ScoreGauge } from "@/components/ui";
 import { report as text } from "@/content/ko";
 import type { Report } from "@/services/claude/schemas/report";
 
-function ScoreBar({ label, score, comment }: { label: string; score: number; comment: string }) {
-  return (
-    <div className="score" data-testid="score">
-      <div className="score-head">
-        <span>{label}</span>
-        <strong aria-label={text.scoreAria(label, score)}>{text.scoreOf(score)}</strong>
-        <span className="score-band">{text.scoreBand(score)}</span>
-      </div>
-      <div className="score-bar" role="img" aria-label={text.scoreAria(label, score)}>
-        <div className="score-fill" style={{ width: `${score * 10}%` }} />
-      </div>
-      <p className="muted" style={{ margin: "4px 0 0", fontSize: 13 }}>
-        {comment}
-      </p>
-    </div>
-  );
-}
+type SectionId = "summary" | "scores" | "interview" | "grammar" | "vocabulary" | "better" | "tasks";
 
-export function ReportView({ report, isInterview }: { report: Report; isInterview: boolean }) {
+const titleId = (id: SectionId) => `report-${id}-title`;
+
+// 순서는 P2: 인정(요약) → 점수 → (면접이면 면접 피드백) → 교정 → 제안 → 다음 과제와 행동.
+export function ReportView({
+  report,
+  isInterview,
+  kind,
+}: {
+  report: Report;
+  isInterview: boolean;
+  kind: "chat" | "call";
+}) {
+  const interview = isInterview ? report.interview : null;
+  const sections: { id: SectionId; title: string }[] = [
+    { id: "summary", title: text.sections.summary },
+    { id: "scores", title: text.sections.scores },
+    ...(interview ? [{ id: "interview" as const, title: text.sections.interview }] : []),
+    { id: "grammar", title: text.sections.grammar },
+    { id: "vocabulary", title: text.sections.vocabulary },
+    { id: "better", title: text.sections.better },
+    { id: "tasks", title: text.sections.nextTasks },
+  ];
+
   return (
-    <div className="stack report">
-      <section className="card">
-        <h2 style={{ marginTop: 0 }}>{text.sections.summary}</h2>
+    <div className="report">
+      <nav className="report-toc" aria-label={text.toc}>
+        {sections.map((s) => (
+          <a key={s.id} href={`#${s.id}`}>
+            {s.title}
+          </a>
+        ))}
+      </nav>
+
+      <Card as="section" id="summary" title={text.sections.summary} titleId={titleId("summary")}>
         <p>{report.summary}</p>
-      </section>
+      </Card>
 
-      <section className="card">
-        <h2 style={{ marginTop: 0 }}>{text.sections.scores}</h2>
+      <Card as="section" id="scores" title={text.sections.scores} titleId={titleId("scores")}>
         <div className="scores">
-          <ScoreBar label={text.scoreLabels.grammar} {...report.scores.grammar} />
-          <ScoreBar label={text.scoreLabels.vocabulary} {...report.scores.vocabulary} />
-          <ScoreBar label={text.scoreLabels.fluency} {...report.scores.fluency} />
-          <ScoreBar label={text.scoreLabels.task} {...report.scores.task} />
-          {report.technicalClarity && <ScoreBar label={text.scoreLabels.technicalClarity} {...report.technicalClarity} />}
+          <ScoreGauge label={text.scoreLabels.grammar} {...report.scores.grammar} />
+          <ScoreGauge label={text.scoreLabels.vocabulary} {...report.scores.vocabulary} />
+          <ScoreGauge label={text.scoreLabels.fluency} {...report.scores.fluency} />
+          <ScoreGauge label={text.scoreLabels.task} {...report.scores.task} />
+          {report.technicalClarity && (
+            <ScoreGauge label={text.scoreLabels.technicalClarity} {...report.technicalClarity} />
+          )}
         </div>
-      </section>
+      </Card>
 
-      <section className="card">
-        <h2 style={{ marginTop: 0 }}>{text.sections.grammar}</h2>
+      {interview && (
+        <Card
+          as="section"
+          id="interview"
+          title={text.sections.interview}
+          titleId={titleId("interview")}
+          data-testid="interview-section"
+        >
+          <div className="stack">
+            <p>{interview.structureFeedback}</p>
+            <div className="stack-sm">
+              <h3>{text.sections.followUps}</h3>
+              <ol className="tasks">
+                {interview.followUpQuestions.map((q, i) => (
+                  <li key={i} lang="en">
+                    {q}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      <Card as="section" id="grammar" title={text.sections.grammar} titleId={titleId("grammar")}>
         {report.grammarCorrections.length === 0 ? (
           <p className="muted">{text.grammarEmpty}</p>
         ) : (
           <ol className="corrections">
             {report.grammarCorrections.map((c, i) => (
               <li key={i} className="correction">
-                <div className="diff">
-                  <span className="sr-only">{text.original}: </span>
-                  <span className="orig">{c.original}</span>
-                  <span className="arrow" aria-hidden="true">
-                    →
-                  </span>
-                  <span className="sr-only">{text.corrected}: </span>
-                  <span className="fixed">{c.corrected}</span>
-                </div>
-                <p className="muted" style={{ margin: "4px 0 0" }}>
-                  {c.explanation}
-                </p>
+                <DiffText
+                  original={c.original}
+                  corrected={c.corrected}
+                  explanation={c.explanation}
+                />
               </li>
             ))}
           </ol>
         )}
-      </section>
+      </Card>
 
-      <section className="card">
-        <h2 style={{ marginTop: 0 }}>{text.sections.vocabulary}</h2>
+      <Card
+        as="section"
+        id="vocabulary"
+        title={text.sections.vocabulary}
+        titleId={titleId("vocabulary")}
+      >
         {report.vocabularySuggestions.length === 0 ? (
           <p className="muted">{text.vocabularyEmpty}</p>
         ) : (
           <ul className="vocab">
             {report.vocabularySuggestions.map((v, i) => (
               <li key={i}>
-                <div className="diff">
-                  <span className="sr-only">{text.original}: </span>
-                  <span className="orig">{v.original}</span>
-                  <span className="arrow" aria-hidden="true">
-                    →
-                  </span>
-                  <span className="sr-only">{text.corrected}: </span>
-                  <span className="fixed">{v.better}</span>
-                </div>
-                <div className="muted" style={{ fontSize: 13 }}>
-                  {v.meaning} · <em>{v.example}</em>
-                </div>
+                <DiffText
+                  original={v.original}
+                  corrected={v.better}
+                  meaning={v.meaning}
+                  example={v.example}
+                />
               </li>
             ))}
           </ul>
         )}
-      </section>
+      </Card>
 
-      <section className="card">
-        <h2 style={{ marginTop: 0 }}>{text.sections.better}</h2>
+      <Card as="section" id="better" title={text.sections.better} titleId={titleId("better")}>
         <ul className="vocab">
           {report.betterExpressions.map((b, i) => (
             <li key={i}>
-              <div className="muted" style={{ fontSize: 13 }}>
-                <span className="sr-only">{text.original}: </span>
-                {b.original}
-              </div>
-              <div className="fixed">
-                <span className="sr-only">{text.corrected}: </span>
-                {b.native}
-              </div>
+              <DiffText original={b.original} corrected={b.native} />
             </li>
           ))}
         </ul>
-      </section>
+      </Card>
 
-      <section className="card">
-        <h2 style={{ marginTop: 0 }}>{text.sections.nextTasks}</h2>
-        <ol>
-          {report.nextTasks.map((t, i) => (
-            <li key={i}>{t}</li>
-          ))}
-        </ol>
-      </section>
-
-      {isInterview && report.interview && (
-        <section className="card" data-testid="interview-section">
-          <h2 style={{ marginTop: 0 }}>{text.sections.interview}</h2>
-          <p>{report.interview.structureFeedback}</p>
-          <h3 style={{ fontSize: 15 }}>{text.sections.followUps}</h3>
-          <ol>
-            {report.interview.followUpQuestions.map((q, i) => (
-              <li key={i}>{q}</li>
+      <Card as="section" id="tasks" title={text.sections.nextTasks} titleId={titleId("tasks")}>
+        <div className="stack">
+          <ol className="tasks">
+            {report.nextTasks.map((t, i) => (
+              <li key={i}>{t}</li>
             ))}
           </ol>
-        </section>
-      )}
+          <div className="row">
+            {kind === "call" ? (
+              <ButtonLink variant="primary" href="/call">
+                {text.nextAction}
+              </ButtonLink>
+            ) : (
+              <ButtonLink variant="primary" href="/chat">
+                {text.nextActionChat}
+              </ButtonLink>
+            )}
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }

@@ -11,7 +11,9 @@ test.describe("모바일 폭", () => {
     });
   });
 
-  test("통화 화면이 가로 스크롤 없이 타이머·트랜스크립트·끊기 버튼을 보여 준다", async ({ page }) => {
+  test("통화 화면이 가로 스크롤 없이 타이머·트랜스크립트·끊기 버튼을 보여 준다", async ({
+    page,
+  }) => {
     await login(page);
     await page.goto("/call");
     await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
@@ -22,7 +24,9 @@ test.describe("모바일 폭", () => {
     await page.evaluate((t) => window.__leoFakeVoice!.say(t), "Hello, can you hear me?");
     await expect(page.getByTestId("msg-assistant")).toHaveCount(1, { timeout: 15_000 });
 
-    const noHorizontalScroll = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+    const noHorizontalScroll = await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth + 1,
+    );
     expect(noHorizontalScroll).toBe(true);
     await expect(page.getByTestId("timer")).toBeInViewport();
     await expect(page.getByTestId("hangup")).toBeInViewport();
@@ -30,7 +34,9 @@ test.describe("모바일 폭", () => {
     await page.screenshot({ path: "test-results/call-mobile.png" });
     await page.getByTestId("hangup").click();
     await expect(page).toHaveURL(/\/report$/, { timeout: 30_000 });
-    const reportNoScroll = await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1);
+    const reportNoScroll = await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth + 1,
+    );
     expect(reportNoScroll).toBe(true);
   });
 });
@@ -55,7 +61,7 @@ test("주요 컨트롤에 접근 가능한 이름이 있다", async ({ page }) =
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
   await expect(page.getByRole("navigation", { name: nav.menuLabel })).toBeVisible();
   await expect(page.getByRole("form", { name: chat.newChatForm })).toBeVisible();
-  await expect(page.getByLabel(themes.label)).toBeVisible();
+  await expect(page.getByRole("group", { name: themes.legend })).toBeVisible();
   await page.getByRole("button", { name: chat.start }).click();
   await expect(page.getByRole("log", { name: chat.logLabel })).toBeVisible();
   await expect(page.getByLabel(chat.inputLabel)).toBeVisible();

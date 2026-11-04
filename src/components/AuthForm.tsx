@@ -4,6 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { auth } from "@/content/ko";
 import { readError } from "@/lib/client-fetch";
+import { Button, Card, StatusMessage, TextField } from "@/components/ui";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const router = useRouter();
@@ -41,37 +42,53 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
   const isLogin = mode === "login";
 
   return (
-    <form onSubmit={onSubmit} className="card" aria-label={isLogin ? auth.loginTitle : auth.signupTitle}>
-      {mode === "signup" && (
-        <div className="field">
-          <label htmlFor="name">{auth.name}</label>
-          <input id="name" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
-        </div>
-      )}
-      <div className="field">
-        <label htmlFor="email">{auth.email}</label>
-        <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
-      </div>
-      <div className="field">
-        <label htmlFor="password">{auth.password}</label>
-        <input
+    <Card as="section">
+      <form
+        onSubmit={onSubmit}
+        className="stack"
+        aria-label={isLogin ? auth.loginTitle : auth.signupTitle}
+      >
+        {isLogin ? null : (
+          <TextField
+            id="name"
+            label={auth.name}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            autoComplete="name"
+          />
+        )}
+        <TextField
+          id="email"
+          label={auth.email}
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          autoComplete="email"
+        />
+        <TextField
           id="password"
+          label={auth.password}
           type="password"
+          hint={isLogin ? undefined : auth.passwordHint}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={8}
           autoComplete={isLogin ? "current-password" : "new-password"}
         />
-      </div>
-      {error && (
-        <p className="error" role="alert">
-          {error}
-        </p>
-      )}
-      <button className="btn btn-primary" type="submit" disabled={busy}>
-        {isLogin ? (busy ? auth.loginBusy : auth.loginButton) : busy ? auth.signupBusy : auth.signupButton}
-      </button>
-    </form>
+        {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
+        <Button
+          type="submit"
+          variant="primary"
+          block
+          loading={busy}
+          loadingLabel={isLogin ? auth.loginBusy : auth.signupBusy}
+        >
+          {isLogin ? auth.loginButton : auth.signupButton}
+        </Button>
+      </form>
+    </Card>
   );
 }
