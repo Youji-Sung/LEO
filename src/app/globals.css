@@ -237,6 +237,7 @@ main:focus {
   align-items: center;
   min-height: 40px;
   padding: 0 var(--space-3);
+  white-space: nowrap;
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
   text-decoration: none;
@@ -266,6 +267,11 @@ main:focus {
 .menu-toggle {
   display: none;
 }
+@media (max-width: 1023.98px) {
+  .site-user .user-name {
+    display: none;
+  }
+}
 @media (max-width: 767.98px) {
   .site-header .container {
     flex-wrap: wrap;
@@ -282,6 +288,9 @@ main:focus {
     display: none;
     justify-content: space-between;
     padding-top: var(--space-2);
+  }
+  .site-user .user-name {
+    display: inline;
   }
   .site-nav {
     order: 4;

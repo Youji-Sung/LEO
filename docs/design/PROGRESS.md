@@ -55,7 +55,7 @@
 - [x] axe(after) — 위반 3종 68노드가 모두 통화 화면(`(call)` 레이아웃)의 `landmark-one-main`·`page-has-heading-one`·`region` 였고, `<main>` + sr-only h1 + 배너를 `<header>` 에 넣어 수정(재검사는 6단계 전수 재검사에서). before 의 `color-contrast` 64건·`scrollable-region-focusable` 10건·채팅/통화 h1 44건은 0
 - [x] E2E — 18개 통과(1.6분). 셀렉터 변경: 테마 select → `selectTheme()`(라디오 카드), 마이크 상태 testid, 포트폴리오 삭제 `window.confirm` → Dialog 버튼, 포트폴리오 select 범위 지정, 연장 후 총 길이 "10분 20초 통화". `npm run check` 종료 코드 0(vitest 33파일 251개)
 - [x] 흐름 변경 없음. 홈 최근 목록에서 메시지 0개인 미완 통화를 숨기고 기록에서만 보이게 한 것(D1·K2)과 포트폴리오 목록을 폼 위로 올린 것(P2)은 화면 구성 변경이며 SCREENS 에 근거 기록
-- 메모: 서브에이전트가 `portfolio.empty` 문구를 "위에서" → "아래에서" 로 고쳤다(폼이 목록 아래로 이동). STRINGS-REVISED 의 신규 문구 표 값과 ko.ts 가 이 한 건에서 다르다 — 8단계 전수 재확인 때 반영
+- 메모: 서브에이전트가 `portfolio.empty` 문구를 "위에서" → "아래에서" 로 고쳤다(폼이 목록 아래로 이동). STRINGS-REVISED 72행을 같이 고쳐 ko.ts 와 일치시켰다(6단계)
 - 미확인: 전체 페이지 스크린샷에서 sticky 헤더가 스크롤 위치에 따라 중간에 찍히는 문제(chat-hints 390)는 촬영 스크립트에 "맨 위로 스크롤" 을 추가해 다음 촬영부터 해결. 이번 after 세트는 그대로 둔다(최종 세트는 5·6단계 뒤 재촬영)
 
 ## 5단계. 상태와 마이크로 인터랙션
@@ -66,3 +66,13 @@
 - [x] 포커스 관리 — `STATES.md` 3절 규칙 10항목 구현: `RouteFocus`(클라이언트 이동 후 `<main>`), `Dialog`(취소 첫 포커스·복귀), `StatusMessage focus`(폼 오류 5곳), 채팅 전송 후 입력창, `scroll-padding-bottom`
 - [x] 상태 촬영 중 발견해 고친 버그 2건 — (1) 채팅에서 서버가 상태 코드로 거절(대화 횟수 한도 429, 끝난 대화 409)하면 네트워크 끊김 문구가 나오던 문제: `ApiError` 면 서버 문구를 보여 주고 재전송 버튼은 한도·종료가 아닐 때만. (2) 통화에서 한도 도달 시 오류와 종료 안내가 둘 다 나오던 중복: 종료 안내만
 - [x] 검증 — `npm run check` 종료 코드 0(251개), `npm run test:e2e` 18개 통과(1.6분), 수정 후 turn-cap 상태 재촬영 8장 실패 0
+
+## 6단계. 접근성·반응형·성능 검증
+
+- [x] axe 전 화면 재검사 — 최종 after 세트 재촬영(42개 상태 × 4 = 168장, `--axe`): **위반 0건**(`screenshots/after/axe.md`). before 118노드 → after 0. 4단계 중간 검사의 통화 화면 68노드(main·h1·region)는 수정 확인됨
+- [x] 키보드만으로 3개 핵심 흐름 — `e2e/keyboard.spec.ts`(서브에이전트 작성, 메인 세션 검토): (1) 로그인→채팅(테마 화살표 선택, 힌트 Space, 메시지 2회, 리포트 만들기, 목차 앵커) (2) 로그인→통화(통화 시간 화살표, 마이크 확인, 다음, 통화 시작, 발화 2회, 끊기, 리포트) (3) 포트폴리오 추가→포트폴리오 면접 통화→리포트→삭제 다이얼로그(취소 첫 포커스 → Tab → 삭제). 첫 `goto` 뒤에는 `page.keyboard` 만 사용. 3개 통과(28.8초), 키보드로 할 수 없는 단계 0
+- [x] 대비 전수 테스트 — `tests/unit/contrast.test.ts`: 토큰 조합 33 × 라이트/다크 = 66개 조합이 각각 텍스트 4.5:1 / UI 3:1 이상, `tokens.css` 가 `tokens.ts` 와 동일, 다크 표면 밝기 순서. 70개 테스트 통과(3단계부터 `npm run check` 에 포함)
+- [x] 반응형 — `scripts/screenshots.ts --widths 360,640,768` 로 42개 상태 × 3폭 = 126장 촬영, 모든 장에서 `scrollWidth <= innerWidth` 를 자동 확인: 가로 스크롤 0장(`screenshots/after-widths/overflow-360-640-768.md`). 390·1280 은 after 기본 세트(136장)에서 확인. 768 에서 헤더 메뉴가 두 줄로 꺾이는 문제를 발견해 `white-space: nowrap` + 1024px 미만에서 사용자 이름 숨김으로 수정
+- [x] 화면 확대 200% — 1280px 창의 200% 확대는 CSS 폭 640px 과 같다(브라우저 확대 = CSS px 축소). 640 폭 42개 상태 전부 가로 스크롤 없음, 모바일 메뉴로 전환되어 레이아웃 깨짐 없음(after-widths 의 `*--640-light.png`). 실제 브라우저 Ctrl/Cmd + 로의 확인은 운영자 수동 항목으로 남김
+- [x] 성능 — `npm run build && npx tsx scripts/perf.ts`(프로덕션 서버, 캐시 없는 새 컨텍스트): `PERF.md` 표. CLS 는 12회 측정 중 최대 0.0001(/login 1280), 나머지 0. 전송량: CSS 41.6KB, JS 481~497KB(Next 런타임 포함), 폰트 128~368KB(서브셋 5~14파일, 화면의 글자 범위에 비례), HTML 11~18KB. DCL 34~553ms(첫 요청만 553ms, 서버 콜드 스타트)
+- 미확인: 실제 Chrome 의 폰트 스왑 체감(FOUT)·Lighthouse 점수는 측정하지 않았다(Playwright 의 layout-shift 관측자로 CLS 만 측정). web.dev 의 CLS 임계값 원문은 읽지 않아 "일반적으로 알려진 0.1" 로만 적었다

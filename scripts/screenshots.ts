@@ -59,18 +59,34 @@ const OUT = path.join(
   "docs",
   "design",
   "screenshots",
-  phase + (reducedMotion ? "-reduced-motion" : ""),
+  phase + (reducedMotion ? "-reduced-motion" : "") + (opt("widths") ? "-widths" : ""),
 );
 const DB_FILE = "shots.db";
 const EMAIL = "dev1@leo.local";
 const PASSWORD = process.env.SEED_USER_PASSWORD ?? "leo-pass-1234";
 
-const VARIANTS: Variant[] = [
+const DEFAULT_VARIANTS: Variant[] = [
   { name: "1280-light", width: 1280, height: 800, scheme: "light", mobile: false },
   { name: "1280-dark", width: 1280, height: 800, scheme: "dark", mobile: false },
   { name: "390-light", width: 390, height: 844, scheme: "light", mobile: true },
   { name: "390-dark", width: 390, height: 844, scheme: "dark", mobile: true },
 ];
+// --widths 360,640,768 : 반응형·확대 검증용(라이트만). 640 은 1280 창의 200% 확대와 같은 CSS 폭이다.
+const widthsOpt = opt("widths");
+const VARIANTS: Variant[] = widthsOpt
+  ? widthsOpt.split(",").map((w) => {
+      const width = Number(w.trim());
+      return {
+        name: `${width}-light`,
+        width,
+        height: width < 700 ? 844 : 900,
+        scheme: "light" as const,
+        mobile: width < 700,
+      };
+    })
+  : DEFAULT_VARIANTS;
+// 가로 스크롤 검사 결과(상태 × 폭)
+const overflow: { shot: string; variant: string; scrollWidth: number; innerWidth: number }[] = [];
 
 // ---------- 서버 ----------
 function sleep(ms: number): Promise<void> {
@@ -699,6 +715,11 @@ async function runStates(
           fullPage: true,
           animations: "disabled",
         });
+        const ov = await page.evaluate(() => ({
+          scrollWidth: document.documentElement.scrollWidth,
+          innerWidth: window.innerWidth,
+        }));
+        overflow.push({ shot: name, variant: v.name, ...ov });
         if (v.name === VARIANTS[0]!.name) index.push({ name, title: state.title });
         if (runAxe) {
           const results = await new AxeBuilder({ page })
@@ -846,6 +867,22 @@ async function main(): Promise<void> {
   for (const i of index) md.push(`| \`${i.name}\` | ${i.title} |`);
   writeFileSync(path.join(OUT, "index.md"), md.join("\n") + "\n");
   if (runAxe) writeAxeReport();
+  {
+    const bad = overflow.filter((o) => o.scrollWidth > o.innerWidth + 1);
+    const lines = [
+      `# 가로 스크롤 검사 (${phase}${widthsOpt ? `, 폭 ${widthsOpt}` : ""})`,
+      "",
+      `검사 ${overflow.length}장 · 가로 스크롤 발생 ${bad.length}장`,
+      "",
+    ];
+    if (bad.length) {
+      lines.push("| 상태 | 변형 | scrollWidth | innerWidth |", "|---|---|---:|---:|");
+      for (const o of bad)
+        lines.push(`| ${o.shot} | ${o.variant} | ${o.scrollWidth} | ${o.innerWidth} |`);
+    }
+    const suffix = widthsOpt ? "-" + widthsOpt.replace(/,/g, "-") : "";
+    writeFileSync(path.join(OUT, `overflow${suffix}.md`), lines.join("\n") + "\n");
+  }
   for (const f of [DB_FILE, `${DB_FILE}-journal`]) rmSync(path.join(ROOT, f), { force: true });
   process.stdout.write(`완료: ${index.length}개 상태 × ${VARIANTS.length} → ${OUT}\n`);
 }

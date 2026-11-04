@@ -8,7 +8,8 @@ import { rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { chromium, type Page } from "@playwright/test";
 
-const PORT = Number(process.argv[process.argv.indexOf("--port") + 1] || 3160);
+const portIdx = process.argv.indexOf("--port");
+const PORT = portIdx >= 0 ? Number(process.argv[portIdx + 1]) : 3160;
 const BASE = `http://localhost:${PORT}`;
 const ROOT = process.cwd();
 const DB = "perf.db";
@@ -37,9 +38,9 @@ async function start(): Promise<ChildProcess> {
     env: env(),
     shell: true,
     detached: true,
-    stdio: ["ignore", "ignore", "pipe"],
+    stdio: "ignore",
   });
-  const deadline = Date.now() + 60_000;
+  const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
     try {
       const r = await fetch(`${BASE}/login`, { redirect: "manual" });
@@ -49,7 +50,7 @@ async function start(): Promise<ChildProcess> {
     }
     await sleep(300);
   }
-  throw new Error("next start 가 60초 안에 뜨지 않았습니다.");
+  throw new Error("next start 가 120초 안에 뜨지 않았습니다.");
 }
 
 type Metric = {

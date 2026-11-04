@@ -362,744 +362,37 @@
   {
     "shot": "call-idle",
     "variant": "1280-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-idle",
     "variant": "1280-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-idle",
     "variant": "390-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-idle",
     "variant": "390-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-live",
     "variant": "1280-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-muted",
     "variant": "1280-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-ending",
     "variant": "1280-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "report-call-interview",
@@ -1109,320 +402,17 @@
   {
     "shot": "call-live",
     "variant": "1280-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-muted",
     "variant": "1280-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-ending",
     "variant": "1280-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "report-call-interview",
@@ -1432,320 +422,17 @@
   {
     "shot": "call-live",
     "variant": "390-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-muted",
     "variant": "390-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-ending",
     "variant": "390-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "report-call-interview",
@@ -1755,320 +442,17 @@
   {
     "shot": "call-live",
     "variant": "390-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-muted",
     "variant": "390-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-ending",
     "variant": "390-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "report-call-interview",
@@ -2078,594 +462,22 @@
   {
     "shot": "call-text-mode",
     "variant": "1280-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<label for=\"call-text\" class=\"sr-only\">말할 내용</label>",
-            "target": [
-              "label"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<textarea id=\"call-text\" rows=\"2\" placeholder=\"영어로 입력하고 Enter\" style=\"\"></textarea>",
-            "target": [
-              "#call-text"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-text-mode",
     "variant": "1280-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<label for=\"call-text\" class=\"sr-only\">말할 내용</label>",
-            "target": [
-              "label"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<textarea id=\"call-text\" rows=\"2\" placeholder=\"영어로 입력하고 Enter\" style=\"\"></textarea>",
-            "target": [
-              "#call-text"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-text-mode",
     "variant": "390-light",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<label for=\"call-text\" class=\"sr-only\">말할 내용</label>",
-            "target": [
-              "label"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<textarea id=\"call-text\" rows=\"2\" placeholder=\"영어로 입력하고 Enter\" style=\"\"></textarea>",
-            "target": [
-              "#call-text"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "call-text-mode",
     "variant": "390-dark",
-    "violations": [
-      {
-        "id": "landmark-one-main",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure the document has a main landmark",
-        "help": "Document should have one main landmark",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/landmark-one-main?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-main",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Document does not have a main landmark"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Document does not have a main landmark"
-          }
-        ]
-      },
-      {
-        "id": "page-has-heading-one",
-        "impact": "moderate",
-        "tags": [
-          "cat.semantics",
-          "best-practice"
-        ],
-        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
-        "help": "Page should contain a level-one heading",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
-        "nodes": [
-          {
-            "any": [],
-            "all": [
-              {
-                "id": "page-has-heading-one",
-                "data": null,
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Page must have a level-one heading"
-              }
-            ],
-            "none": [],
-            "impact": "moderate",
-            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
-            "target": [
-              "html"
-            ],
-            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
-          }
-        ]
-      },
-      {
-        "id": "region",
-        "impact": "moderate",
-        "tags": [
-          "cat.keyboard",
-          "best-practice",
-          "RGAAv4",
-          "RGAA-9.2.1"
-        ],
-        "description": "Ensure all page content is contained by landmarks",
-        "help": "All page content should be contained by landmarks",
-        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/region?application=playwright",
-        "nodes": [
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<div class=\"call-top\">",
-            "target": [
-              ".call-top"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<label for=\"call-text\" class=\"sr-only\">말할 내용</label>",
-            "target": [
-              "label"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          },
-          {
-            "any": [
-              {
-                "id": "region",
-                "data": {
-                  "isIframe": false
-                },
-                "relatedNodes": [],
-                "impact": "moderate",
-                "message": "Some page content is not contained by landmarks"
-              }
-            ],
-            "all": [],
-            "none": [],
-            "impact": "moderate",
-            "html": "<textarea id=\"call-text\" rows=\"2\" placeholder=\"영어로 입력하고 Enter\" style=\"\"></textarea>",
-            "target": [
-              "#call-text"
-            ],
-            "failureSummary": "Fix any of the following:\n  Some page content is not contained by landmarks"
-          }
-        ]
-      }
-    ]
+    "violations": []
   },
   {
     "shot": "report-chat-interview",
@@ -2693,7 +505,17 @@
     "violations": []
   },
   {
+    "shot": "report-error",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
     "shot": "report-missing",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "report-error",
     "variant": "1280-dark",
     "violations": []
   },
@@ -2703,7 +525,117 @@
     "violations": []
   },
   {
+    "shot": "report-error",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
     "shot": "report-missing",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "report-error",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-refusal",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-refusal",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-refusal",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-refusal",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-network-error",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-network-error",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-network-error",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-network-error",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-remake-dialog",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-remake-dialog",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-remake-dialog",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-remake-dialog",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-delete-dialog",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-delete-dialog",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-delete-dialog",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-delete-dialog",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "settings-saved",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "settings-saved",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "settings-saved",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "settings-saved",
     "variant": "390-dark",
     "violations": []
   },
@@ -2864,6 +796,46 @@
   },
   {
     "shot": "chat-nokey-error",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-turn-cap",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-turn-cap",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-turn-cap",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-turn-cap",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-turn-cap",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "call-turn-cap",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-turn-cap",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "call-turn-cap",
     "variant": "390-dark",
     "violations": []
   }
