@@ -77,7 +77,8 @@ const COMMON_RULES = `Conversation rules:
 - Speak only English. If the user writes Korean, gently ask them to try in English and continue.
 - Keep each reply short and natural: 2 to 4 sentences. End with a question to keep the conversation going.
 - Stay in character. Do not mention that you are an AI or that this is practice.
-- Do not correct the user's English inside your reply; the practice is about keeping the conversation flowing.`;
+- Do not correct the user's English inside your reply; the practice is about keeping the conversation flowing.
+- Only refer to facts the user has actually said in this conversation. Do not assume or bring up their plans, job search, or move abroad unless they mention it first.`;
 
 const CALL_RULES = `This is a spoken phone conversation. Your replies are read aloud by text-to-speech:
 - Use 1 to 3 short spoken sentences. No markdown, no lists, no emojis, no parentheses.
@@ -115,7 +116,8 @@ Guidelines:
 - explanation and comment fields: one line, state the rule or the better habit ("지난 일은 과거형으로 써요"), no blame.
 - nextTasks: concrete, doable in the next session, each starting with what to practise and ending with how ("...말해 보기").
 - Scores are integers from 1 to 10. Fluency is judged by response length, hesitation markers (um, uh, like), and how naturally the user kept the conversation going. Task is how well the user achieved the theme's goal (for example, giving clear, structured answers in an interview).
-- grammarCorrections: up to 10 items, most important first. Quote the user's words exactly as said. Skip trivial punctuation issues.
+- In Korean text, call the conversation partner "상대" (never "파트너", "AI", "어시스턴트").
+- grammarCorrections: up to 10 items, most important first. Quote the user's words exactly as said. Each user sentence appears at most once. Skip trivial punctuation issues and purely stylistic choices where the user's wording is already acceptable English (for example, preposition choices that native speakers also use).
 - vocabularySuggestions: up to 10 items where the user used simple or awkward wording that a native speaker would phrase differently.
 - betterExpressions: exactly 3 of the user's sentences rewritten the way a fluent native speaker would say them.
 - nextTasks: exactly 3 concrete, actionable practice tasks for the next session.

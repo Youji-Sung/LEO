@@ -166,7 +166,8 @@ export function ChatView(props: Props) {
     }
   }
 
-  const userCount = messages.filter((m) => m.role === "user").length;
+  // 보내지 못한 말풍선은 서버에 없으므로 리포트 대상에서 뺀다.
+  const userCount = messages.filter((m) => m.role === "user" && m.id !== failedId).length;
   const reportDisabled = reportBusy || busy || userCount === 0;
 
   return (

@@ -23,3 +23,15 @@ export function extendedDurationSec(currentSec: number): number {
   if (!canExtend(currentSec)) return currentSec;
   return currentSec + EXTEND_STEP_MINUTES * 60;
 }
+
+// 기록에 보여 줄 통화 시간. durationSec 은 설정한 길이라서, 끝난 통화는 실제 경과(종료 − 시작)를 쓴다.
+export function displayedCallSec(conv: {
+  durationSec: number | null;
+  startedAt: Date;
+  endedAt: Date | null;
+}): number | null {
+  if (!conv.durationSec) return null;
+  if (!conv.endedAt) return conv.durationSec;
+  const elapsed = Math.round((conv.endedAt.getTime() - conv.startedAt.getTime()) / 1000);
+  return Math.max(0, Math.min(elapsed, conv.durationSec));
+}

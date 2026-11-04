@@ -5,6 +5,7 @@ import { common, transcript } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { getOwnedReport } from "@/services/report";
 import { formatDateTime, formatDuration } from "@/lib/format";
+import { displayedCallSec } from "@/services/call/duration";
 
 export const metadata = { title: common.pageTitle(transcript.pageTitle) };
 
@@ -23,7 +24,7 @@ export default async function TranscriptPage({ params }: { params: Promise<{ id:
     theme?.label ?? conversation.theme,
     conversation.kind === "call" ? common.callLabel : common.chatLabel,
     formatDateTime(conversation.startedAt),
-    conversation.durationSec ? formatDuration(conversation.durationSec) : null,
+    displayedCallSec(conversation) ? formatDuration(displayedCallSec(conversation)!) : null,
   ]
     .filter(Boolean)
     .join(" · ");
