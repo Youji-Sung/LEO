@@ -65,7 +65,25 @@ claude.ai/code → 저장소 `Youji-Sung/LEO`, 브랜치 `main` → 권한 모�
 - `docs/design/PROGRESS.md`의 "미확인" 항목과 `docs/design/screenshots/after/`를 본다.
 - 실제 브라우저에서 다크 모드, 모션, 통화 화면을 직접 확인한다(클라우드에는 오디오 장치가 없다).
 
-## 세션 프롬프트 (UI/UX 개선)
+## 세션 프롬프트 (시각 방향 시안, 1차)
+
+Network access는 `Full`로 둔다(참고 자료 조회).
+
+```
+CLAUDE.md 를 읽고, docs/design/VISUAL_BRIEF.md 와 docs/design/VISUAL_PLAN.md 를 읽은 뒤 VISUAL_PLAN 의 1~5 를 순서대로 수행해.
+
+- 시각 방향은 네가 정해. 후보나 참고 대상을 누가 정해 주지 않는다. 이전 세션의 원칙·토큰은 입력이지 제약이 아니다.
+- 시안 3개는 서로 분명히 다른 방향이어야 하고, 같은 화면 세트로 비교할 수 있어야 한다.
+- 참고한 자료는 출처를 적고, 읽지 않은 것은 인용하지 마.
+- 실제 Claude API 는 호출하지 마(CLAUDE_MOCK=1).
+- 산출물을 docs/design/directions/ 에 정리하고 push 한 뒤 멈춰. 어느 시안도 적용하지 말고 2차 작업을 시작하지 마.
+```
+
+## 세션 프롬프트 (2차: 선택한 방향 반영)
+
+운영자가 `docs/design/directions/README.md`의 "선택" 칸을 채워 push한 뒤에 쓴다. 2차 계획은 선택 내용을 보고 작성한다.
+
+## 이전 세션 프롬프트 (UI/UX 개선, 완료됨 2026-11-04)
 
 ```
 CLAUDE.md 를 읽고, docs/design/BRIEF.md 와 docs/design/PLAN.md 를 전부 읽은 뒤 PLAN 의 0단계부터 8단계까지 순서대로 끝까지 수행해.
