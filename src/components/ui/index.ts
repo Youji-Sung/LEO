@@ -15,3 +15,4 @@ export { DiffText } from "@/components/ui/DiffText";
 export { Bubble } from "@/components/ui/Bubble";
 export { ToastProvider, useToast } from "@/components/ui/Toast";
 export { ThemeSelect } from "@/components/ui/ThemeSelect";
+export { DirectionSelect, type DirectionChoice } from "@/components/ui/DirectionSelect";

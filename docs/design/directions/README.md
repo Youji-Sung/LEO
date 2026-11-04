@@ -34,7 +34,7 @@
 ## 로컬에서 보는 방법
 
 1. 서버를 띄운다: `npm run dev` (모의 모드로 보려면 `.env` 에 `CLAUDE_MOCK=1`).
-2. 주소에 쿼리를 붙인다. 쿠키(`leo_direction`, 30일)로 저장되므로 그 뒤로는 모든 화면이 그 시안으로 보인다.
+2. **설정 페이지 → 화면 → 디자인 시안**에서 기본(현행)·서재·무대·콘솔 중 고른다. 고르면 바로 바뀐다. 또는 주소에 쿼리를 붙인다. 쿠키(`leo_direction`, 30일)로 저장되므로 그 뒤로는 모든 화면이 그 시안으로 보인다.
    - 서재: `http://localhost:3000/?direction=study`
    - 무대: `http://localhost:3000/?direction=stage`
    - 콘솔: `http://localhost:3000/?direction=console`
