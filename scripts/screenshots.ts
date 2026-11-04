@@ -418,7 +418,8 @@ const STATES: State[] = [
       await go(c.page, `/chat/${id}`);
       await c.page.route("**/api/conversations/*/messages", async (route) => {
         await sleep(4000);
-        await route.continue();
+        // 지연 중에 unroute 가 먼저 되면 "Route is already handled" 가 나므로 삼킨다.
+        await route.continue().catch(() => undefined);
       });
       await c.page.getByLabel(chat.inputLabel).fill("Hi! Can I tell you about my week?");
       await c.page.getByLabel(chat.inputLabel).press("Enter");
@@ -495,7 +496,8 @@ const STATES: State[] = [
       await c.page.getByRole("button", { name: callLive.unmute }).click();
       await c.page.route("**/api/conversations/*/report", async (route) => {
         await sleep(4000);
-        await route.continue();
+        // 지연 중에 unroute 가 먼저 되면 "Route is already handled" 가 나므로 삼킨다.
+        await route.continue().catch(() => undefined);
       });
       await c.page.getByTestId("hangup").click();
       await c.page.getByText(callLive.status.ending).waitFor();
@@ -702,7 +704,8 @@ const LIMIT_STATES: State[] = [
       await startCall(c.page);
       await c.page.route("**/api/conversations/*/report", async (route) => {
         await sleep(6000);
-        await route.continue();
+        // 지연 중에 unroute 가 먼저 되면 "Route is already handled" 가 나므로 삼킨다.
+        await route.continue().catch(() => undefined);
       });
       await say(c.page, "One more thing.");
       await c.page.getByText(callLive.turnCapEnd).waitFor({ timeout: 15_000 });
