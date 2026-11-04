@@ -78,7 +78,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           minLength={8}
           autoComplete={isLogin ? "current-password" : "new-password"}
         />
-        {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
+        {error ? <StatusMessage tone="error" focus>{error}</StatusMessage> : null}
         <Button
           type="submit"
           variant="primary"

@@ -57,3 +57,12 @@
 - [x] 흐름 변경 없음. 홈 최근 목록에서 메시지 0개인 미완 통화를 숨기고 기록에서만 보이게 한 것(D1·K2)과 포트폴리오 목록을 폼 위로 올린 것(P2)은 화면 구성 변경이며 SCREENS 에 근거 기록
 - 메모: 서브에이전트가 `portfolio.empty` 문구를 "위에서" → "아래에서" 로 고쳤다(폼이 목록 아래로 이동). STRINGS-REVISED 의 신규 문구 표 값과 ko.ts 가 이 한 건에서 다르다 — 8단계 전수 재확인 때 반영
 - 미확인: 전체 페이지 스크린샷에서 sticky 헤더가 스크롤 위치에 따라 중간에 찍히는 문제(chat-hints 390)는 촬영 스크립트에 "맨 위로 스크롤" 을 추가해 다음 촬영부터 해결. 이번 after 세트는 그대로 둔다(최종 세트는 5·6단계 뒤 재촬영)
+
+## 5단계. 상태와 마이크로 인터랙션
+
+- [x] 상태 표 — `STATES.md` 1절: 화면 14개 × 상태 55행, 각 행에 구현·스크린샷·테스트. 스크린샷이 없는 행은 사유 명시(순간 상태 4, 실제 브라우저 필요 3, 범위 밖 1)
+- [x] 상태 스크린샷 추가 — `scripts/screenshots.ts` 에 9개 상태 추가(chat-refusal, chat-network-error, chat-remake-dialog, portfolios-delete-dialog, settings-saved, report-error 최종 샷, LEO_MAX_TURNS=1 서버 패스의 chat-turn-cap·call-turn-cap) → 36장 촬영, 실패 0
+- [x] 모션 — `STATES.md` 2절 표 9항목, 전부 reduced-motion 대체 동작 정의. `after-reduced-motion/` 에 call-live·call-muted·call-ending·call-idle·chat-sending·settings-saved·report-call-interview 7상태 × 4 = 28장. call-live 에서 펄스 링이 없음을 눈으로 확인
+- [x] 포커스 관리 — `STATES.md` 3절 규칙 10항목 구현: `RouteFocus`(클라이언트 이동 후 `<main>`), `Dialog`(취소 첫 포커스·복귀), `StatusMessage focus`(폼 오류 5곳), 채팅 전송 후 입력창, `scroll-padding-bottom`
+- [x] 상태 촬영 중 발견해 고친 버그 2건 — (1) 채팅에서 서버가 상태 코드로 거절(대화 횟수 한도 429, 끝난 대화 409)하면 네트워크 끊김 문구가 나오던 문제: `ApiError` 면 서버 문구를 보여 주고 재전송 버튼은 한도·종료가 아닐 때만. (2) 통화에서 한도 도달 시 오류와 종료 안내가 둘 다 나오던 중복: 종료 안내만
+- [x] 검증 — `npm run check` 종료 코드 0(251개), `npm run test:e2e` 18개 통과(1.6분), 수정 후 turn-cap 상태 재촬영 8장 실패 0

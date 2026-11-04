@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { HydrationMarker } from "@/components/HydrationMarker";
+import { RouteFocus } from "@/components/RouteFocus";
 import { meta } from "@/content/ko";
 import { THEME_COOKIE, themeAttribute } from "@/lib/theme";
 import "./tokens.css";
@@ -36,6 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       </head>
       <body>
         <HydrationMarker />
+        <RouteFocus />
         {children}
       </body>
     </html>

@@ -163,16 +163,17 @@ export function CallView(props: Props) {
             { id: ev.message.id, role: "assistant", content: ev.message.content },
           ]);
         } else if (ev.type === "error") {
-          setError(ev.message);
           setEntries((e) => e.filter((x) => x.id !== tempId));
+          // 대화 횟수 한도는 종료 안내 한 줄로만 알린다(오류 메시지 중복 금지).
           if (ev.code === "turn_cap") void endCall("turn_cap");
+          else setError(ev.message);
         }
       });
       if (!done) splitter.flush();
     } catch (e) {
-      setError((e as Error).message);
       setEntries((en) => en.filter((x) => x.id !== tempId));
       if (e instanceof ApiError && e.code === "turn_cap") void endCall("turn_cap");
+      else setError((e as Error).message);
     } finally {
       setPartial(null);
       busyRef.current = false;

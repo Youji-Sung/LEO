@@ -13,7 +13,16 @@ import path from "node:path";
 import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import type { AxeResults } from "axe-core";
-import { auth, callLive, callSetup, chat, common, portfolio, report } from "../src/content/ko";
+import {
+  auth,
+  callLive,
+  callSetup,
+  chat,
+  common,
+  portfolio,
+  report,
+  settings,
+} from "../src/content/ko";
 
 type Phase = "before" | "after";
 type Scheme = "light" | "dark";
@@ -33,10 +42,25 @@ if (phase !== "before" && phase !== "after") throw new Error("--phase 는 before
 const runAxe = flag("axe");
 const reducedMotion = flag("reduced-motion");
 const only = opt("only");
+const onlyList = only
+  ? only
+      .split(",")
+      .map((x) => x.trim())
+      .filter(Boolean)
+  : [];
+function wanted(id: string): boolean {
+  return onlyList.length === 0 || onlyList.includes("all") || onlyList.some((o) => id.includes(o));
+}
 const PORT = Number(opt("port") ?? 3150);
 const BASE = `http://localhost:${PORT}`;
 const ROOT = process.cwd();
-const OUT = path.join(ROOT, "docs", "design", "screenshots", phase + (reducedMotion ? "-reduced-motion" : ""));
+const OUT = path.join(
+  ROOT,
+  "docs",
+  "design",
+  "screenshots",
+  phase + (reducedMotion ? "-reduced-motion" : ""),
+);
 const DB_FILE = "shots.db";
 const EMAIL = "dev1@leo.local";
 const PASSWORD = process.env.SEED_USER_PASSWORD ?? "leo-pass-1234";
@@ -170,14 +194,22 @@ async function newContext(browser: Browser, v: Variant): Promise<BrowserContext>
 }
 
 async function login(context: BrowserContext): Promise<void> {
-  const res = await context.request.post(`${BASE}/api/auth/login`, { data: { email: EMAIL, password: PASSWORD } });
+  const res = await context.request.post(`${BASE}/api/auth/login`, {
+    data: { email: EMAIL, password: PASSWORD },
+  });
   if (!res.ok()) throw new Error(`로그인 실패 ${res.status()}`);
 }
 
-async function api<T>(context: BrowserContext, method: "post" | "patch", url: string, data?: unknown): Promise<T> {
+async function api<T>(
+  context: BrowserContext,
+  method: "post" | "patch",
+  url: string,
+  data?: unknown,
+): Promise<T> {
   const res = await context.request[method](`${BASE}${url}`, { data });
   const text = await res.text();
-  if (!res.ok()) throw new Error(`${method.toUpperCase()} ${url} → ${res.status()} ${text.slice(0, 200)}`);
+  if (!res.ok())
+    throw new Error(`${method.toUpperCase()} ${url} → ${res.status()} ${text.slice(0, 200)}`);
   // NDJSON(메시지 전송)은 본문을 끝까지 읽기만 하면 된다.
   try {
     return JSON.parse(text) as T;
@@ -186,8 +218,16 @@ async function api<T>(context: BrowserContext, method: "post" | "patch", url: st
   }
 }
 
-async function createConversation(context: BrowserContext, body: Record<string, unknown>): Promise<string> {
-  const r = await api<{ conversation: { id: string } }>(context, "post", "/api/conversations", body);
+async function createConversation(
+  context: BrowserContext,
+  body: Record<string, unknown>,
+): Promise<string> {
+  const r = await api<{ conversation: { id: string } }>(
+    context,
+    "post",
+    "/api/conversations",
+    body,
+  );
   return r.conversation.id;
 }
 
@@ -196,15 +236,31 @@ async function sendMessage(context: BrowserContext, id: string, content: string)
 }
 
 async function makeFixtures(context: BrowserContext): Promise<Fixtures> {
-  const chatHintsId = await createConversation(context, { kind: "chat", theme: "interview", hintsEnabled: true });
-  for (const s of ["Hi, I am backend developer for five years.", "I go to school yesterday.", "There was very much people."]) {
+  const chatHintsId = await createConversation(context, {
+    kind: "chat",
+    theme: "interview",
+    hintsEnabled: true,
+  });
+  for (const s of [
+    "Hi, I am backend developer for five years.",
+    "I go to school yesterday.",
+    "There was very much people.",
+  ]) {
     await sendMessage(context, chatHintsId, s);
   }
-  const reportChatId = await createConversation(context, { kind: "chat", theme: "interview", hintsEnabled: false });
+  const reportChatId = await createConversation(context, {
+    kind: "chat",
+    theme: "interview",
+    hintsEnabled: false,
+  });
   await sendMessage(context, reportChatId, "I go to school yesterday.");
   await sendMessage(context, reportChatId, "There was very much people.");
   await api(context, "post", `/api/conversations/${reportChatId}/report`);
-  const reportErrorId = await createConversation(context, { kind: "chat", theme: "free", hintsEnabled: false });
+  const reportErrorId = await createConversation(context, {
+    kind: "chat",
+    theme: "free",
+    hintsEnabled: false,
+  });
   await sendMessage(context, reportErrorId, "Please break it MOCK_INVALID_REPORT");
   const pf = await api<{ portfolio: { id: string } }>(context, "post", "/api/portfolios", {
     title: "2025 백엔드 포트폴리오",
@@ -241,10 +297,30 @@ const STATES: State[] = [
   { id: "signup", title: "회원가입", auth: "anon", run: async (c) => go(c.page, "/signup") },
   // 빈 상태 (픽스처 생성 전)
   { id: "home-empty", title: "홈 · 빈 상태", auth: "auth", run: async (c) => go(c.page, "/") },
-  { id: "chat-list-empty", title: "채팅 목록 · 빈 상태", auth: "auth", run: async (c) => go(c.page, "/chat") },
-  { id: "history-empty", title: "기록 · 빈 상태", auth: "auth", run: async (c) => go(c.page, "/history") },
-  { id: "portfolios-empty", title: "포트폴리오 · 빈 상태", auth: "auth", run: async (c) => go(c.page, "/portfolios") },
-  { id: "usage-empty", title: "사용량 · 빈 상태", auth: "auth", run: async (c) => go(c.page, "/usage?period=all") },
+  {
+    id: "chat-list-empty",
+    title: "채팅 목록 · 빈 상태",
+    auth: "auth",
+    run: async (c) => go(c.page, "/chat"),
+  },
+  {
+    id: "history-empty",
+    title: "기록 · 빈 상태",
+    auth: "auth",
+    run: async (c) => go(c.page, "/history"),
+  },
+  {
+    id: "portfolios-empty",
+    title: "포트폴리오 · 빈 상태",
+    auth: "auth",
+    run: async (c) => go(c.page, "/portfolios"),
+  },
+  {
+    id: "usage-empty",
+    title: "사용량 · 빈 상태",
+    auth: "auth",
+    run: async (c) => go(c.page, "/usage?period=all"),
+  },
   {
     id: "call-setup-portfolio-empty",
     title: "통화 설정 · 포트폴리오 면접인데 포트폴리오 없음",
@@ -263,17 +339,30 @@ const STATES: State[] = [
     title: "채팅 · 대화 시작 전",
     auth: "auth",
     run: async (c) => {
-      const id = await createConversation(c.context, { kind: "chat", theme: "free", hintsEnabled: false });
+      const id = await createConversation(c.context, {
+        kind: "chat",
+        theme: "free",
+        hintsEnabled: false,
+      });
       await go(c.page, `/chat/${id}`);
     },
   },
-  { id: "chat-hints", title: "채팅 · 대화 중 + 교정 힌트", auth: "auth", run: async (c) => go(c.page, `/chat/${c.fixtures.chatHintsId}`) },
+  {
+    id: "chat-hints",
+    title: "채팅 · 대화 중 + 교정 힌트",
+    auth: "auth",
+    run: async (c) => go(c.page, `/chat/${c.fixtures.chatHintsId}`),
+  },
   {
     id: "chat-sending",
     title: "채팅 · 답변 기다리는 중",
     auth: "auth",
     run: async (c) => {
-      const id = await createConversation(c.context, { kind: "chat", theme: "daily", hintsEnabled: true });
+      const id = await createConversation(c.context, {
+        kind: "chat",
+        theme: "daily",
+        hintsEnabled: true,
+      });
       await go(c.page, `/chat/${id}`);
       await c.page.route("**/api/conversations/*/messages", async (route) => {
         await sleep(4000);
@@ -292,14 +381,23 @@ const STATES: State[] = [
     title: "채팅 · 응답 오류 + 다시 시도",
     auth: "auth",
     run: async (c) => {
-      const id = await createConversation(c.context, { kind: "chat", theme: "free", hintsEnabled: false });
+      const id = await createConversation(c.context, {
+        kind: "chat",
+        theme: "free",
+        hintsEnabled: false,
+      });
       await go(c.page, `/chat/${id}`);
       await c.page.getByLabel(chat.inputLabel).fill("Hello MOCK_ERROR");
       await c.page.getByLabel(chat.inputLabel).press("Enter");
       await c.page.locator("main").getByRole("alert").waitFor();
     },
   },
-  { id: "chat-ended", title: "채팅 · 종료된 대화", auth: "auth", run: async (c) => go(c.page, `/chat/${c.fixtures.reportChatId}`) },
+  {
+    id: "chat-ended",
+    title: "채팅 · 종료된 대화",
+    auth: "auth",
+    run: async (c) => go(c.page, `/chat/${c.fixtures.reportChatId}`),
+  },
   { id: "call-setup", title: "통화 설정", auth: "auth", run: async (c) => go(c.page, "/call") },
   {
     id: "call-setup-mic-ok",
@@ -316,7 +414,11 @@ const STATES: State[] = [
     title: "통화 · 시작 전",
     auth: "auth",
     run: async (c) => {
-      const id = await createConversation(c.context, { kind: "call", theme: "interview", durationMin: 0 });
+      const id = await createConversation(c.context, {
+        kind: "call",
+        theme: "interview",
+        durationMin: 0,
+      });
       await go(c.page, `/call/${id}`);
     },
   },
@@ -325,7 +427,11 @@ const STATES: State[] = [
     title: "통화 중(듣는 중, 연장 버튼) → 종료 중 → 통화 리포트",
     auth: "auth",
     run: async (c) => {
-      const id = await createConversation(c.context, { kind: "call", theme: "interview", durationMin: 0 });
+      const id = await createConversation(c.context, {
+        kind: "call",
+        theme: "interview",
+        durationMin: 0,
+      });
       await go(c.page, `/call/${id}`);
       await startCall(c.page);
       await say(c.page, "Hi, I am backend developer for five years.");
@@ -353,7 +459,11 @@ const STATES: State[] = [
     title: "통화 · 음성 인식 미지원(텍스트 입력)",
     auth: "auth",
     run: async (c) => {
-      const id = await createConversation(c.context, { kind: "call", theme: "daily", durationMin: 10 });
+      const id = await createConversation(c.context, {
+        kind: "call",
+        theme: "daily",
+        durationMin: 10,
+      });
       await c.page.addInitScript(() => {
         window.__LEO_FAKE_VOICE_SUPPORT = { stt: false, tts: true };
       });
@@ -362,7 +472,12 @@ const STATES: State[] = [
       await c.page.getByText(callLive.textModeNotice).waitFor();
     },
   },
-  { id: "report-chat-interview", title: "리포트(채팅·면접)", auth: "auth", run: async (c) => go(c.page, `/history/${c.fixtures.reportChatId}/report`) },
+  {
+    id: "report-chat-interview",
+    title: "리포트(채팅·면접)",
+    auth: "auth",
+    run: async (c) => go(c.page, `/history/${c.fixtures.reportChatId}/report`),
+  },
   {
     id: "report-error",
     title: "리포트 · 생성 실패(스키마) + 다시 시도",
@@ -371,12 +486,92 @@ const STATES: State[] = [
       await go(c.page, `/history/${c.fixtures.reportErrorId}/report`);
       await c.shot("report-missing");
       await c.page.getByRole("button", { name: report.make }).click();
-      await c.page.getByTestId("report-retry").getByRole("button", { name: common.retry }).waitFor({ timeout: 30_000 });
+      await c.page
+        .getByTestId("report-retry")
+        .getByRole("button", { name: common.retry })
+        .waitFor({ timeout: 30_000 });
+      await c.shot("report-error");
     },
   },
-  { id: "transcript", title: "트랜스크립트", auth: "auth", run: async (c) => go(c.page, `/history/${c.fixtures.reportChatId}`) },
+  {
+    id: "chat-refusal",
+    title: "채팅 · 상대가 답하지 않기로 함(refusal)",
+    auth: "auth",
+    run: async (c) => {
+      const id = await createConversation(c.context, {
+        kind: "chat",
+        theme: "free",
+        hintsEnabled: false,
+      });
+      await go(c.page, `/chat/${id}`);
+      await c.page.getByLabel(chat.inputLabel).fill("Tell me MOCK_REFUSAL");
+      await c.page.getByLabel(chat.inputLabel).press("Enter");
+      await c.page.locator("main").getByRole("alert").waitFor();
+    },
+  },
+  {
+    id: "chat-network-error",
+    title: "채팅 · 네트워크 끊김",
+    auth: "auth",
+    run: async (c) => {
+      const id = await createConversation(c.context, {
+        kind: "chat",
+        theme: "free",
+        hintsEnabled: false,
+      });
+      await go(c.page, `/chat/${id}`);
+      await c.page.route("**/api/conversations/*/messages", (route) =>
+        route.abort("connectionfailed"),
+      );
+      await c.page.getByLabel(chat.inputLabel).fill("Hello?");
+      await c.page.getByLabel(chat.inputLabel).press("Enter");
+      await c.page.locator("main").getByRole("alert").waitFor();
+      await c.page.unroute("**/api/conversations/*/messages");
+    },
+  },
+  {
+    id: "chat-remake-dialog",
+    title: "채팅 · 리포트 다시 만들기 확인 대화",
+    auth: "auth",
+    run: async (c) => {
+      await go(c.page, `/chat/${c.fixtures.reportChatId}`);
+      await c.page.getByRole("button", { name: chat.remakeReport }).click();
+      await c.page.getByRole("dialog").waitFor();
+    },
+  },
+  {
+    id: "portfolios-delete-dialog",
+    title: "포트폴리오 · 삭제 확인 대화",
+    auth: "auth",
+    run: async (c) => {
+      await go(c.page, "/portfolios");
+      await c.page.getByRole("button", { name: /삭제$/ }).first().click();
+      await c.page.getByRole("dialog").waitFor();
+    },
+  },
+  {
+    id: "settings-saved",
+    title: "설정 · 저장 토스트",
+    auth: "auth",
+    run: async (c) => {
+      await go(c.page, "/settings");
+      await c.page.getByRole("button", { name: settings.save }).click();
+      await c.page.getByText(settings.saved).waitFor();
+    },
+  },
+  {
+    id: "transcript",
+    title: "트랜스크립트",
+    auth: "auth",
+    run: async (c) => go(c.page, `/history/${c.fixtures.reportChatId}`),
+  },
   { id: "history", title: "기록 목록", auth: "auth", run: async (c) => go(c.page, "/history") },
-  { id: "portfolios", title: "포트폴리오 목록", auth: "auth", run: async (c) => go(c.page, "/portfolios") },
+  {
+    id: "portfolios",
+    title: "포트폴리오 목록",
+    auth: "auth",
+    run: async (c) => go(c.page, "/portfolios"),
+  },
   {
     id: "portfolios-pdf-mode",
     title: "포트폴리오 · PDF 업로드 모드",
@@ -392,13 +587,22 @@ const STATES: State[] = [
 
 // API 키 없음 서버(CLAUDE_MOCK=0, 키 없음)에서 찍는 상태
 const NOKEY_STATES: State[] = [
-  { id: "home-nokey", title: "홈 · API 키 없음 배너", auth: "auth", run: async (c) => go(c.page, "/") },
+  {
+    id: "home-nokey",
+    title: "홈 · API 키 없음 배너",
+    auth: "auth",
+    run: async (c) => go(c.page, "/"),
+  },
   {
     id: "chat-nokey-error",
     title: "채팅 · API 키 없음 오류",
     auth: "auth",
     run: async (c) => {
-      const id = await createConversation(c.context, { kind: "chat", theme: "free", hintsEnabled: false });
+      const id = await createConversation(c.context, {
+        kind: "chat",
+        theme: "free",
+        hintsEnabled: false,
+      });
       await go(c.page, `/chat/${id}`);
       await c.page.getByLabel(chat.inputLabel).fill("Hello!");
       await c.page.getByLabel(chat.inputLabel).press("Enter");
@@ -407,8 +611,57 @@ const NOKEY_STATES: State[] = [
   },
 ];
 
+// 대화 횟수 한도(LEO_MAX_TURNS=1) 서버에서 찍는 상태
+const LIMIT_STATES: State[] = [
+  {
+    id: "chat-turn-cap",
+    title: "채팅 · 대화 횟수 한도",
+    auth: "auth",
+    run: async (c) => {
+      const id = await createConversation(c.context, {
+        kind: "chat",
+        theme: "free",
+        hintsEnabled: false,
+      });
+      await sendMessage(c.context, id, "Hello!");
+      await go(c.page, `/chat/${id}`);
+      await c.page.getByLabel(chat.inputLabel).fill("One more?");
+      await c.page.getByLabel(chat.inputLabel).press("Enter");
+      await c.page.locator("main").getByRole("alert").waitFor();
+    },
+  },
+  {
+    id: "call-turn-cap",
+    title: "통화 · 대화 횟수 한도로 종료",
+    auth: "auth",
+    run: async (c) => {
+      const id = await createConversation(c.context, {
+        kind: "call",
+        theme: "daily",
+        durationMin: 10,
+      });
+      await sendMessage(c.context, id, "Hello!");
+      await go(c.page, `/call/${id}`);
+      await startCall(c.page);
+      await c.page.route("**/api/conversations/*/report", async (route) => {
+        await sleep(6000);
+        await route.continue();
+      });
+      await say(c.page, "One more thing.");
+      await c.page.getByText(callLive.turnCapEnd).waitFor({ timeout: 15_000 });
+      await c.shot("call-turn-cap");
+      await c.page.unroute("**/api/conversations/*/report");
+      await c.page.waitForURL(/\/report$/, { timeout: 40_000 });
+    },
+  },
+];
+
 // ---------- 실행 ----------
-async function runStates(browser: Browser, states: State[], fixturesRef: { current: Fixtures | null }): Promise<void> {
+async function runStates(
+  browser: Browser,
+  states: State[],
+  fixturesRef: { current: Fixtures | null },
+): Promise<void> {
   const contexts = new Map<string, BrowserContext>();
   for (const v of VARIANTS) contexts.set(v.name, await newContext(browser, v));
   let loggedIn = false;
@@ -423,7 +676,7 @@ async function runStates(browser: Browser, states: State[], fixturesRef: { curre
       fixturesRef.current = await makeFixtures(first);
       continue;
     }
-    if (only && !state.id.includes(only) && only !== "all") continue;
+    if (!wanted(state.id)) continue;
     if (state.auth === "auth" && !loggedIn) {
       for (const ctx of contexts.values()) await login(ctx);
       loggedIn = true;
@@ -436,24 +689,42 @@ async function runStates(browser: Browser, states: State[], fixturesRef: { curre
         shots += 1;
         const file = `${name}--${v.name}.png`;
         // Next 개발 도구 표시(좌하단 N 버튼)는 제품 화면이 아니므로 가린다.
-        await page.addStyleTag({ content: "nextjs-portal { display: none !important; }" }).catch(() => undefined);
+        await page
+          .addStyleTag({ content: "nextjs-portal { display: none !important; }" })
+          .catch(() => undefined);
         // 전체 페이지 캡처가 스크롤 위치에 따라 sticky 요소를 중간에 그리지 않도록 맨 위로 올린다.
         await page.evaluate(() => window.scrollTo(0, 0));
-        await page.screenshot({ path: path.join(OUT, file), fullPage: true, animations: "disabled" });
+        await page.screenshot({
+          path: path.join(OUT, file),
+          fullPage: true,
+          animations: "disabled",
+        });
         if (v.name === VARIANTS[0]!.name) index.push({ name, title: state.title });
         if (runAxe) {
-          const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"]).analyze();
+          const results = await new AxeBuilder({ page })
+            .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"])
+            .analyze();
           axeRecords.push({ shot: name, variant: v.name, violations: results.violations });
         }
         process.stdout.write(`  ${file}\n`);
       };
-      const fx = fixturesRef.current ?? { chatHintsId: "", reportChatId: "", reportErrorId: "", portfolioId: "" };
+      const fx = fixturesRef.current ?? {
+        chatHintsId: "",
+        reportChatId: "",
+        reportErrorId: "",
+        portfolioId: "",
+      };
       try {
         await state.run({ page, context, variant: v, fixtures: fx, shot });
         if (shots === 0) await shot(state.id);
       } catch (e) {
         process.stderr.write(`[${state.id} / ${v.name}] 실패: ${(e as Error).message}\n`);
-        await page.screenshot({ path: path.join(OUT, `${state.id}--${v.name}--FAILED.png`), fullPage: true }).catch(() => undefined);
+        await page
+          .screenshot({
+            path: path.join(OUT, `${state.id}--${v.name}--FAILED.png`),
+            fullPage: true,
+          })
+          .catch(() => undefined);
       } finally {
         await page.close();
       }
@@ -464,21 +735,42 @@ async function runStates(browser: Browser, states: State[], fixturesRef: { curre
 
 function writeAxeReport(): void {
   writeFileSync(path.join(OUT, "axe.json"), JSON.stringify(axeRecords, null, 2));
-  const byRule = new Map<string, { impact: string; help: string; helpUrl: string; count: number; shots: Set<string> }>();
+  const byRule = new Map<
+    string,
+    { impact: string; help: string; helpUrl: string; count: number; shots: Set<string> }
+  >();
   const lines: string[] = [];
-  lines.push(`# axe-core 결과 (${phase})`, "", `실행: \`npx tsx scripts/screenshots.ts --phase ${phase} --axe\` · 태그 wcag2a/2aa/21a/21aa/22aa/best-practice · 스크린샷 ${axeRecords.length}장 검사`, "");
+  lines.push(
+    `# axe-core 결과 (${phase})`,
+    "",
+    `실행: \`npx tsx scripts/screenshots.ts --phase ${phase} --axe\` · 태그 wcag2a/2aa/21a/21aa/22aa/best-practice · 스크린샷 ${axeRecords.length}장 검사`,
+    "",
+  );
   for (const rec of axeRecords) {
     for (const v of rec.violations) {
       const key = v.id;
-      const entry = byRule.get(key) ?? { impact: v.impact ?? "", help: v.help, helpUrl: v.helpUrl, count: 0, shots: new Set<string>() };
+      const entry = byRule.get(key) ?? {
+        impact: v.impact ?? "",
+        help: v.help,
+        helpUrl: v.helpUrl,
+        count: 0,
+        shots: new Set<string>(),
+      };
       entry.count += v.nodes.length;
       entry.shots.add(`${rec.shot}--${rec.variant}`);
       byRule.set(key, entry);
     }
   }
-  lines.push("## 규칙별 요약", "", "| 규칙 | 영향 | 노드 수 | 화면 수 | 설명 |", "|---|---|---:|---:|---|");
+  lines.push(
+    "## 규칙별 요약",
+    "",
+    "| 규칙 | 영향 | 노드 수 | 화면 수 | 설명 |",
+    "|---|---|---:|---:|---|",
+  );
   for (const [id, e] of [...byRule.entries()].sort((a, b) => b[1].count - a[1].count)) {
-    lines.push(`| \`${id}\` | ${e.impact} | ${e.count} | ${e.shots.size} | [${e.help}](${e.helpUrl}) |`);
+    lines.push(
+      `| \`${id}\` | ${e.impact} | ${e.count} | ${e.shots.size} | [${e.help}](${e.helpUrl}) |`,
+    );
   }
   if (byRule.size === 0) lines.push("| (위반 없음) | | | | |");
   lines.push("", "## 화면별 상세", "");
@@ -487,9 +779,21 @@ function writeAxeReport(): void {
     lines.push(`### ${rec.shot} (${rec.variant})`, "");
     for (const v of rec.violations) {
       for (const n of v.nodes) {
-        const data = n.any[0]?.data as { contrastRatio?: number; fgColor?: string; bgColor?: string; expectedContrastRatio?: string } | undefined;
-        const ratio = data?.contrastRatio !== undefined ? ` · 대비 ${data.contrastRatio}:1 (요구 ${data.expectedContrastRatio ?? ""}, fg ${data.fgColor ?? ""} / bg ${data.bgColor ?? ""})` : "";
-        lines.push(`- \`${v.id}\` [${v.impact}] ${n.target.join(" ")}${ratio} — ${n.html.replace(/\s+/g, " ").slice(0, 120)}`);
+        const data = n.any[0]?.data as
+          | {
+              contrastRatio?: number;
+              fgColor?: string;
+              bgColor?: string;
+              expectedContrastRatio?: string;
+            }
+          | undefined;
+        const ratio =
+          data?.contrastRatio !== undefined
+            ? ` · 대비 ${data.contrastRatio}:1 (요구 ${data.expectedContrastRatio ?? ""}, fg ${data.fgColor ?? ""} / bg ${data.bgColor ?? ""})`
+            : "";
+        lines.push(
+          `- \`${v.id}\` [${v.impact}] ${n.target.join(" ")}${ratio} — ${n.html.replace(/\s+/g, " ").slice(0, 120)}`,
+        );
       }
     }
     lines.push("");
@@ -509,7 +813,7 @@ async function main(): Promise<void> {
   } finally {
     stopServer(server);
   }
-  if (!only || only === "all" || only.includes("nokey")) {
+  if (wanted("nokey")) {
     await sleep(1500);
     server = await startServer({ CLAUDE_MOCK: "0", LEO_ANTHROPIC_API_KEY: "" });
     process.stdout.write(`서버 ${BASE} (API 키 없음)\n`);
@@ -519,9 +823,26 @@ async function main(): Promise<void> {
       stopServer(server);
     }
   }
+  if (wanted("turn-cap")) {
+    await sleep(1500);
+    server = await startServer({ LEO_MAX_TURNS: "1" });
+    process.stdout.write(`서버 ${BASE} (대화 횟수 한도 1)\n`);
+    try {
+      await runStates(browser, LIMIT_STATES, fixturesRef);
+    } finally {
+      stopServer(server);
+    }
+  }
   await browser.close();
 
-  const md = ["# 스크린샷 목록 (" + phase + ")", "", "각 상태는 `--1280-light`, `--1280-dark`, `--390-light`, `--390-dark` 네 장이 있다.", "", "| 파일 접두사 | 상태 |", "|---|---|"];
+  const md = [
+    "# 스크린샷 목록 (" + phase + ")",
+    "",
+    "각 상태는 `--1280-light`, `--1280-dark`, `--390-light`, `--390-dark` 네 장이 있다.",
+    "",
+    "| 파일 접두사 | 상태 |",
+    "|---|---|",
+  ];
   for (const i of index) md.push(`| \`${i.name}\` | ${i.title} |`);
   writeFileSync(path.join(OUT, "index.md"), md.join("\n") + "\n");
   if (runAxe) writeAxeReport();

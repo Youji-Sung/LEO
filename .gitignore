@@ -43,3 +43,4 @@ src/generated/
 next-env.d.ts
 *.tsbuildinfo
 shots.db*
+perf.db*

@@ -4,7 +4,7 @@ import { Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { chat, common } from "@/content/ko";
-import { apiJson } from "@/lib/client-fetch";
+import { ApiError, apiJson } from "@/lib/client-fetch";
 import { streamMessage } from "@/lib/ndjson-client";
 import type { Report } from "@/services/claude/schemas/report";
 import {
@@ -82,11 +82,17 @@ export function ChatView(props: Props) {
           if (ev.code !== "refusal") setLastFailed(content);
         }
       });
-    } catch {
-      // 네트워크가 끊긴 경우: 서버가 답변을 이미 저장했을 수 있으므로 재전송 대신 다시 불러온다.
-      setError(chat.networkError);
+    } catch (e) {
       setMessages((m) => m.filter((x) => x.id !== tempId));
-      router.refresh();
+      if (e instanceof ApiError) {
+        // 서버가 상태 코드로 거절한 경우(대화 횟수 한도, 끝난 대화 등): 서버 문구를 그대로 보여 준다.
+        setError(e.message);
+        if (e.code !== "turn_cap" && e.code !== "conversation_ended") setLastFailed(content);
+      } else {
+        // 네트워크가 끊긴 경우: 서버가 답변을 이미 저장했을 수 있으므로 재전송 대신 다시 불러온다.
+        setError(chat.networkError);
+        router.refresh();
+      }
     } finally {
       setStreaming(null);
       setBusy(false);
@@ -226,6 +232,7 @@ export function ChatView(props: Props) {
 
       {error && (
         <StatusMessage
+          focus
           tone="error"
           action={
             lastFailed ? (

@@ -39,6 +39,7 @@ export function ReportRetry({
         </Card>
       ) : error ? (
         <StatusMessage
+          focus
           tone="error"
           action={
             <Button variant="primary" onClick={retry}>

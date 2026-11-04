@@ -153,6 +153,9 @@ main.container {
   padding-top: var(--space-6);
   padding-bottom: var(--space-9);
 }
+main:focus {
+  outline: none;
+}
 .stack {
   display: flex;
   flex-direction: column;

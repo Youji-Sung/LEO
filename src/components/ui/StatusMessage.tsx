@@ -18,6 +18,7 @@ export function StatusMessage({
   action,
   className,
   polite = false,
+  focus = false,
   "data-testid": testId,
 }: {
   tone?: StatusTone;
@@ -27,6 +28,8 @@ export function StatusMessage({
   className?: string;
   // 경고라도 즉시 끼어들 필요가 없으면(1분 남음 등) polite 로 status 를 쓴다.
   polite?: boolean;
+  // 오류가 생겼을 때 포커스를 메시지로 옮긴다(포커스 관리 규칙, docs/design/STATES.md). React 가 마운트 시 focus() 한다.
+  focus?: boolean;
   "data-testid"?: string;
 }) {
   const Icon = ICONS[tone];
@@ -36,6 +39,8 @@ export function StatusMessage({
       className={`status status-${tone}${className ? ` ${className}` : ""}`}
       role={role}
       data-testid={testId}
+      tabIndex={focus ? -1 : undefined}
+      autoFocus={focus || undefined}
     >
       <Icon size={18} aria-hidden="true" />
       <div className="status-body">

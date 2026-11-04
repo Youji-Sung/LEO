@@ -190,7 +190,7 @@ export function CallSetupForm({
         {!sttSupported && <StatusMessage tone="warning">{callSetup.sttUnsupported}</StatusMessage>}
       </Card>
 
-      {error && <StatusMessage tone="error">{error}</StatusMessage>}
+      {error && <StatusMessage tone="error" focus>{error}</StatusMessage>}
 
       <div className="row">
         <Button

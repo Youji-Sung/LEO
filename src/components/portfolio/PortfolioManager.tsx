@@ -188,7 +188,7 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
               />
             </div>
           )}
-          {error ? <StatusMessage tone="error">{error}</StatusMessage> : null}
+          {error ? <StatusMessage tone="error" focus>{error}</StatusMessage> : null}
           {status ? <StatusMessage tone="success">{status}</StatusMessage> : null}
           <div>
             <Button
