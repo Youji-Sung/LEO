@@ -1,0 +1,4838 @@
+[
+  {
+    "shot": "login",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "login",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "login",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "login",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "login-error",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "login-error",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "login-error",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "login-error",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "signup",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "signup",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "signup",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "signup",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "home-empty",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "home-empty",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "home-empty",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "home-empty",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-list-empty",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-list-empty",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-list-empty",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-list-empty",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "history-empty",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "history-empty",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "history-empty",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "history-empty",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-empty",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-empty",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-empty",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-empty",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "usage-empty",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "usage-empty",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "usage-empty",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "scrollable-region-focusable",
+        "impact": "serious",
+        "tags": [
+          "cat.keyboard",
+          "wcag2a",
+          "wcag211",
+          "wcag213",
+          "TTv5",
+          "TT4.a",
+          "EN-301-549",
+          "EN-9.2.1.1",
+          "EN-9.2.1.3",
+          "RGAAv4",
+          "RGAA-7.3.2"
+        ],
+        "description": "Ensure elements that have scrollable content are accessible by keyboard in Safari",
+        "help": "Scrollable region must have keyboard access",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/scrollable-region-focusable?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(5)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          },
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(7)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "usage-empty",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "scrollable-region-focusable",
+        "impact": "serious",
+        "tags": [
+          "cat.keyboard",
+          "wcag2a",
+          "wcag211",
+          "wcag213",
+          "TTv5",
+          "TT4.a",
+          "EN-301-549",
+          "EN-9.2.1.1",
+          "EN-9.2.1.3",
+          "RGAAv4",
+          "RGAA-7.3.2"
+        ],
+        "description": "Ensure elements that have scrollable content are accessible by keyboard in Safari",
+        "help": "Scrollable region must have keyboard access",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/scrollable-region-focusable?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(5)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          },
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(7)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-setup-portfolio-empty",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "call-setup-portfolio-empty",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-setup-portfolio-empty",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "call-setup-portfolio-empty",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "home",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "home",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "home",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "home",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-list",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-list",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-list",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-list",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-empty",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-empty",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-empty",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-empty",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-hints",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-hints",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-hints",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-hints",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-sending",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-sending",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-sending",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-sending",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-error",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-error",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-error",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-error",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-ended",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-ended",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-ended",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-ended",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-setup",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "call-setup",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-setup",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "call-setup",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-setup-mic-ok",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "call-setup-mic-ok",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-setup-mic-ok",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "call-setup-mic-ok",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-idle",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-idle",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-idle",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-idle",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-live",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-muted",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-ending",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "report-call-interview",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I went to school yesterday.</span>",
+            "target": [
+              ".correction:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">There were a lot of people.</span>",
+            "target": [
+              ".correction:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I agree with you.</span>",
+            "target": [
+              ".correction:nth-child(3) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">excellent</span>",
+            "target": [
+              "ul > li:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">make a quick call</span>",
+            "target": [
+              "ul > li:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I went to school yesterday and it was a long day.</div>",
+            "target": [
+              "li:nth-child(1) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">The place was packed.</div>",
+            "target": [
+              "li:nth-child(2) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I'm with you on that.</div>",
+            "target": [
+              "li:nth-child(3) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-live",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-muted",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-ending",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "report-call-interview",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I went to school yesterday.</span>",
+            "target": [
+              ".correction:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">There were a lot of people.</span>",
+            "target": [
+              ".correction:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I agree with you.</span>",
+            "target": [
+              ".correction:nth-child(3) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">excellent</span>",
+            "target": [
+              "ul > li:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">make a quick call</span>",
+            "target": [
+              "ul > li:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I went to school yesterday and it was a long day.</div>",
+            "target": [
+              "li:nth-child(1) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">The place was packed.</div>",
+            "target": [
+              "li:nth-child(2) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I'm with you on that.</div>",
+            "target": [
+              "li:nth-child(3) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-live",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-muted",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-ending",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "report-call-interview",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I went to school yesterday.</span>",
+            "target": [
+              ".correction:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">There were a lot of people.</span>",
+            "target": [
+              ".correction:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I agree with you.</span>",
+            "target": [
+              ".correction:nth-child(3) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">excellent</span>",
+            "target": [
+              "ul > li:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">make a quick call</span>",
+            "target": [
+              "ul > li:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I went to school yesterday and it was a long day.</div>",
+            "target": [
+              "li:nth-child(1) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">The place was packed.</div>",
+            "target": [
+              "li:nth-child(2) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I'm with you on that.</div>",
+            "target": [
+              "li:nth-child(3) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-live",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-muted",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-ending",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "report-call-interview",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I went to school yesterday.</span>",
+            "target": [
+              ".correction:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">There were a lot of people.</span>",
+            "target": [
+              ".correction:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I agree with you.</span>",
+            "target": [
+              ".correction:nth-child(3) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">excellent</span>",
+            "target": [
+              "ul > li:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">make a quick call</span>",
+            "target": [
+              "ul > li:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I went to school yesterday and it was a long day.</div>",
+            "target": [
+              "li:nth-child(1) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">The place was packed.</div>",
+            "target": [
+              "li:nth-child(2) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I'm with you on that.</div>",
+            "target": [
+              "li:nth-child(3) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-text-mode",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-text-mode",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-text-mode",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "call-text-mode",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "report-chat-interview",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I went to school yesterday.</span>",
+            "target": [
+              ".correction:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">There were a lot of people.</span>",
+            "target": [
+              ".correction:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I agree with you.</span>",
+            "target": [
+              ".correction:nth-child(3) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">excellent</span>",
+            "target": [
+              "ul > li:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">make a quick call</span>",
+            "target": [
+              "ul > li:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I went to school yesterday and it was a long day.</div>",
+            "target": [
+              "li:nth-child(1) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">The place was packed.</div>",
+            "target": [
+              "li:nth-child(2) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I'm with you on that.</div>",
+            "target": [
+              "li:nth-child(3) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "report-chat-interview",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I went to school yesterday.</span>",
+            "target": [
+              ".correction:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">There were a lot of people.</span>",
+            "target": [
+              ".correction:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I agree with you.</span>",
+            "target": [
+              ".correction:nth-child(3) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">excellent</span>",
+            "target": [
+              "ul > li:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">make a quick call</span>",
+            "target": [
+              "ul > li:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I went to school yesterday and it was a long day.</div>",
+            "target": [
+              "li:nth-child(1) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">The place was packed.</div>",
+            "target": [
+              "li:nth-child(2) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I'm with you on that.</div>",
+            "target": [
+              "li:nth-child(3) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "report-chat-interview",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I went to school yesterday.</span>",
+            "target": [
+              ".correction:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">There were a lot of people.</span>",
+            "target": [
+              ".correction:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I agree with you.</span>",
+            "target": [
+              ".correction:nth-child(3) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">excellent</span>",
+            "target": [
+              "ul > li:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">make a quick call</span>",
+            "target": [
+              "ul > li:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I went to school yesterday and it was a long day.</div>",
+            "target": [
+              "li:nth-child(1) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">The place was packed.</div>",
+            "target": [
+              "li:nth-child(2) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I'm with you on that.</div>",
+            "target": [
+              "li:nth-child(3) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "report-chat-interview",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I went to school yesterday.</span>",
+            "target": [
+              ".correction:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">There were a lot of people.</span>",
+            "target": [
+              ".correction:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(3)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">I agree with you.</span>",
+            "target": [
+              ".correction:nth-child(3) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">excellent</span>",
+            "target": [
+              "ul > li:nth-child(1) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(4)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"fixed\">make a quick call</span>",
+            "target": [
+              "ul > li:nth-child(2) > .diff > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I went to school yesterday and it was a long day.</div>",
+            "target": [
+              "li:nth-child(1) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">The place was packed.</div>",
+            "target": [
+              "li:nth-child(2) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#2d8a4e",
+                  "bgColor": "#ffffff",
+                  "contrastRatio": 4.32,
+                  "fontSize": "12.0pt (16px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<section class=\"card\">",
+                    "target": [
+                      "section:nth-child(5)"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"fixed\">I'm with you on that.</div>",
+            "target": [
+              "li:nth-child(3) > .fixed"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #2d8a4e, background color: #ffffff, font size: 12.0pt (16px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "report-missing",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "report-missing",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "report-missing",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "report-missing",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "transcript",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "transcript",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "transcript",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "transcript",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "history",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "history",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "history",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "history",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "portfolios",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "portfolios",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "portfolios",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "portfolios",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-pdf-mode",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-pdf-mode",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-pdf-mode",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "portfolios-pdf-mode",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "usage",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "usage",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "usage",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "scrollable-region-focusable",
+        "impact": "serious",
+        "tags": [
+          "cat.keyboard",
+          "wcag2a",
+          "wcag211",
+          "wcag213",
+          "TTv5",
+          "TT4.a",
+          "EN-301-549",
+          "EN-9.2.1.1",
+          "EN-9.2.1.3",
+          "RGAAv4",
+          "RGAA-7.3.2"
+        ],
+        "description": "Ensure elements that have scrollable content are accessible by keyboard in Safari",
+        "help": "Scrollable region must have keyboard access",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/scrollable-region-focusable?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(5)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          },
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(6)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          },
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(7)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "usage",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "scrollable-region-focusable",
+        "impact": "serious",
+        "tags": [
+          "cat.keyboard",
+          "wcag2a",
+          "wcag211",
+          "wcag213",
+          "TTv5",
+          "TT4.a",
+          "EN-301-549",
+          "EN-9.2.1.1",
+          "EN-9.2.1.3",
+          "RGAAv4",
+          "RGAA-7.3.2"
+        ],
+        "description": "Ensure elements that have scrollable content are accessible by keyboard in Safari",
+        "help": "Scrollable region must have keyboard access",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/scrollable-region-focusable?application=playwright",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(5)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          },
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(6)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          },
+          {
+            "any": [
+              {
+                "id": "focusable-content",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should have focusable content"
+              },
+              {
+                "id": "focusable-element",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "serious",
+                "message": "Element should be focusable"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"table-wrap\">",
+            "target": [
+              ".table-wrap:nth-child(7)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element should have focusable content\n  Element should be focusable"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "settings",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "settings",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "settings",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "settings",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "home-nokey",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "home-nokey",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "home-nokey",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "home-nokey",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-nokey-error",
+    "variant": "1280-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-nokey-error",
+    "variant": "1280-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-nokey-error",
+    "variant": "390-light",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "shot": "chat-nokey-error",
+    "variant": "390-dark",
+    "violations": [
+      {
+        "id": "page-has-heading-one",
+        "impact": "moderate",
+        "tags": [
+          "cat.semantics",
+          "best-practice"
+        ],
+        "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
+        "help": "Page should contain a level-one heading",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/page-has-heading-one?application=playwright",
+        "nodes": [
+          {
+            "any": [],
+            "all": [
+              {
+                "id": "page-has-heading-one",
+                "data": null,
+                "relatedNodes": [],
+                "impact": "moderate",
+                "message": "Page must have a level-one heading"
+              }
+            ],
+            "none": [],
+            "impact": "moderate",
+            "html": "<html lang=\"ko\" data-hydrated=\"1\">",
+            "target": [
+              "html"
+            ],
+            "failureSummary": "Fix all of the following:\n  Page must have a level-one heading"
+          }
+        ]
+      }
+    ]
+  }
+]
