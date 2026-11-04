@@ -130,6 +130,7 @@ function serverEnv(extra: Record<string, string>): NodeJS.ProcessEnv {
     AUTH_SECRET: process.env.AUTH_SECRET || "shots-secret-shots-secret-shots-secret-00",
     SEED_USER_PASSWORD: PASSWORD,
     LEO_ALLOW_SHORT_CALLS: "1",
+    LEO_ALLOW_SIGNUP: "1",
     CLAUDE_MOCK: "1",
     ...(direction ? { NEXT_DIST_DIR: `.next-shots-${PORT}` } : {}),
     ...extra,

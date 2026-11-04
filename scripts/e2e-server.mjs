@@ -19,6 +19,7 @@ const env = {
   AUTH_SECRET: process.env.AUTH_SECRET ?? "e2e-secret-e2e-secret-e2e-secret-0000",
   SEED_USER_PASSWORD: process.env.SEED_USER_PASSWORD ?? "leo-pass-1234",
   LEO_ALLOW_SHORT_CALLS: "1",
+  LEO_ALLOW_SIGNUP: "1",
   NEXT_DIST_DIR: ".next-e2e",
 };
 
