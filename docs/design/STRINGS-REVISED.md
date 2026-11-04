@@ -458,3 +458,41 @@
 - 326·328·336행: 처음 안에는 브라우저 오류 코드·HTTP 상태 번호를 괄호에 남겼으나 2.7 "기술 정보·상태 번호 금지" 에 맞춰 뺐다. 코드는 console 로그와 `ApiError.status` 에만 남는다(DECISIONS 2단계).
 - 41·246·260·303행 등 구분자+데이터 행: 문구가 아니라 조합이라 키 없이 유지로 셌다.
 - 49·237행(`교정 힌트: {m.hint}`), 252·253·305·313·314행(` · 종료` 등 접미 문자열): 핵심 단어는 그대로라 유지로 셌고, 앞의 ` · ` 와 뒤의 `: {hint}` 는 ko.ts 값이 아니라 컴포넌트가 조합한다.
+
+## 4. 7단계 개정 (리뷰 패스 반영)
+
+리뷰 A(`PROGRESS.md` 7단계)로 바뀐 문구. 위 표의 개정 열은 2단계 시점 그대로 두고 여기에 최종값을 적는다. 단일 출처는 여전히 `src/content/ko.ts`.
+
+| ko.ts 키 | 2단계 문구 | 7단계 문구 | 이유 |
+|---|---|---|---|
+| `nav.currentUser(name)` | `${name} 님으로 로그인` | `${name}` (+ `nav.currentUserLabel` = `로그인한 사용자`, aria) | 2.12 "님" 은 홈 인사 한 곳에서만(A11) |
+| `banner.mock` | `… Claude 에 연결하지 않아요.` | `… Claude에 연결하지 않아요.` · 화면에는 `banner.mockChip` = `모의 모드` 칩만 | 2.5 조사 붙여쓰기(A10), P5 운영 상태는 상단 배너 금지(A1·A2) |
+| `banner.noKeyOperator` | `.env 의 LEO_ANTHROPIC_API_KEY 를 …` | `.env의 LEO_ANTHROPIC_API_KEY를 …` | 2.5 조사 |
+| `home.startChat` | `채팅 시작하기` | `채팅 시작` | 2.2 보조 버튼 명사형(A5) |
+| `chat.inputPlaceholder` | `영어로 입력. Enter 로 보내고 Shift+Enter 로 줄을 바꿔요` | `영어로 입력하고 Enter` (+ `chat.inputHint` = `Enter로 보내고 Shift+Enter로 줄을 바꿔요`, 입력창 아래) | 2.4 플레이스홀더 마침표 없음(A25), 통화 글자 모드와 통일(A18) |
+| `chat.endedAction` | `새 채팅 시작하기` | `새 채팅 시작` | 2.2(A5) |
+| `chat.failedLabel` | (없음) | `보내지 못했어요` | 2.7 입력 보존 — 실패한 말풍선 라벨(A4) |
+| `chat.refresh` | (없음) | `새로고침` | 2.7 네트워크 오류에 행동 버튼(A16) |
+| `callSetup.portfolioAdd` | `포트폴리오 추가하기` | `포트폴리오 추가` | 2.2(A5) |
+| `callSetup.micCheck` | `마이크 확인하기` | `마이크 확인` | 용어집(A5) |
+| `callSetup.micUnknown` | `… 통화 시작 전에 한 번 확인하면 …` | `… 통화 시작 전에 확인하면 …` | 2.3 잡초(A24) |
+| `callSetup.sttUnsupported` | `… Chrome 을 권하고 …` | `… Chrome을 권하고 …` | 2.5 조사 |
+| `callLive.idleBody` | 3문장 | `상대가 먼저 인사해요. 편하게 영어로 답하면 돼요.` (리포트 안내는 `idleTips` 3번째 불릿으로) | 2.3 본문 2문장(A20) |
+| `callLive.status.mutedHint` | (없음, 버튼 라벨 재사용) | `내 말이 들어가지 않아요.` | 톤 차트 통화 중 상태 서술(A15) |
+| `callLive.say` | `말하기` | `보내기` | 채팅과 같은 행동 같은 라벨(A18) |
+| `report.sections.better` | `더 나은 표현` | `표현 제안` | 용어집 교정/제안 구분(A14) |
+| `report.suggested` | (없음) | `이렇게도 말해요` | 제안 라벨(A14) |
+| `report.missingHint` | `… 만들 수 있어요. …` | `… 만들어요. …` | 2.3 가능 표현 금지(A39) |
+| `history.report` | `리포트` | `리포트 보기` | P3 같은 행동 같은 라벨(A6) |
+| `portfolio.pickFile` / `portfolio.noFile` | (네이티브 파일 입력) | `PDF 고르기` / `아직 고른 파일이 없어요` | 2.5 UI 문구 한국어(A19) |
+| `portfolio.added(title, chars)` | `${title} 을(를) 추가했어요 (${chars}).` | `"${title}" 포트폴리오를 추가했어요 (${chars}).` | 2.5 조사 자리표시 금지(A12) |
+| `portfolio.deleteBody(title)` | `${title} 을(를) 삭제하면 …` | `"${title}" 포트폴리오를 삭제하면 …` | A12 |
+| `portfolio.deleted(title)` | `${title} 을(를) 삭제했어요.` | `"${title}" 포트폴리오를 삭제했어요.` | A12 |
+| `usage.intro` | `Claude 를 부른 …` | `Claude를 부른 …` | 2.5 조사 |
+| `usage.recent` | `최근 호출 50건` | `usage.recent(n)` = `최근 호출 ${n}건` | 2.6 실제 수(A29) |
+| `usage.columns.latency` | `지연(ms)` | `응답 시간` (값에 `20ms`) | 2.5 약어·단위(A29) |
+| `errors.portfolio.fileTooLarge` | `PDF 는 10MB 까지 …` | `PDF는 10MB까지 …` | 2.5 조사 |
+| `errors.portfolio.noText` | `PDF 에 읽을 …` | `PDF에 읽을 …` | 2.5 조사 |
+| `errors.claude.connection` / `api` | `Claude 에 …` / `Claude 가 …` | `Claude에 …` / `Claude가 …` | 2.5 조사 |
+
+모의 응답(`mock-provider.ts`)도 같은 규칙으로: 힌트는 `원문 → 교정 · 이유`(따옴표·괄호 없음), 교정 설명의 조사 붙여쓰기. 힌트 형식 지시(`HINT_RULES`)와 리포트 문체 지시(`REPORT_SYSTEM_PROMPT`)에 같은 규칙을 넣었다.

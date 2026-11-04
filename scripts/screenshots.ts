@@ -19,6 +19,7 @@ import {
   callSetup,
   chat,
   common,
+  errors,
   portfolio,
   report,
   settings,
@@ -522,7 +523,12 @@ const STATES: State[] = [
       await go(c.page, `/chat/${id}`);
       await c.page.getByLabel(chat.inputLabel).fill("Tell me MOCK_REFUSAL");
       await c.page.getByLabel(chat.inputLabel).press("Enter");
-      await c.page.locator("main").getByRole("alert").waitFor();
+      // 거절은 오류가 아니라 안내(info, role=status)다(7단계 리뷰 A 27).
+      await c.page
+        .locator("main")
+        .getByRole("status")
+        .filter({ hasText: errors.conversation.refusal })
+        .waitFor();
     },
   },
   {
@@ -860,6 +866,8 @@ async function main(): Promise<void> {
     "# 스크린샷 목록 (" + phase + ")",
     "",
     "각 상태는 `--1280-light`, `--1280-dark`, `--390-light`, `--390-dark` 네 장이 있다.",
+    "",
+    "캡처 방식: `fullPage` 로 문서 전체를 찍으므로 고정 요소(채팅 입력창, 통화 컨트롤, 다이얼로그 스크림)가 긴 화면에서는 문서 중간 위치에 찍힌다. 실제 브라우저에서는 뷰포트 하단에 고정되고 스크림은 화면 전체를 덮는다(7단계 리뷰 A 32).",
     "",
     "| 파일 접두사 | 상태 |",
     "|---|---|",

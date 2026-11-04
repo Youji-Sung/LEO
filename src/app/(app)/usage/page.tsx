@@ -184,7 +184,7 @@ export default async function UsagePage({
 
       <div className="table-wrap" tabIndex={0} role="region" aria-labelledby="usage-recent">
         <table className="table">
-          <caption id="usage-recent">{text.recent}</caption>
+          <caption id="usage-recent">{text.recent(summary.recent.length)}</caption>
           <thead>
             <tr>
               <th scope="col">{text.columns.time}</th>
@@ -218,7 +218,7 @@ export default async function UsagePage({
                   <td>{formatTokens(r.cacheReadTokens)}</td>
                   <td>{formatTokens(r.cacheWriteTokens)}</td>
                   <td>{formatUsd(r.costUsd)}</td>
-                  <td>{formatTokens(r.latencyMs)}</td>
+                  <td>{formatTokens(r.latencyMs)}ms</td>
                 </tr>
               ))
             )}

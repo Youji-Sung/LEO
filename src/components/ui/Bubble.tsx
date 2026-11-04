@@ -13,6 +13,8 @@ export function Bubble({
   interim = false,
   interimLabel,
   waiting = false,
+  failed = false,
+  failedLabel,
   "data-testid": testId,
 }: {
   speaker: Speaker;
@@ -22,13 +24,15 @@ export function Bubble({
   interim?: boolean;
   interimLabel?: string;
   waiting?: boolean;
+  failed?: boolean;
+  failedLabel?: string;
   "data-testid"?: string;
 }) {
   const speakerLabel = speaker === "me" ? common.me : common.partner;
   return (
     <div className={`bubble-group bubble-group-${speaker}`}>
       <div
-        className={`bubble bubble-${speaker}${interim ? " bubble-interim" : ""}${waiting ? " bubble-waiting" : ""}`}
+        className={`bubble bubble-${speaker}${interim ? " bubble-interim" : ""}${waiting ? " bubble-waiting" : ""}${failed ? " bubble-failed" : ""}`}
         data-testid={testId}
       >
         <span className="sr-only">
@@ -36,6 +40,7 @@ export function Bubble({
         </span>
         <span lang={waiting ? undefined : "en"}>{children}</span>
       </div>
+      {failed && failedLabel ? <span className="bubble-failed-label">{failedLabel}</span> : null}
       {hint ? (
         <div className="bubble-hint" data-testid="hint">
           <Lightbulb size={16} aria-hidden="true" />

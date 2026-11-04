@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { LogoutButton } from "@/components/LogoutButton";
 import { Button } from "@/components/ui/Button";
-import { common, nav } from "@/content/ko";
+import { banner, common, nav } from "@/content/ko";
+import { Badge } from "@/components/ui/Badge";
 
 const NAV = [
   { href: "/", label: nav.home },
@@ -24,7 +25,13 @@ function isCurrent(href: string, pathname: string): boolean {
 }
 
 // 데스크톱은 가로 메뉴, 768px 미만은 메뉴 버튼으로 여닫는 세로 메뉴(SYSTEM.md 5절). 경로가 바뀌면 닫힌다.
-export function SiteHeader({ userName }: { userName: string }) {
+export function SiteHeader({
+  userName,
+  mockMode = false,
+}: {
+  userName: string;
+  mockMode?: boolean;
+}) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   return (
@@ -33,6 +40,11 @@ export function SiteHeader({ userName }: { userName: string }) {
         <Link href="/" className="brand">
           {common.brand}
         </Link>
+        {mockMode ? (
+          <span className="site-mode" title={banner.mock}>
+            <Badge tone="caution">{banner.mockChip}</Badge>
+          </span>
+        ) : null}
         <Button
           variant="ghost"
           iconOnly
@@ -56,7 +68,9 @@ export function SiteHeader({ userName }: { userName: string }) {
           ))}
         </nav>
         <div className="site-user">
-          <span className="user-name">{nav.currentUser(userName)}</span>
+          <span className="user-name" aria-label={nav.currentUserLabel}>
+            {nav.currentUser(userName)}
+          </span>
           <LogoutButton />
         </div>
       </div>

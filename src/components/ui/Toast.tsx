@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -34,6 +35,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const arm = useCallback(
     (id: number) => {
+      const prev = timers.current.get(id);
+      if (prev) clearTimeout(prev);
       const t = setTimeout(() => dismiss(id), AUTO_CLOSE_MS);
       timers.current.set(id, t);
     },
@@ -43,11 +46,24 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   const show = useCallback(
     (message: string, tone: Tone = "info") => {
       const id = ++seq.current;
-      setItems((list) => [...list.slice(-2), { id, message, tone }]);
+      setItems((list) => {
+        const kept = list.slice(-2);
+        for (const dropped of list.slice(0, -2)) {
+          const t = timers.current.get(dropped.id);
+          if (t) clearTimeout(t);
+          timers.current.delete(dropped.id);
+        }
+        return [...kept, { id, message, tone }];
+      });
       arm(id);
     },
     [arm],
   );
+
+  useEffect(() => {
+    const map = timers.current;
+    return () => map.forEach((t) => clearTimeout(t));
+  }, []);
 
   const value = useMemo(() => ({ show }), [show]);
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { Mic, MicOff, PhoneOff, Plus, Send } from "lucide-react";
+import { Mic, MicOff, Phone, PhoneOff, Plus, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { callLive, chat, common } from "@/content/ko";
@@ -217,6 +217,8 @@ export function CallView(props: Props) {
       },
       onError: (message, fatal) => {
         setError(message);
+        // 재시작 가능한 오류는 다시 듣기 시작하면 지운다.
+        if (!fatal) setTimeout(() => setError((cur) => (cur === message ? null : cur)), 4000);
         if (fatal) {
           // 권한 거부·마이크 없음: 재시작하지 않고 텍스트 입력으로 바꾼다.
           sttDisabledRef.current = true;
@@ -283,8 +285,7 @@ export function CallView(props: Props) {
 
   // 새 말풍선이 생기면 대화 영역 끝으로 스크롤한다.
   useEffect(() => {
-    const el = logRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
+    logRef.current?.lastElementChild?.scrollIntoView({ block: "end" });
   }, [entries, partial, interim]);
 
   function toggleMute() {
@@ -346,9 +347,8 @@ export function CallView(props: Props) {
       : state === "speaking"
         ? callLive.idleTips[0]
         : state === "muted"
-          ? callLive.unmute
+          ? callLive.status.mutedHint
           : undefined;
-  const showOpening = entries.length === 0 && partial === null;
 
   return (
     <main className="call-shell">
@@ -360,7 +360,9 @@ export function CallView(props: Props) {
             {callLive.callOf(props.themeLabel, formatDurationWords(durationSec))}
           </span>
         </div>
-        <Timer remainingSec={remaining} totalSec={durationSec} warnAtSec={WARN_AT_SEC} />
+        {phase !== "ending" && phase !== "ended" ? (
+          <Timer remainingSec={remaining} totalSec={durationSec} warnAtSec={WARN_AT_SEC} />
+        ) : null}
       </div>
 
       <div className="call-main">
@@ -382,7 +384,7 @@ export function CallView(props: Props) {
               size="lg"
               onClick={startCall}
               data-testid="start-call"
-              icon={<Mic size={20} />}
+              icon={<Phone size={20} />}
             >
               {callLive.start}
             </Button>
@@ -412,11 +414,9 @@ export function CallView(props: Props) {
               role="log"
               aria-label={callLive.logLabel}
             >
-              {showOpening && (
-                <Bubble speaker="partner" data-testid="opening-line">
-                  {props.openingLine}
-                </Bubble>
-              )}
+              <Bubble speaker="partner" data-testid="opening-line">
+                {props.openingLine}
+              </Bubble>
               {entries.map((m) => (
                 <Bubble
                   key={m.id}
@@ -426,21 +426,24 @@ export function CallView(props: Props) {
                   {m.content}
                 </Bubble>
               ))}
-              {partial !== null && (
-                <Bubble speaker="partner" waiting={!partial} data-testid="streaming">
-                  {partial || chat.waiting}
-                </Bubble>
-              )}
-              {interim && (
-                <Bubble
-                  speaker="me"
-                  interim
-                  interimLabel={callLive.interimLabel}
-                  data-testid="interim"
-                >
-                  {interim}
-                </Bubble>
-              )}
+              {/* 토큰 단위로 바뀌는 말풍선은 라이브 리전에서 뺀다(완료 메시지만 읽힘). */}
+              <div aria-live="off">
+                {partial !== null && (
+                  <Bubble speaker="partner" waiting={!partial} data-testid="streaming">
+                    {partial || chat.waiting}
+                  </Bubble>
+                )}
+                {interim && (
+                  <Bubble
+                    speaker="me"
+                    interim
+                    interimLabel={callLive.interimLabel}
+                    data-testid="interim"
+                  >
+                    {interim}
+                  </Bubble>
+                )}
+              </div>
             </div>
 
             {error && <StatusMessage tone="error">{error}</StatusMessage>}
@@ -485,7 +488,7 @@ export function CallView(props: Props) {
             <div className="controls-left">
               {support.stt && (
                 <Button
-                  variant={muted ? "primary" : "secondary"}
+                  variant="secondary"
                   size="lg"
                   onClick={toggleMute}
                   disabled={phase !== "live"}

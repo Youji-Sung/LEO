@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { FileText, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { common, portfolio } from "@/content/ko";
@@ -73,7 +73,6 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
       setContent("");
       setFile(null);
       setStatus(message);
-      toast.show(message, "success");
       router.refresh();
     } catch (err) {
       setError((err as Error).message);
@@ -91,6 +90,8 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
       setItems((list) => list.filter((p) => p.id !== target.id));
       setPending(null);
       toast.show(portfolio.deleted(target.title), "success");
+      // 삭제 버튼이 사라지므로 목록 제목으로 포커스를 옮긴다.
+      setTimeout(() => document.getElementById("portfolio-list-title")?.focus(), 0);
       router.refresh();
     } catch (err) {
       setPending(null);
@@ -103,7 +104,9 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
   return (
     <div className="stack-lg">
       <section className="stack" aria-labelledby="portfolio-list-title">
-        <h2 id="portfolio-list-title">{portfolio.listTitle}</h2>
+        <h2 id="portfolio-list-title" tabIndex={-1}>
+          {portfolio.listTitle}
+        </h2>
         {items.length === 0 ? (
           <EmptyState title={portfolio.empty} />
         ) : (
@@ -180,15 +183,30 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
           ) : (
             <div className="field">
               <label htmlFor="pf-file">{portfolio.file}</label>
-              <input
-                id="pf-file"
-                type="file"
-                accept="application/pdf,.pdf"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              />
+              <div className="file-pick">
+                <input
+                  id="pf-file"
+                  className="sr-only"
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+                />
+                <Button
+                  variant="secondary"
+                  icon={<FileText size={18} />}
+                  onClick={() => document.getElementById("pf-file")?.click()}
+                >
+                  {portfolio.pickFile}
+                </Button>
+                <span className="file-name">{file ? file.name : portfolio.noFile}</span>
+              </div>
             </div>
           )}
-          {error ? <StatusMessage tone="error" focus>{error}</StatusMessage> : null}
+          {error ? (
+            <StatusMessage tone="error" focus>
+              {error}
+            </StatusMessage>
+          ) : null}
           {status ? <StatusMessage tone="success">{status}</StatusMessage> : null}
           <div>
             <Button

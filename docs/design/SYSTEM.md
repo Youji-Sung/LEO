@@ -162,13 +162,13 @@ M3 easing/duration 토큰 값에서 세 단계만 쓴다(RESEARCH 1부 C). Stand
 | StatusMessage | tone: info / success / warning / error · `role`: info·success → `status`, warning·error → `alert` (WCAG 4.1.3) · `action` 버튼 | 아이콘 + 텍스트, 오류는 `aria-live="assertive"` 가 아닌 role=alert 로 | 오류·성공·안내 전부 |
 | Dialog | `open`, `title`(필수, `aria-labelledby`), `description`, `actions`, `danger` | `<dialog>` 기반: 포커스 트랩·Esc·스크림 클릭 닫기, 열릴 때 첫 포커스 = 취소 또는 첫 입력, 닫히면 트리거로 복귀 | 포트폴리오 삭제, 리포트 다시 만들기 |
 | Tabs / Segmented | `items[{id,label,href?}]`, `value` · 링크형(기록 필터, 사용량 기간)은 `aria-current="page"` | `role="tablist"` 는 패널 전환일 때만; 필터는 `nav` + `aria-current` | 기록 필터, 사용량 필터, 포트폴리오 입력 방식 |
-| EmptyState | `title`, `body`, `action`(Button 1개), `icon` | 제목 h2/h3, 행동 1개(WRITING 2.8) | 홈·채팅·기록·포트폴리오·사용량 빈 상태 |
+| EmptyState | `title`, `body`, `action`(Button 1개 또는 없음), `icon` | 제목 h2/h3, 행동 1개(WRITING 2.8). 버튼 규칙: 빈 상태가 그 행동의 유일한 입구면 primary 1개(기록·채팅 목록), 같은 화면에 1차 버튼이 이미 있으면 버튼 없음(홈) | 홈·채팅·기록·포트폴리오·사용량 빈 상태 |
 | Spinner / Skeleton | Spinner: `label`(sr-only, 필수), size 16/24 · Skeleton: `lines`, `height` | Spinner `role="status"`, Skeleton `aria-hidden` + 상위에 `aria-busy` | 2~10초 대기 / 화면 로드 |
 | Timer | `remainingSec`, `totalSec`, `warnAtSec=60` · 링 + 숫자 | `role="timer"`, `aria-live="off"`, 60초 이하 `caution` 색 + 텍스트 "1분 남았어요" 는 별도 `role=status` | 통화 중 |
 | CallStatus | state: listening / speaking / thinking / muted / waiting / ending · 아이콘 + 라벨 + 펄스 | `role="status"` 1개 영역, reduced-motion 에서 정적 | 통화 중 |
 | ScoreGauge | `score`(1~10), `label`, `comment` · 바 + 숫자 + 등급 배지 | `role="img"` + aria-label "문법 6점, 10점 만점, 괜찮아요"; 색은 등급(positive/accent/caution)과 텍스트 동반 | 리포트 |
-| DiffText | `original`, `corrected`, `explanation` · 두 줄(내가 한 말 / 이렇게 말해요), 취소선 없음 | 각 줄에 보이는 라벨, 영어는 `lang="en"` | 리포트 교정·어휘·표현 |
-| Bubble | `role: me/partner`, `hint`, `interim` | 화자 라벨 텍스트(sr-only 또는 보임) + `lang="en"`, 힌트는 말풍선 밖 별도 블록 | 채팅·통화·대화 내용 |
+| DiffText | `original`, `corrected`, `explanation`, `tone: fix / suggest` · 두 줄(내가 한 말 / 이렇게 말해요), 취소선 없음 · `suggest` 는 라벨 "이렇게도 말해요" + 강조색(교정의 긍정색과 구분) | 각 줄에 보이는 라벨, 영어는 `lang="en"` | 리포트 교정(fix)·어휘·표현 제안(suggest) |
+| Bubble | `role: me/partner`, `hint`, `interim`, `failed`(+`failedLabel`) | 화자 라벨 텍스트(sr-only 또는 보임) + `lang="en"`, 힌트는 말풍선 밖 별도 블록, 실패한 내 메시지는 흐리게 + "보내지 못했어요" 라벨로 남겨 재전송 대상을 보인다 | 채팅·통화·대화 내용 |
 | Toast | `message`, `tone`, 자동 닫힘 5초, 호버 시 정지 | `role="status"`, 포커스 가능한 요소 위에 겹치지 않음(2.4.11) | 설정 저장, 포트폴리오 추가·삭제 |
 | ThemeSelect | system / light / dark | 라디오 그룹, 즉시 적용 + 저장 | 설정 |
 

@@ -7,9 +7,12 @@ export function DiffText({
   explanation,
   meaning,
   example,
+  tone = "fix",
   originalLabel = report.original,
-  correctedLabel = report.corrected,
+  correctedLabel,
 }: {
+  // fix: 틀린 것을 고침(교정, 긍정색) / suggest: 더 나은 표현 제안(강조색)
+  tone?: "fix" | "suggest";
   original: string;
   corrected: string;
   explanation?: string;
@@ -18,14 +21,15 @@ export function DiffText({
   originalLabel?: string;
   correctedLabel?: string;
 }) {
+  const label = correctedLabel ?? (tone === "suggest" ? report.suggested : report.corrected);
   return (
     <div className="diff">
       <span className="diff-label">{originalLabel}</span>
       <span className="orig" lang="en">
         {original}
       </span>
-      <span className="diff-label">{correctedLabel}</span>
-      <span className="fixed" lang="en">
+      <span className="diff-label">{label}</span>
+      <span className={`fixed${tone === "suggest" ? " fixed-suggest" : ""}`} lang="en">
         {corrected}
       </span>
       {explanation ? <p className="diff-explain">{explanation}</p> : null}

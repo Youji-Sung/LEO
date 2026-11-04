@@ -30,13 +30,18 @@ describe("formatUsd", () => {
 });
 
 describe("formatDateTime", () => {
-  const now = new Date(2026, 10, 4, 15, 0);
+  // 표시 시간대는 Asia/Seoul(UTC+9) 로 고정된다. 입력은 UTC 로 만들어 어느 머신에서나 같은 결과가 나오게 한다.
+  const now = new Date(Date.UTC(2026, 10, 4, 6, 0)); // 2026-11-04 15:00 KST
   it("uses relative words for today and yesterday", () => {
-    expect(formatDateTime(new Date(2026, 10, 4, 9, 5), now)).toBe("오늘 09:05");
-    expect(formatDateTime(new Date(2026, 10, 3, 23, 59), now)).toBe("어제 23:59");
+    expect(formatDateTime(new Date(Date.UTC(2026, 10, 4, 0, 5)), now)).toBe("오늘 09:05");
+    expect(formatDateTime(new Date(Date.UTC(2026, 10, 3, 14, 59)), now)).toBe("어제 23:59");
+  });
+  it("crosses the day boundary in the display time zone, not UTC", () => {
+    // 2026-11-03 16:30 UTC = 11월 4일 01:30 KST → 오늘
+    expect(formatDateTime(new Date(Date.UTC(2026, 10, 3, 16, 30)), now)).toBe("오늘 01:30");
   });
   it("drops the year inside the same year and keeps it otherwise", () => {
-    expect(formatDateTime(new Date(2026, 2, 2, 9, 12), now)).toBe("3월 2일 09:12");
-    expect(formatDateTime(new Date(2025, 2, 2, 9, 12), now)).toBe("2025년 3월 2일 09:12");
+    expect(formatDateTime(new Date(Date.UTC(2026, 2, 2, 0, 12)), now)).toBe("3월 2일 09:12");
+    expect(formatDateTime(new Date(Date.UTC(2025, 2, 2, 0, 12)), now)).toBe("2025년 3월 2일 09:12");
   });
 });

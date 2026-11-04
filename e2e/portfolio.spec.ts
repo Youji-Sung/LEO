@@ -39,7 +39,7 @@ test("포트폴리오 등록(텍스트·PDF) → 포트폴리오 면접 통화 �
   await page.getByRole("button", { name: portfolio.submit }).click();
   await expect(
     page.getByRole("form", { name: portfolio.formLabel }).getByRole("status"),
-  ).toContainText("sample 을(를) 추가했어요");
+  ).toContainText('"sample" 포트폴리오를 추가했어요');
 
   // 포트폴리오 면접 통화
   await page.goto("/call");

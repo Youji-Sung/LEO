@@ -39,9 +39,9 @@ export default async function ChatListPage() {
                   <div className="list-main">
                     <Link href={`/chat/${c.id}`}>{c.title ?? chat.untitled}</Link>
                     <div className="list-meta">
-                      <Badge>{THEMES[c.theme as keyof typeof THEMES]?.label ?? c.theme}</Badge>
-                      <span>{common.messagesCount(c._count.messages)}</span>
                       <span>{formatDateTime(c.updatedAt)}</span>
+                      <span>{common.messagesCount(c._count.messages)}</span>
+                      <Badge>{THEMES[c.theme as keyof typeof THEMES]?.label ?? c.theme}</Badge>
                       {c.report ? <Badge tone="positive">{common.hasReport}</Badge> : null}
                       {ended ? <Badge>{common.ended}</Badge> : null}
                     </div>

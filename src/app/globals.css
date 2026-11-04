@@ -93,8 +93,7 @@ code {
   letter-spacing: var(--type-display-tracking);
   font-variant-numeric: tabular-nums;
 }
-h1,
-.t-headline {
+h1 {
   font-size: var(--type-headline-size);
   line-height: var(--type-headline-line);
   font-weight: var(--type-headline-weight);
@@ -111,7 +110,6 @@ h3 {
   line-height: var(--type-body-line);
   font-weight: var(--type-body-strong-weight);
 }
-.t-small,
 .muted {
   font-size: var(--type-small-size);
   line-height: var(--type-small-line);
@@ -119,24 +117,10 @@ h3 {
 .muted {
   color: var(--color-text-secondary);
 }
-.t-caption {
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-line);
-  color: var(--color-text-secondary);
-}
 .t-label {
   font-size: var(--type-label-size);
   line-height: var(--type-label-line);
   font-weight: var(--type-label-weight);
-}
-.tabular {
-  font-variant-numeric: tabular-nums;
-}
-.text-positive {
-  color: var(--color-positive);
-}
-.text-negative {
-  color: var(--color-negative);
 }
 
 /* ---------- layout ---------- */
@@ -176,9 +160,6 @@ main:focus {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
-}
-.row-between {
-  justify-content: space-between;
 }
 .page-head {
   display: flex;
@@ -264,8 +245,11 @@ main:focus {
   color: var(--color-text-secondary);
   font-size: var(--type-small-size);
 }
-.menu-toggle {
+.site-header .menu-toggle {
   display: none;
+}
+.site-mode {
+  display: inline-flex;
 }
 @media (max-width: 1023.98px) {
   .site-user .user-name {
@@ -277,7 +261,7 @@ main:focus {
     flex-wrap: wrap;
     gap: var(--space-2);
   }
-  .menu-toggle {
+  .site-header .menu-toggle {
     display: inline-flex;
     margin-left: auto;
   }
@@ -432,12 +416,11 @@ main:focus {
 .btn-block {
   width: 100%;
 }
-.btn:disabled,
-.btn[aria-disabled="true"] {
+.btn:disabled {
   cursor: not-allowed;
   background: var(--color-surface-sunken);
-  color: var(--color-text-secondary);
-  border-color: var(--color-divider);
+  color: var(--color-text-placeholder);
+  border-color: transparent;
   filter: none;
   transform: none;
 }
@@ -455,7 +438,6 @@ main:focus {
   gap: var(--space-1);
 }
 .field > label,
-.field-label,
 legend {
   font-size: var(--type-label-size);
   font-weight: var(--type-label-weight);
@@ -494,8 +476,15 @@ legend {
 .field textarea[aria-invalid="true"] {
   border-color: var(--color-negative);
 }
-.field input[type="file"] {
-  padding: var(--space-2) 0;
+.file-pick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.file-name {
+  font-size: var(--type-small-size);
+  color: var(--color-text-secondary);
 }
 fieldset {
   border: 0;
@@ -890,6 +879,7 @@ fieldset.field > legend {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  min-height: calc(100vh - 180px);
   min-height: calc(100dvh - 180px);
 }
 .chat-toolbar {
@@ -931,18 +921,24 @@ fieldset.field > legend {
   border-radius: var(--radius-xl);
   white-space: pre-wrap;
 }
-.bubble-me,
-.bubble-user {
+.bubble-me {
   background: var(--color-bubble-me);
   color: var(--color-on-bubble-me);
   border-bottom-right-radius: var(--radius-sm);
 }
-.bubble-partner,
-.bubble-assistant {
+.bubble-partner {
   background: var(--color-bubble-partner);
   color: var(--color-on-bubble-partner);
   border: 1px solid var(--color-divider);
   border-bottom-left-radius: var(--radius-sm);
+}
+.bubble-failed {
+  opacity: 0.75;
+  border: 1px dashed var(--color-negative);
+}
+.bubble-failed-label {
+  font-size: var(--type-caption-size);
+  color: var(--color-negative);
 }
 .bubble-interim {
   background: var(--color-accent-subtle);
@@ -976,6 +972,14 @@ fieldset.field > legend {
   align-items: flex-end;
   padding: var(--space-2) 0 var(--space-3);
   background: var(--color-canvas);
+}
+.chat-input-hint {
+  width: 100%;
+  font-size: var(--type-caption-size);
+  color: var(--color-text-secondary);
+}
+.chat-input {
+  flex-wrap: wrap;
 }
 .chat-input textarea {
   flex: 1;
@@ -1103,6 +1107,9 @@ fieldset.field > legend {
   color: var(--color-positive);
   font-weight: var(--type-body-strong-weight);
 }
+.fixed-suggest {
+  color: var(--color-accent);
+}
 .diff-explain {
   grid-column: 1 / -1;
   color: var(--color-text);
@@ -1112,9 +1119,6 @@ fieldset.field > legend {
   grid-column: 1 / -1;
   color: var(--color-text-secondary);
   font-size: var(--type-small-size);
-}
-.arrow {
-  color: var(--color-text-secondary);
 }
 .tasks {
   display: flex;
@@ -1146,6 +1150,23 @@ fieldset.field > legend {
 }
 .table-wrap:focus-visible {
   outline-offset: -2px;
+}
+/* 가로로 더 있음을 알리는 스크롤 그림자 + 첫 열 고정 */
+.table-wrap {
+  background:
+    linear-gradient(to right, var(--color-surface) 30%, transparent) left / 40px 100% no-repeat
+      local,
+    linear-gradient(to left, var(--color-surface) 30%, transparent) right / 40px 100% no-repeat
+      local,
+    linear-gradient(to right, var(--color-scrim), transparent) left / 14px 100% no-repeat scroll,
+    linear-gradient(to left, var(--color-scrim), transparent) right / 14px 100% no-repeat scroll,
+    var(--color-surface);
+}
+.table th:first-child,
+.table td:first-child {
+  position: sticky;
+  left: 0;
+  background: var(--color-surface);
 }
 .table {
   width: 100%;
@@ -1181,6 +1202,7 @@ fieldset.field > legend {
 
 /* ---------- call ---------- */
 .call-shell {
+  min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -1343,10 +1365,18 @@ fieldset.field > legend {
   flex-direction: column;
   gap: var(--space-1);
   min-width: 4.5rem;
-  font-size: var(--type-caption-size);
+  font-size: var(--type-small-size);
 }
 .call-controls .btn-lg {
   min-width: 5.5rem;
+}
+.call-controls .btn-danger {
+  min-width: 6.5rem;
+}
+.call-controls .btn[aria-pressed="true"] {
+  background: var(--color-accent-subtle);
+  color: var(--color-on-accent-subtle);
+  border-color: var(--color-accent);
 }
 .call-text-form {
   display: flex;

@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { useEffect, useRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { Spinner } from "@/components/ui/Spinner";
 
 type Variant = "primary" | "secondary" | "danger" | "ghost";
@@ -50,8 +52,19 @@ export function Button({
   ...rest
 }: ButtonProps) {
   if (iconOnly && !rest["aria-label"]) throw new Error("iconOnly 버튼에는 aria-label 이 필요하다.");
+  // 로딩 중 disabled 가 되면 브라우저가 포커스를 body 로 떨어뜨리므로, 로딩이 끝나면 되돌린다(WCAG 2.4.3).
+  const ref = useRef<HTMLButtonElement>(null);
+  const hadFocus = useRef(false);
+  useEffect(() => {
+    if (loading) hadFocus.current = ref.current === document.activeElement;
+    else if (hadFocus.current) {
+      hadFocus.current = false;
+      if (ref.current?.isConnected && !ref.current.disabled) ref.current.focus();
+    }
+  }, [loading]);
   return (
     <button
+      ref={ref}
       type={type ?? "button"}
       className={classes({ variant, size, icon, iconOnly, block, className })}
       disabled={disabled || loading}

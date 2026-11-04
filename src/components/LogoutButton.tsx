@@ -10,9 +10,13 @@ export function LogoutButton() {
   const [busy, setBusy] = useState(false);
   async function logout() {
     setBusy(true);
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.push("/login");
-    router.refresh();
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/login");
+      router.refresh();
+    } catch {
+      setBusy(false);
+    }
   }
   return (
     <Button variant="ghost" onClick={logout} loading={busy}>

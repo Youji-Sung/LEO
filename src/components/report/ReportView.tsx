@@ -108,6 +108,7 @@ export function ReportView({
             {report.vocabularySuggestions.map((v, i) => (
               <li key={i}>
                 <DiffText
+                  tone="suggest"
                   original={v.original}
                   corrected={v.better}
                   meaning={v.meaning}
@@ -123,7 +124,7 @@ export function ReportView({
         <ul className="vocab">
           {report.betterExpressions.map((b, i) => (
             <li key={i}>
-              <DiffText original={b.original} corrected={b.native} />
+              <DiffText tone="suggest" original={b.original} corrected={b.native} />
             </li>
           ))}
         </ul>

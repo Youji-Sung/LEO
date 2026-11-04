@@ -81,9 +81,11 @@
 | 통화 → 리포트 자동 이동 | 위와 같음(리포트 `<main>`) | `router.push` 후 RouteFocus |
 | 다이얼로그 열림 | 취소 버튼(실수 방지) | `Dialog` autoFocus + `showModal()` 트랩, Esc·스크림 닫기 |
 | 다이얼로그 닫힘 | 열기 전 요소(삭제 버튼 등) | `Dialog` close 이벤트에서 복귀 |
-| 폼 제출 오류 | 오류 메시지(role=alert, tabindex=-1) | `StatusMessage focus`: 로그인·회원가입, 포트폴리오, 통화 설정, 채팅 오류, 리포트 오류 |
+| 폼 제출 오류 | 오류 메시지(role=alert, tabindex=-1) | `StatusMessage focus`: `useEffect` 에서 `focus()`(div 의 `autoFocus` 는 React 가 무시, 7단계 리뷰 B 2). 로그인·회원가입, 포트폴리오, 통화 설정, 채팅 오류, 리포트 오류 |
+| 로딩 버튼이 끝남 | 눌렀던 버튼으로 복귀(`disabled` 동안 브라우저가 body 로 떨어뜨린 포커스) | `Button` 의 loading → false 전환 effect |
+| 포트폴리오 삭제 완료 | 목록 제목(`#portfolio-list-title`, tabindex=-1) — 열었던 삭제 버튼이 사라지므로 | `PortfolioManager` |
 | 통화 중 오류 | 이동하지 않음(말하는 중 방해 금지), role=alert 로만 알림 | `CallView` |
-| 채팅 전송 완료 | 입력창으로 복귀 | `ChatView` `inputRef.focus()` |
+| 채팅 전송 완료 | 입력창으로 복귀(성공 시에만, 오류 시에는 오류 메시지가 포커스를 가짐) | `ChatView` `inputRef.focus()` |
 | 모바일 메뉴 열기/닫기 | 버튼에 유지, 링크 클릭 시 메뉴 닫힘 | `SiteHeader` |
 | 토스트 | 이동하지 않음(role=status), 닫기 버튼은 Tab 으로 접근 가능 | `Toast` |
 | 하단 고정 바가 포커스를 가림 | `scroll-padding-bottom: 120px` | `globals.css` (WCAG 2.4.11) |

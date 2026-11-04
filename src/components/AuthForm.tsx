@@ -30,7 +30,9 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         return;
       }
       const next = params.get("next");
-      router.push(next && next.startsWith("/") ? next : "/");
+      // 같은 출처의 경로만 허용한다("//evil.com" 같은 프로토콜 상대 URL 차단).
+      const safeNext = next && /^\/(?![\/\\])/.test(next) ? next : "/";
+      router.push(safeNext);
       router.refresh();
     } catch {
       setError(auth.networkError);
@@ -78,7 +80,11 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           minLength={8}
           autoComplete={isLogin ? "current-password" : "new-password"}
         />
-        {error ? <StatusMessage tone="error" focus>{error}</StatusMessage> : null}
+        {error ? (
+          <StatusMessage tone="error" focus>
+            {error}
+          </StatusMessage>
+        ) : null}
         <Button
           type="submit"
           variant="primary"

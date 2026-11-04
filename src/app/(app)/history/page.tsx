@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { MessageSquare, Phone } from "lucide-react";
 import { requireUser } from "@/lib/auth/current-user";
 import { common, history } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
@@ -69,17 +68,6 @@ export default async function HistoryPage({
                     {c.title ? ` · ${c.title}` : ""}
                   </Link>
                   <span className="list-meta">
-                    <Badge
-                      icon={
-                        isCall ? (
-                          <Phone size={12} aria-hidden="true" />
-                        ) : (
-                          <MessageSquare size={12} aria-hidden="true" />
-                        )
-                      }
-                    >
-                      {kindLabel}
-                    </Badge>
                     <span>{formatDateTime(c.startedAt)}</span>
                     <span>
                       {hasMessages ? common.messagesCount(c._count.messages) : history.noMessages}

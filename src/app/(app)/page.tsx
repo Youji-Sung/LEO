@@ -69,14 +69,7 @@ export default async function HomePage() {
       <section className="stack" aria-labelledby="home-recent">
         <h2 id="home-recent">{home.recentTitle}</h2>
         {recent.length === 0 ? (
-          <EmptyState
-            title={home.recentEmpty}
-            action={
-              <ButtonLink href="/call" variant="secondary">
-                {home.startCall}
-              </ButtonLink>
-            }
-          />
+          <EmptyState title={home.recentEmpty} />
         ) : (
           <>
             <ul className="list">

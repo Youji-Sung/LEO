@@ -19,13 +19,7 @@ export function ScoreGauge({
   const tone = band === "high" ? "positive" : band === "mid" ? "accent" : "caution";
   const bandText = report.scoreBand(score);
   return (
-    <div
-      className="score"
-      data-testid="score"
-      data-band={band}
-      role="img"
-      aria-label={`${report.scoreAria(label, score)}, ${bandText}`}
-    >
+    <div className="score" data-testid="score" data-band={band}>
       <div className="score-head">
         <span className="t-label">{label}</span>
         <span className="row" style={{ gap: "var(--space-2)" }}>
@@ -33,7 +27,11 @@ export function ScoreGauge({
           <span className="score-value">{report.scoreOf(score)}</span>
         </span>
       </div>
-      <div className="score-bar">
+      <div
+        className="score-bar"
+        role="img"
+        aria-label={`${report.scoreAria(label, score)}, ${bandText}`}
+      >
         <div className="score-fill" style={{ width: `${score * 10}%` }} />
       </div>
       <p className="score-comment">{comment}</p>

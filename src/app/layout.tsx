@@ -12,15 +12,24 @@ export const metadata: Metadata = {
   description: meta.siteDescription,
 };
 
-export const viewport: Viewport = {
-  width: "device-width",
-  initialScale: 1,
-  // 라이트/다크 주소창 색은 tokens.ts 의 canvas 값과 같다.
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f4f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#131315" },
-  ],
-};
+// 라이트/다크 주소창 색은 tokens.ts 의 canvas 값과 같다. 수동 테마면 그 값 하나만 준다.
+export async function generateViewport(): Promise<Viewport> {
+  const store = await cookies();
+  const theme = themeAttribute(store.get(THEME_COOKIE)?.value);
+  return {
+    width: "device-width",
+    initialScale: 1,
+    themeColor:
+      theme === "light"
+        ? "#f4f4f1"
+        : theme === "dark"
+          ? "#131315"
+          : [
+              { media: "(prefers-color-scheme: light)", color: "#f4f4f1" },
+              { media: "(prefers-color-scheme: dark)", color: "#131315" },
+            ],
+  };
+}
 
 // Pretendard Variable 다이나믹 서브셋(SYSTEM.md 2.1). 버전을 고정한다.
 const PRETENDARD_CSS =

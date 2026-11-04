@@ -44,6 +44,8 @@ export function ChatView(props: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastFailed, setLastFailed] = useState<string | null>(null);
+  const [errorTone, setErrorTone] = useState<"error" | "info">("error");
+  const [failedId, setFailedId] = useState<string | null>(null);
   const [reportBusy, setReportBusy] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [ended, setEnded] = useState(props.ended);
@@ -66,37 +68,56 @@ export function ChatView(props: Props) {
   async function send(content: string) {
     setBusy(true);
     setError(null);
+    setErrorTone("error");
     setLastFailed(null);
+    // 이전에 보내지 못한 말풍선은 재전송과 함께 내린다.
+    if (failedId) {
+      setMessages((m) => m.filter((x) => x.id !== failedId));
+      setFailedId(null);
+    }
     const tempId = `tmp-${Date.now()}`;
     setMessages((m) => [...m, { id: tempId, role: "user", content, hint: null, index: m.length }]);
+    let ok = false;
     setStreaming("");
     try {
       await streamMessage(props.conversationId, content, (ev) => {
         if (ev.type === "delta") setStreaming((s) => (s ?? "") + ev.text);
         else if (ev.type === "done") {
+          ok = true;
           setMessages((m) => [...m, { ...ev.message }]);
         } else if (ev.type === "error") {
           setError(ev.message);
-          // 서버가 사용자 턴을 지웠으므로 화면에서도 내린다
-          setMessages((m) => m.filter((x) => x.id !== tempId));
-          if (ev.code !== "refusal") setLastFailed(content);
+          if (ev.code === "refusal") {
+            // 거부는 오류가 아니라 안내. 서버가 사용자 턴을 지웠으므로 화면에서도 내린다.
+            setErrorTone("info");
+            setMessages((m) => m.filter((x) => x.id !== tempId));
+          } else {
+            // 보내지 못한 말풍선은 남겨 두고(입력 보존) 다시 보내기로 잇는다.
+            setFailedId(tempId);
+            setLastFailed(content);
+          }
         }
       });
     } catch (e) {
-      setMessages((m) => m.filter((x) => x.id !== tempId));
       if (e instanceof ApiError) {
         // 서버가 상태 코드로 거절한 경우(대화 횟수 한도, 끝난 대화 등): 서버 문구를 그대로 보여 준다.
         setError(e.message);
-        if (e.code !== "turn_cap" && e.code !== "conversation_ended") setLastFailed(content);
+        if (e.code !== "turn_cap" && e.code !== "conversation_ended") {
+          setFailedId(tempId);
+          setLastFailed(content);
+        } else {
+          setMessages((m) => m.filter((x) => x.id !== tempId));
+        }
       } else {
-        // 네트워크가 끊긴 경우: 서버가 답변을 이미 저장했을 수 있으므로 재전송 대신 다시 불러온다.
+        // 네트워크가 끊긴 경우: 서버가 답변을 이미 저장했을 수 있으므로 재전송 대신 새로고침을 권한다.
+        setMessages((m) => m.filter((x) => x.id !== tempId));
         setError(chat.networkError);
-        router.refresh();
       }
     } finally {
       setStreaming(null);
       setBusy(false);
-      inputRef.current?.focus();
+      // 오류일 때는 포커스가 오류 메시지로 가므로 성공했을 때만 입력창으로 돌아간다.
+      if (ok) inputRef.current?.focus();
     }
   }
 
@@ -172,7 +193,7 @@ export function ChatView(props: Props) {
           <span>{chat.hintsToggle}</span>
         </label>
         <Button
-          variant="secondary"
+          variant={props.hasReport ? "ghost" : "secondary"}
           onClick={props.hasReport ? () => setConfirmOpen(true) : makeReport}
           disabled={reportDisabled}
           loading={reportBusy}
@@ -181,7 +202,7 @@ export function ChatView(props: Props) {
           {props.hasReport ? chat.remakeReport : chat.makeReport}
         </Button>
         {props.hasReport && (
-          <ButtonLink href={reportHref} variant="ghost">
+          <ButtonLink href={reportHref} variant="secondary">
             {chat.viewReport}
           </ButtonLink>
         )}
@@ -199,7 +220,7 @@ export function ChatView(props: Props) {
         />
       )}
 
-      <div className="chat-messages" role="log" aria-live="polite" aria-label={chat.logLabel}>
+      <div className="chat-messages" role="log" aria-label={chat.logLabel}>
         {messages.length === 0 && (
           // 예문은 영어라 lang="en" 이 필요해 EmptyState 의 body 대신 행동 자리에 둔다.
           <EmptyState
@@ -217,28 +238,35 @@ export function ChatView(props: Props) {
             speaker={m.role === "user" ? "me" : "partner"}
             hint={m.hint}
             hintLabel={chat.hintLabel}
+            failed={m.id === failedId}
+            failedLabel={chat.failedLabel}
             data-testid={`msg-${m.role}`}
           >
             {m.content}
           </Bubble>
         ))}
-        {streaming !== null && (
-          <Bubble speaker="partner" waiting={!streaming} data-testid="streaming">
-            {streaming || chat.waiting}
-          </Bubble>
-        )}
+        {/* 토큰 단위로 바뀌는 스트리밍 말풍선은 라이브 리전에서 뺀다. */}
+        <div aria-live="off">
+          {streaming !== null && (
+            <Bubble speaker="partner" waiting={!streaming} data-testid="streaming">
+              {streaming || chat.waiting}
+            </Bubble>
+          )}
+        </div>
         <div ref={bottomRef} />
       </div>
 
       {error && (
         <StatusMessage
           focus
-          tone="error"
+          tone={errorTone}
           action={
             lastFailed ? (
               <Button onClick={() => send(lastFailed)} disabled={busy}>
                 {common.retrySend}
               </Button>
+            ) : error === chat.networkError ? (
+              <Button onClick={() => window.location.reload()}>{chat.refresh}</Button>
             ) : undefined
           }
         >
@@ -279,6 +307,7 @@ export function ChatView(props: Props) {
           >
             {chat.send}
           </Button>
+          <span className="chat-input-hint">{chat.inputHint}</span>
         </form>
       )}
     </div>

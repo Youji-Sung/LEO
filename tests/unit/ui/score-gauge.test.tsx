@@ -35,6 +35,8 @@ describe("ScoreGauge", () => {
     const html = renderToStaticMarkup(<ScoreGauge label={label} score={7} comment="관사를 더 신경 쓰세요." />);
     expect(html).toContain(`<span class="t-label">${label}</span>`);
     expect(html).toContain('<p class="score-comment">관사를 더 신경 쓰세요.</p>');
-    expect(html).toContain('<div class="score-bar"><div class="score-fill" style="width:70%"></div></div>');
+    expect(html).toContain(
+      `<div class="score-bar" role="img" aria-label="${report.scoreAria(label, 7)}, ${report.scoreBand(7)}"><div class="score-fill" style="width:70%"></div></div>`,
+    );
   });
 });
