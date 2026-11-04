@@ -30,20 +30,32 @@
 
 ## 실행
 
-터미널 1 (앱):
+`.env`에 `LEO_ALLOW_SIGNUP=0`을 넣어 두면 가입 차단은 자동이다. `APP_URL`은 `.env`에 넣지 않는다(넣으면 로컬 개발 서버 `http://localhost:3000`의 로그인 쿠키가 Secure 가 되어 로그인이 안 된다). 실행할 때만 환경 변수로 준다.
 
-```bash
+터미널 1 (앱) — PowerShell:
+
+```powershell
+cd C:\Users\User\orca\projects\cloud\LEO
 npm run build
-LEO_ALLOW_SIGNUP=0 APP_URL=https://tunnel npm run start:tunnel
+$env:APP_URL = "https://tunnel"; npm run start:tunnel
 ```
 
-터미널 2 (터널):
+터미널 2 (터널) — PowerShell:
 
-```bash
+```powershell
 cloudflared tunnel --url http://127.0.0.1:3200
 ```
 
-출력에 나오는 `https://….trycloudflare.com` 주소로 접속한다. 끝낼 때는 두 터미널 모두 Ctrl+C.
+Git Bash라면 `APP_URL=https://tunnel npm run start:tunnel`.
+
+터널 출력에서 `https://….trycloudflare.com` 주소를 찾아 접속한다. 끝낼 때는 두 터미널 모두 Ctrl+C. 두 프로세스는 Claude 세션과 무관한 일반 프로세스라 떠 있는 동안 토큰을 쓰지 않는다.
+
+이미 서버가 떠 있는 상태(포트 3200 사용 중)에서 다시 띄우면 실패한다. 먼저 기존 것을 끈다:
+
+```powershell
+Get-NetTCPConnection -LocalPort 3200 -State Listen | ForEach-Object { Stop-Process -Id $_.OwningProcess -Force }
+Get-Process cloudflared -ErrorAction SilentlyContinue | Stop-Process -Force
+```
 
 ## 한계와 다음 단계
 
