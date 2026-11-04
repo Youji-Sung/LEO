@@ -34,7 +34,7 @@ describe("design token palettes", () => {
   }
 
   it("keeps src/app/tokens.css in sync with tokens.ts", () => {
-    const css = readFileSync(path.join(process.cwd(), "src", "app", "tokens.css"), "utf8");
+    const css = readFileSync(path.join(process.cwd(), "src", "app", "tokens.css"), "utf8").replace(/\r\n/g, "\n");
     expect(css).toBe(renderTokensCss());
   });
 
