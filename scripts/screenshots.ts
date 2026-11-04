@@ -3,8 +3,10 @@
  * 자체 Next 개발 서버를 띄우므로 실제 API 는 호출하지 않는다.
  *
  *   npx tsx scripts/screenshots.ts --phase before|after [--axe] [--only call] [--reduced-motion] [--port 3150]
+ *   npx tsx scripts/screenshots.ts --direction study|stage|console [--axe] [--port 3151]   (시각 방향 시안)
  *
  * 출력: docs/design/screenshots/{phase}/{상태}--{폭}-{light|dark}.png, index.md, (--axe) axe.json·axe.md
+ *       --direction 이면 docs/design/directions/{이름}/shots/
  * Linux/macOS 기준(npx 를 셸로 실행한다).
  */
 import { execSync, spawn, type ChildProcess } from "node:child_process";
@@ -24,6 +26,7 @@ import {
   report,
   settings,
 } from "../src/content/ko";
+import { DIRECTION_COOKIE, isDirection } from "../src/lib/direction";
 
 type Phase = "before" | "after";
 type Scheme = "light" | "dark";
@@ -40,6 +43,22 @@ function opt(name: string): string | undefined {
 
 const phase = (opt("phase") ?? "before") as Phase;
 if (phase !== "before" && phase !== "after") throw new Error("--phase 는 before 또는 after");
+// --direction study|stage|console : 시각 방향 시안(docs/design/directions/<이름>/shots/)을 찍는다.
+// 쿠키 leo_direction 을 넣고, 시안 비교용 화면 세트(00-understanding.md 6절)만 찍는다(--only 로 바꿀 수 있다).
+const direction = opt("direction");
+if (direction !== undefined && !isDirection(direction))
+  throw new Error("--direction 은 study, stage, console 중 하나");
+const DIRECTION_SET = [
+  "login",
+  "home",
+  "call-setup",
+  "call-idle",
+  "call-live",
+  "chat-hints",
+  "report-chat-interview",
+  "history",
+  "settings",
+];
 const runAxe = flag("axe");
 const reducedMotion = flag("reduced-motion");
 const only = opt("only");
@@ -48,21 +67,31 @@ const onlyList = only
       .split(",")
       .map((x) => x.trim())
       .filter(Boolean)
-  : [];
+  : direction
+    ? DIRECTION_SET
+    : [];
 function wanted(id: string): boolean {
-  return onlyList.length === 0 || onlyList.includes("all") || onlyList.some((o) => id.includes(o));
+  return (
+    onlyList.length === 0 ||
+    onlyList.includes("all") ||
+    onlyList.some((o) => (direction ? id === o : id.includes(o)))
+  );
 }
 const PORT = Number(opt("port") ?? 3150);
 const BASE = `http://localhost:${PORT}`;
 const ROOT = process.cwd();
-const OUT = path.join(
-  ROOT,
-  "docs",
-  "design",
-  "screenshots",
-  phase + (reducedMotion ? "-reduced-motion" : "") + (opt("widths") ? "-widths" : ""),
-);
-const DB_FILE = "shots.db";
+const label = direction ?? phase;
+const OUT = direction
+  ? path.join(ROOT, "docs", "design", "directions", direction, "shots")
+  : path.join(
+      ROOT,
+      "docs",
+      "design",
+      "screenshots",
+      phase + (reducedMotion ? "-reduced-motion" : "") + (opt("widths") ? "-widths" : ""),
+    );
+// 시안 촬영은 셋이 동시에 돌 수 있으므로 DB 파일과 Next 빌드 폴더를 포트별로 나눈다.
+const DB_FILE = direction ? `shots-${PORT}.db` : "shots.db";
 const EMAIL = "dev1@leo.local";
 const PASSWORD = process.env.SEED_USER_PASSWORD ?? "leo-pass-1234";
 
@@ -102,6 +131,7 @@ function serverEnv(extra: Record<string, string>): NodeJS.ProcessEnv {
     SEED_USER_PASSWORD: PASSWORD,
     LEO_ALLOW_SHORT_CALLS: "1",
     CLAUDE_MOCK: "1",
+    ...(direction ? { NEXT_DIST_DIR: `.next-shots-${PORT}` } : {}),
     ...extra,
   };
 }
@@ -207,6 +237,11 @@ async function newContext(browser: Browser, v: Variant): Promise<BrowserContext>
   await context.addInitScript(() => {
     window.__LEO_FAKE_VOICE = true;
   });
+  if (direction) {
+    await context.addCookies([
+      { name: DIRECTION_COOKIE, value: direction, url: BASE, sameSite: "Lax" },
+    ]);
+  }
   return context;
 }
 
@@ -768,9 +803,9 @@ function writeAxeReport(): void {
   >();
   const lines: string[] = [];
   lines.push(
-    `# axe-core 결과 (${phase})`,
+    `# axe-core 결과 (${label})`,
     "",
-    `실행: \`npx tsx scripts/screenshots.ts --phase ${phase} --axe\` · 태그 wcag2a/2aa/21a/21aa/22aa/best-practice · 스크린샷 ${axeRecords.length}장 검사`,
+    `실행: \`npx tsx scripts/screenshots.ts ${direction ? `--direction ${direction}` : `--phase ${phase}`} --axe\` · 태그 wcag2a/2aa/21a/21aa/22aa/best-practice · 스크린샷 ${axeRecords.length}장 검사`,
     "",
   );
   for (const rec of axeRecords) {
@@ -863,7 +898,7 @@ async function main(): Promise<void> {
   await browser.close();
 
   const md = [
-    "# 스크린샷 목록 (" + phase + ")",
+    "# 스크린샷 목록 (" + label + ")",
     "",
     "각 상태는 `--1280-light`, `--1280-dark`, `--390-light`, `--390-dark` 네 장이 있다.",
     "",
@@ -878,7 +913,7 @@ async function main(): Promise<void> {
   {
     const bad = overflow.filter((o) => o.scrollWidth > o.innerWidth + 1);
     const lines = [
-      `# 가로 스크롤 검사 (${phase}${widthsOpt ? `, 폭 ${widthsOpt}` : ""})`,
+      `# 가로 스크롤 검사 (${label}${widthsOpt ? `, 폭 ${widthsOpt}` : ""})`,
       "",
       `검사 ${overflow.length}장 · 가로 스크롤 발생 ${bad.length}장`,
       "",
