@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { chat, themes as themeText } from "@/content/ko";
 import { apiJson } from "@/lib/client-fetch";
 
 type Theme = { id: string; label: string; description: string };
@@ -30,9 +31,9 @@ export function NewChatForm({ themes, hintsDefault }: { themes: Theme[]; hintsDe
   }
 
   return (
-    <form onSubmit={onSubmit} className="card stack" aria-label="새 채팅">
+    <form onSubmit={onSubmit} className="card stack" aria-label={chat.newChatForm}>
       <div className="field">
-        <label htmlFor="theme">테마</label>
+        <label htmlFor="theme">{themeText.label}</label>
         <select id="theme" value={theme} onChange={(e) => setTheme(e.target.value)}>
           {themes.map((t) => (
             <option key={t.id} value={t.id}>
@@ -43,8 +44,9 @@ export function NewChatForm({ themes, hintsDefault }: { themes: Theme[]; hintsDe
       </div>
       <label className="row" style={{ gap: 6 }}>
         <input type="checkbox" checked={hints} onChange={(e) => setHints(e.target.checked)} />
-        교정 힌트 켜기
+        {chat.hintsToggle}
       </label>
+      <span className="muted">{chat.hintsToggleDesc}</span>
       {error && (
         <p className="error" role="alert">
           {error}
@@ -52,7 +54,7 @@ export function NewChatForm({ themes, hintsDefault }: { themes: Theme[]; hintsDe
       )}
       <div>
         <button type="submit" className="btn btn-primary" disabled={busy}>
-          새 채팅 시작
+          {busy ? chat.starting : chat.start}
         </button>
       </div>
     </form>

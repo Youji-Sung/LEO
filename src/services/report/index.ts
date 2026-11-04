@@ -6,6 +6,7 @@ import { recordUsage } from "@/services/claude/usage";
 import { reportSchema, type Report } from "@/services/claude/schemas/report";
 import type { ChatMessage, ThemeId } from "@/services/claude/types";
 import { getOwnedConversation, toChatMessages } from "@/services/conversation";
+import { errors } from "@/content/ko";
 
 // 리포트 입력 상한. Opus 5 의 1M 컨텍스트에 비해 통화 1회(최대 60턴)는 아주 작으므로 전체를 넣되,
 // 비정상적으로 긴 경우만 오래된 턴부터 잘라 낸다(DECISIONS 참고).
@@ -35,7 +36,7 @@ export async function generateAndSaveReport(userId: string, conversationId: stri
   const conv = await getOwnedConversation(userId, conversationId);
   const messages = toChatMessages(conv.messages);
   if (!messages.some((m) => m.role === "user")) {
-    throw new ReportGenerationError("리포트를 만들려면 사용자 발화가 최소 1개 필요합니다.", "empty");
+    throw new ReportGenerationError(errors.report.empty, "empty");
   }
   const { transcript } = trimTranscript(messages);
   const provider = getClaudeProvider();
@@ -49,14 +50,16 @@ export async function generateAndSaveReport(userId: string, conversationId: stri
     });
   } catch (e) {
     console.error("generateReport failed", e);
-    throw new ReportGenerationError(`리포트 생성 실패: ${describeClaudeError(e)}`, "provider");
+    throw new ReportGenerationError(errors.report.provider(describeClaudeError(e)), "provider");
   }
   await recordUsage({ userId, feature: "report", model: result.model, usage: result.usage, latencyMs: result.latencyMs });
   if (result.stopReason === "refusal") {
-    throw new ReportGenerationError("모델이 이 대화의 리포트 생성을 거부했습니다. 다시 시도하거나 새 대화를 시작하세요.", "refusal");
+    throw new ReportGenerationError(errors.report.refusal, "refusal");
   }
   if (!result.report) {
-    throw new ReportGenerationError(`리포트 형식이 올바르지 않아 저장하지 못했습니다 (${result.parseError}). 다시 시도하세요.`, "invalid");
+    // 파싱 오류 내용은 사용자에게 보이지 않게 로그에만 남긴다.
+    console.error("report parse failed", result.parseError);
+    throw new ReportGenerationError(errors.report.invalid, "invalid");
   }
   const saved = await prisma.$transaction(async (tx) => {
     const rep = await tx.report.upsert({
@@ -75,7 +78,7 @@ export async function getOwnedReport(userId: string, conversationId: string) {
     where: { id: conversationId, userId },
     include: { report: true, messages: { orderBy: { index: "asc" } }, portfolio: { select: { id: true, title: true } } },
   });
-  if (!conv) throw new HttpError(404, "대화를 찾을 수 없습니다.", "conversation_not_found");
+  if (!conv) throw new HttpError(404, errors.conversation.notFound, "conversation_not_found");
   if (!conv.report) return { conversation: conv, report: null };
   const parsed = reportSchema.safeParse(JSON.parse(conv.report.json));
   return { conversation: conv, report: parsed.success ? parsed.data : null };

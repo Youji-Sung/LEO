@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { common, report } from "@/content/ko";
 import { apiJson } from "@/lib/client-fetch";
 
 // 리포트가 없거나 생성에 실패했을 때: 오류 메시지와 재시도 버튼.
@@ -26,15 +27,18 @@ export function ReportRetry({ conversationId, initialError }: { conversationId: 
   return (
     <div className="card stack" data-testid="report-retry">
       {busy ? (
-        <p role="status">리포트를 생성하는 중입니다. 보통 30초에서 1분 정도 걸립니다…</p>
+        <p role="status">
+          {report.making} · {report.makingHint}
+        </p>
       ) : (
         <>
           <p role="alert" className={error ? "error" : "muted"}>
-            {error ?? "아직 리포트가 없습니다."}
+            {error ?? report.missing}
           </p>
+          {!error && <p className="muted">{report.missingHint}</p>}
           <div>
             <button type="button" className="btn btn-primary" onClick={retry}>
-              {error ? "다시 시도" : "리포트 생성"}
+              {error ? common.retry : report.make}
             </button>
           </div>
         </>

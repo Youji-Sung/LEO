@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { auth, callSetup, chat, nav, themes } from "../src/content/ko";
 import { gotoHydrated, login } from "./helpers";
 
 test.describe("모바일 폭", () => {
@@ -14,8 +15,8 @@ test.describe("모바일 폭", () => {
     await login(page);
     await page.goto("/call");
     await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-    await page.getByLabel("테스트(20초)").check();
-    await page.getByRole("button", { name: "다음" }).click();
+    await page.getByLabel(callSetup.durationTest).check();
+    await page.getByRole("button", { name: callSetup.next }).click();
     await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
     await page.getByTestId("start-call").click();
     await page.evaluate((t) => window.__leoFakeVoice!.say(t), "Hello, can you hear me?");
@@ -37,13 +38,13 @@ test.describe("모바일 폭", () => {
 test("키보드만으로 로그인할 수 있고 포커스 순서가 자연스럽다", async ({ page }) => {
   await gotoHydrated(page, "/login");
   await page.keyboard.press("Tab");
-  await expect(page.getByLabel("이메일")).toBeFocused();
+  await expect(page.getByLabel(auth.email)).toBeFocused();
   await page.keyboard.type("dev1@leo.local");
   await page.keyboard.press("Tab");
-  await expect(page.getByLabel("비밀번호")).toBeFocused();
+  await expect(page.getByLabel(auth.password)).toBeFocused();
   await page.keyboard.type("leo-pass-1234");
   await page.keyboard.press("Tab");
-  await expect(page.getByRole("button", { name: "로그인" })).toBeFocused();
+  await expect(page.getByRole("button", { name: auth.loginButton })).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/\/$/);
 });
@@ -52,11 +53,11 @@ test("주요 컨트롤에 접근 가능한 이름이 있다", async ({ page }) =
   await login(page);
   await page.goto("/chat");
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await expect(page.getByRole("navigation", { name: "주 메뉴" })).toBeVisible();
-  await expect(page.getByRole("form", { name: "새 채팅" })).toBeVisible();
-  await expect(page.getByLabel("테마")).toBeVisible();
-  await page.getByRole("button", { name: "새 채팅 시작" }).click();
-  await expect(page.getByRole("log", { name: "대화" })).toBeVisible();
-  await expect(page.getByLabel("메시지")).toBeVisible();
-  await expect(page.getByRole("checkbox", { name: "교정 힌트" })).toBeVisible();
+  await expect(page.getByRole("navigation", { name: nav.menuLabel })).toBeVisible();
+  await expect(page.getByRole("form", { name: chat.newChatForm })).toBeVisible();
+  await expect(page.getByLabel(themes.label)).toBeVisible();
+  await page.getByRole("button", { name: chat.start }).click();
+  await expect(page.getByRole("log", { name: chat.logLabel })).toBeVisible();
+  await expect(page.getByLabel(chat.inputLabel)).toBeVisible();
+  await expect(page.getByRole("checkbox", { name: chat.hintsToggle })).toBeVisible();
 });

@@ -13,6 +13,7 @@ import path from "node:path";
 import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import { AxeBuilder } from "@axe-core/playwright";
 import type { AxeResults } from "axe-core";
+import { auth, callLive, callSetup, chat, common, portfolio, report, themes } from "../src/content/ko";
 
 type Phase = "before" | "after";
 type Scheme = "light" | "dark";
@@ -231,9 +232,9 @@ const STATES: State[] = [
     auth: "anon",
     run: async (c) => {
       await go(c.page, "/login");
-      await c.page.getByLabel("이메일").fill(EMAIL);
-      await c.page.getByLabel("비밀번호").fill("wrong-password");
-      await c.page.getByRole("button", { name: "로그인" }).click();
+      await c.page.getByLabel(auth.email).fill(EMAIL);
+      await c.page.getByLabel(auth.password).fill("wrong-password");
+      await c.page.getByRole("button", { name: auth.loginButton }).click();
       await c.page.getByRole("form").getByRole("alert").waitFor();
     },
   },
@@ -250,7 +251,7 @@ const STATES: State[] = [
     auth: "auth",
     run: async (c) => {
       await go(c.page, "/call");
-      await c.page.getByLabel("테마").selectOption("portfolio");
+      await c.page.getByLabel(themes.label).selectOption("portfolio");
     },
   },
   { id: "__fixtures__", title: "", auth: "auth", run: async () => undefined },
@@ -278,8 +279,8 @@ const STATES: State[] = [
         await sleep(4000);
         await route.continue();
       });
-      await c.page.getByLabel("메시지").fill("Hi! Can I tell you about my week?");
-      await c.page.getByLabel("메시지").press("Enter");
+      await c.page.getByLabel(chat.inputLabel).fill("Hi! Can I tell you about my week?");
+      await c.page.getByLabel(chat.inputLabel).press("Enter");
       await c.page.getByTestId("streaming").waitFor();
       await c.shot("chat-sending");
       await c.page.unroute("**/api/conversations/*/messages");
@@ -293,8 +294,8 @@ const STATES: State[] = [
     run: async (c) => {
       const id = await createConversation(c.context, { kind: "chat", theme: "free", hintsEnabled: false });
       await go(c.page, `/chat/${id}`);
-      await c.page.getByLabel("메시지").fill("Hello MOCK_ERROR");
-      await c.page.getByLabel("메시지").press("Enter");
+      await c.page.getByLabel(chat.inputLabel).fill("Hello MOCK_ERROR");
+      await c.page.getByLabel(chat.inputLabel).press("Enter");
       await c.page.locator("main").getByRole("alert").waitFor();
     },
   },
@@ -306,8 +307,8 @@ const STATES: State[] = [
     auth: "auth",
     run: async (c) => {
       await go(c.page, "/call");
-      await c.page.getByRole("button", { name: "마이크 권한 확인" }).click();
-      await c.page.getByRole("status").filter({ hasText: "마이크를 사용할 수 있습니다" }).waitFor();
+      await c.page.getByRole("button", { name: callSetup.micCheck }).click();
+      await c.page.getByRole("status").filter({ hasText: callSetup.micGranted }).waitFor();
     },
   },
   {
@@ -331,15 +332,15 @@ const STATES: State[] = [
       await c.page.getByTestId("msg-assistant").first().waitFor({ timeout: 20_000 });
       await c.page.waitForFunction(() => window.__leoFakeVoice?.listening() === true);
       await c.shot("call-live");
-      await c.page.getByRole("button", { name: "음소거" }).click();
+      await c.page.getByRole("button", { name: callLive.mute, exact: true }).click();
       await c.shot("call-muted");
-      await c.page.getByRole("button", { name: "음소거 해제" }).click();
+      await c.page.getByRole("button", { name: callLive.unmute }).click();
       await c.page.route("**/api/conversations/*/report", async (route) => {
         await sleep(4000);
         await route.continue();
       });
       await c.page.getByTestId("hangup").click();
-      await c.page.getByText("리포트를 만드는 중").waitFor();
+      await c.page.getByText(callLive.status.ending).waitFor();
       await c.shot("call-ending");
       await c.page.unroute("**/api/conversations/*/report");
       await c.page.waitForURL(/\/report$/, { timeout: 40_000 });
@@ -358,7 +359,7 @@ const STATES: State[] = [
       });
       await go(c.page, `/call/${id}`);
       await c.page.getByTestId("start-call").click();
-      await c.page.getByText("텍스트로 대화합니다").waitFor();
+      await c.page.getByText(callLive.textModeNotice).waitFor();
     },
   },
   { id: "report-chat-interview", title: "리포트(채팅·면접)", auth: "auth", run: async (c) => go(c.page, `/history/${c.fixtures.reportChatId}/report`) },
@@ -369,8 +370,8 @@ const STATES: State[] = [
     run: async (c) => {
       await go(c.page, `/history/${c.fixtures.reportErrorId}/report`);
       await c.shot("report-missing");
-      await c.page.getByRole("button", { name: "리포트 생성" }).click();
-      await c.page.getByTestId("report-retry").getByRole("button", { name: "다시 시도" }).waitFor({ timeout: 30_000 });
+      await c.page.getByRole("button", { name: report.make }).click();
+      await c.page.getByTestId("report-retry").getByRole("button", { name: common.retry }).waitFor({ timeout: 30_000 });
     },
   },
   { id: "transcript", title: "트랜스크립트", auth: "auth", run: async (c) => go(c.page, `/history/${c.fixtures.reportChatId}`) },
@@ -382,7 +383,7 @@ const STATES: State[] = [
     auth: "auth",
     run: async (c) => {
       await go(c.page, "/portfolios");
-      await c.page.getByLabel("PDF 업로드").check();
+      await c.page.getByLabel(portfolio.modePdf).check();
     },
   },
   { id: "usage", title: "사용량", auth: "auth", run: async (c) => go(c.page, "/usage?period=all") },
@@ -399,8 +400,8 @@ const NOKEY_STATES: State[] = [
     run: async (c) => {
       const id = await createConversation(c.context, { kind: "chat", theme: "free", hintsEnabled: false });
       await go(c.page, `/chat/${id}`);
-      await c.page.getByLabel("메시지").fill("Hello!");
-      await c.page.getByLabel("메시지").press("Enter");
+      await c.page.getByLabel(chat.inputLabel).fill("Hello!");
+      await c.page.getByLabel(chat.inputLabel).press("Enter");
       await c.page.locator("main").getByRole("alert").waitFor({ timeout: 20_000 });
     },
   },

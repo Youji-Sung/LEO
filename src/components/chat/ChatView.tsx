@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
+import { chat, common } from "@/content/ko";
 import { apiJson } from "@/lib/client-fetch";
 import { streamMessage } from "@/lib/ndjson-client";
 import type { Report } from "@/services/claude/schemas/report";
@@ -61,9 +63,9 @@ export function ChatView(props: Props) {
           if (ev.code !== "refusal") setLastFailed(content);
         }
       });
-    } catch (e) {
+    } catch {
       // 네트워크가 끊긴 경우: 서버가 답변을 이미 저장했을 수 있으므로 재전송 대신 다시 불러온다.
-      setError(`${(e as Error).message} 화면을 새로고침해 대화 상태를 확인하세요.`);
+      setError(chat.networkError);
       setMessages((m) => m.filter((x) => x.id !== tempId));
       router.refresh();
     } finally {
@@ -118,7 +120,7 @@ export function ChatView(props: Props) {
         {props.title && <span className="muted">· {props.title}</span>}
         <label className="row" style={{ marginLeft: "auto", gap: 6 }}>
           <input type="checkbox" checked={hints} onChange={toggleHints} disabled={ended} />
-          교정 힌트
+          {chat.hintsToggle}
         </label>
         <button
           type="button"
@@ -126,19 +128,21 @@ export function ChatView(props: Props) {
           onClick={makeReport}
           disabled={reportBusy || busy || messages.filter((m) => m.role === "user").length === 0}
         >
-          {reportBusy ? "리포트 생성 중…" : props.hasReport ? "리포트 다시 생성" : "리포트 생성"}
+          {reportBusy ? chat.makingReport : props.hasReport ? chat.remakeReport : chat.makeReport}
         </button>
         {props.hasReport && (
           <a className="btn" href={`/history/${props.conversationId}/report`}>
-            리포트 보기
+            {chat.viewReport}
           </a>
         )}
       </div>
 
-      <div className="chat-messages" role="log" aria-live="polite" aria-label="대화">
+      <div className="chat-messages" role="log" aria-live="polite" aria-label={chat.logLabel}>
         {messages.length === 0 && (
           <p className="muted">
-            영어로 첫 메시지를 보내 보세요. 예: &quot;Hi! Can I tell you about my week?&quot;
+            {chat.emptyTitle}
+            <br />
+            <span lang="en">{chat.emptyExample}</span>
           </p>
         )}
         {messages.map((m) => (
@@ -146,14 +150,14 @@ export function ChatView(props: Props) {
             <div className="bubble-text">{m.content}</div>
             {m.hint && (
               <div className="bubble-hint" data-testid="hint">
-                교정 힌트: {m.hint}
+                {chat.hintLabel}: {m.hint}
               </div>
             )}
           </div>
         ))}
         {streaming !== null && (
           <div className="bubble bubble-assistant" data-testid="streaming">
-            <div className="bubble-text">{streaming || "…"}</div>
+            <div className="bubble-text">{streaming || chat.waiting}</div>
           </div>
         )}
         <div ref={bottomRef} />
@@ -164,18 +168,23 @@ export function ChatView(props: Props) {
           <span>{error}</span>
           {lastFailed && (
             <button type="button" className="btn" onClick={() => send(lastFailed)} disabled={busy}>
-              다시 시도
+              {common.retrySend}
             </button>
           )}
         </div>
       )}
 
       {ended ? (
-        <p className="muted">종료된 대화입니다. 새 대화를 시작하세요.</p>
+        <p className="muted">
+          {chat.endedNotice}{" "}
+          <Link className="btn" href="/chat">
+            {chat.endedAction}
+          </Link>
+        </p>
       ) : (
         <form onSubmit={onSubmit} className="chat-input row">
           <label htmlFor="chat-input" className="sr-only">
-            메시지
+            {chat.inputLabel}
           </label>
           <textarea
             id="chat-input"
@@ -188,12 +197,12 @@ export function ChatView(props: Props) {
                 void onSubmit(e);
               }
             }}
-            placeholder="영어로 입력 (Enter 전송, Shift+Enter 줄바꿈)"
+            placeholder={chat.inputPlaceholder}
             rows={2}
             disabled={busy}
           />
           <button type="submit" className="btn btn-primary" disabled={busy || !input.trim()}>
-            보내기
+            {chat.send}
           </button>
         </form>
       )}

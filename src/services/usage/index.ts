@@ -1,22 +1,13 @@
 import { prisma } from "@/lib/db";
 import { USAGE_FEATURES, type UsageFeature } from "@/services/claude/usage";
+import { usage } from "@/content/ko";
 
 export const USAGE_PERIODS = ["today", "7d", "30d", "all"] as const;
 export type UsagePeriod = (typeof USAGE_PERIODS)[number];
 
-export const USAGE_PERIOD_LABELS: Record<UsagePeriod, string> = {
-  today: "오늘",
-  "7d": "7일",
-  "30d": "30일",
-  all: "전체",
-};
+export const USAGE_PERIOD_LABELS: Record<UsagePeriod, string> = usage.periods;
 
-export const USAGE_FEATURE_LABELS: Record<UsageFeature, string> = {
-  chat: "채팅",
-  call: "전화 영어",
-  report: "리포트",
-  portfolio: "포트폴리오",
-};
+export const USAGE_FEATURE_LABELS: Record<UsageFeature, string> = usage.features;
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 

@@ -43,17 +43,17 @@ export function buildMockReport(input: ReportInput): Report {
   const second = userLines[1] ?? "There was very much people.";
   const third = userLines[2] ?? "I am agree with you.";
   return {
-    summary: `${theme.label} 테마로 ${userLines.length}번 발화했습니다. 주로 자기소개와 최근 작업에 대해 이야기했고, 상대의 질문에 짧게 답했습니다. 전반적으로 의사소통은 가능했지만 과거 시제와 관사 사용에서 반복되는 실수가 있었습니다. 어휘는 기본적인 수준이며 더 자연스러운 표현으로 바꿀 여지가 있습니다.`,
+    summary: `${theme.label} 테마로 ${userLines.length}번 말했어요. 자기소개와 최근에 한 일을 이야기했고 상대 질문에 끊기지 않고 답했어요. 다음에는 지난 일을 과거형으로 말하는 것과 관사를 붙이는 것에 집중하면 돼요. 어휘는 기본 단어 위주라 더 자연스러운 표현으로 바꿔 보면 좋아요.`,
     scores: {
-      grammar: { score: 6, comment: "시제 일치와 관사 오류가 반복됩니다." },
-      vocabulary: { score: 5, comment: "기본 어휘 위주라 표현이 단조롭습니다." },
-      fluency: { score: 7, comment: "응답이 짧지만 주저 표현은 적습니다." },
-      task: { score: 6, comment: "질문에는 답했으나 구체적인 사례가 부족합니다." },
+      grammar: { score: 6, comment: "지난 일을 과거형으로, 셀 수 있는 명사에는 관사를 붙여 보세요." },
+      vocabulary: { score: 5, comment: "기본 단어 위주예요. 아래 제안 표현을 다음 대화에서 써 보세요." },
+      fluency: { score: 7, comment: "답이 짧은 편이지만 머뭇거리는 말은 적어요." },
+      task: { score: 6, comment: "질문에 답했어요. 구체적인 사례를 하나씩 붙이면 더 좋아요." },
     },
     grammarCorrections: [
-      { original: first, corrected: "I went to school yesterday.", explanation: "과거의 일이므로 동사를 과거형(went)으로 씁니다." },
-      { original: second, corrected: "There were a lot of people.", explanation: "people 은 복수 가산명사라 were 와 a lot of/many 를 씁니다." },
-      { original: third, corrected: "I agree with you.", explanation: "agree 는 동사이므로 be 동사(am)를 붙이지 않습니다." },
+      { original: first, corrected: "I went to school yesterday.", explanation: "지난 일은 과거형(went)으로 써요." },
+      { original: second, corrected: "There were a lot of people.", explanation: "people 은 복수라 were 와 a lot of 를 써요." },
+      { original: third, corrected: "I agree with you.", explanation: "agree 는 동사라 am 을 붙이지 않아요." },
     ],
     vocabularySuggestions: [
       { original: "very good", better: "excellent", meaning: "아주 좋은", example: "The onboarding docs were excellent." },
@@ -71,7 +71,7 @@ export function buildMockReport(input: ReportInput): Report {
     ],
     interview: theme.isInterview
       ? {
-          structureFeedback: "답변이 상황 설명에 머물러 결과(R)가 빠졌습니다. 상황→과제→행동→결과 순서로 30초 안에 정리해 보세요.",
+          structureFeedback: "답변이 상황 설명에서 끝나 결과가 빠졌어요. 상황, 과제, 행동, 결과 순서로 30초 안에 정리해 보세요.",
           followUpQuestions: [
             "What was the most difficult technical decision in that project?",
             "How did you measure whether the change was successful?",
@@ -79,7 +79,7 @@ export function buildMockReport(input: ReportInput): Report {
           ],
         }
       : null,
-    technicalClarity: input.theme === "portfolio" ? { score: 6, comment: "아키텍처 선택의 이유를 더 명확히 설명하면 좋습니다." } : null,
+    technicalClarity: input.theme === "portfolio" ? { score: 6, comment: "아키텍처를 고른 이유를 한 문장으로 덧붙이면 더 분명해져요." } : null,
   };
 }
 

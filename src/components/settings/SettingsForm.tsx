@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import { common, settings as text } from "@/content/ko";
 import { apiJson } from "@/lib/client-fetch";
 import { getVoiceAdapter } from "@/lib/voice";
 import type { VoiceInfo } from "@/lib/voice/types";
@@ -29,7 +30,7 @@ export function SettingsForm({ initial, durationOptions }: { initial: Settings; 
     setError(null);
     try {
       await apiJson("/api/settings", { method: "PATCH", body: JSON.stringify(form) });
-      setStatus("저장했습니다.");
+      setStatus(text.saved);
     } catch (err) {
       setError((err as Error).message);
     }
@@ -42,16 +43,18 @@ export function SettingsForm({ initial, durationOptions }: { initial: Settings; 
   }
 
   return (
-    <form onSubmit={onSubmit} className="card stack" aria-label="설정">
+    <form onSubmit={onSubmit} className="card stack" aria-label={text.formLabel}>
+      <h2>{text.chatTitle}</h2>
       <label className="row" style={{ gap: 6 }}>
         <input type="checkbox" checked={form.hintsDefault} onChange={(e) => setForm({ ...form, hintsDefault: e.target.checked })} />
-        새 채팅에서 교정 힌트 기본 켜기
+        {text.hintsDefault}
       </label>
+      <h2>{text.callTitle}</h2>
       <div className="field">
-        <label htmlFor="tts-voice">TTS 음성</label>
+        <label htmlFor="tts-voice">{text.voice}</label>
         <div className="row">
           <select id="tts-voice" value={form.ttsVoice ?? ""} onChange={(e) => setForm({ ...form, ttsVoice: e.target.value || null })}>
-            <option value="">브라우저 기본 (영어)</option>
+            <option value="">{text.voiceDefault}</option>
             {voices.map((v) => (
               <option key={v.id} value={v.id}>
                 {v.name} ({v.lang})
@@ -59,17 +62,17 @@ export function SettingsForm({ initial, durationOptions }: { initial: Settings; 
             ))}
           </select>
           <button type="button" className="btn" onClick={preview}>
-            미리 듣기
+            {text.voicePreview}
           </button>
         </div>
-        {voices.length === 0 && <span className="muted">이 브라우저에서 사용할 수 있는 음성 목록을 불러오지 못했습니다.</span>}
+        {voices.length === 0 && <span className="muted">{text.voiceEmpty}</span>}
       </div>
       <div className="field">
-        <label htmlFor="default-minutes">통화 기본 길이</label>
+        <label htmlFor="default-minutes">{text.defaultMinutes}</label>
         <select id="default-minutes" value={form.defaultCallMinutes} onChange={(e) => setForm({ ...form, defaultCallMinutes: Number(e.target.value) })}>
           {durationOptions.map((m) => (
             <option key={m} value={m}>
-              {m}분
+              {common.minutes(m)}
             </option>
           ))}
         </select>
@@ -82,7 +85,7 @@ export function SettingsForm({ initial, durationOptions }: { initial: Settings; 
       )}
       <div>
         <button type="submit" className="btn btn-primary">
-          저장
+          {text.save}
         </button>
       </div>
     </form>

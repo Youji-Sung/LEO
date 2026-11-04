@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { common, portfolio } from "@/content/ko";
 import { apiJson, readError } from "@/lib/client-fetch";
 import { formatDateTime } from "@/lib/format";
 
@@ -26,7 +27,7 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
     try {
       let created: { portfolio: Item };
       if (mode === "pdf") {
-        if (!file) throw new Error("PDF 파일을 선택하세요.");
+        if (!file) throw new Error(portfolio.fileRequired);
         const fd = new FormData();
         fd.set("title", title);
         fd.set("file", file);
@@ -40,7 +41,7 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
       setTitle("");
       setContent("");
       setFile(null);
-      setStatus(`"${created.portfolio.title}" 등록 완료 (${created.portfolio.chars.toLocaleString()}자)`);
+      setStatus(portfolio.added(created.portfolio.title, common.chars(created.portfolio.chars)));
       router.refresh();
     } catch (err) {
       setError((err as Error).message);
@@ -50,7 +51,7 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
   }
 
   async function remove(id: string) {
-    if (!window.confirm("이 포트폴리오를 삭제할까요?")) return;
+    if (!window.confirm(portfolio.deleteTitle)) return;
     try {
       await apiJson(`/api/portfolios/${id}`, { method: "DELETE" });
       setItems((list) => list.filter((p) => p.id !== id));
@@ -62,27 +63,27 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
 
   return (
     <div className="stack">
-      <form onSubmit={onSubmit} className="card stack" aria-label="포트폴리오 등록">
-        <div className="row" role="radiogroup" aria-label="입력 방식">
+      <form onSubmit={onSubmit} className="card stack" aria-label={portfolio.formLabel}>
+        <div className="row" role="radiogroup" aria-label={portfolio.modeLabel}>
           <label className="row" style={{ gap: 4 }}>
-            <input type="radio" name="mode" checked={mode === "text"} onChange={() => setMode("text")} /> 텍스트/마크다운 붙여넣기
+            <input type="radio" name="mode" checked={mode === "text"} onChange={() => setMode("text")} /> {portfolio.modeText}
           </label>
           <label className="row" style={{ gap: 4 }}>
-            <input type="radio" name="mode" checked={mode === "pdf"} onChange={() => setMode("pdf")} /> PDF 업로드
+            <input type="radio" name="mode" checked={mode === "pdf"} onChange={() => setMode("pdf")} /> {portfolio.modePdf}
           </label>
         </div>
         <div className="field">
-          <label htmlFor="pf-title">제목</label>
-          <input id="pf-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={mode === "pdf" ? "비우면 파일 이름을 씁니다" : "예: 2025 백엔드 포트폴리오"} />
+          <label htmlFor="pf-title">{portfolio.title}</label>
+          <input id="pf-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder={mode === "pdf" ? portfolio.titlePlaceholderPdf : portfolio.titlePlaceholderText} />
         </div>
         {mode === "text" ? (
           <div className="field">
-            <label htmlFor="pf-content">내용</label>
-            <textarea id="pf-content" value={content} onChange={(e) => setContent(e.target.value)} rows={10} placeholder="프로젝트 설명, 역할, 기술 스택, 성과를 영어 또는 한국어로…" />
+            <label htmlFor="pf-content">{portfolio.content}</label>
+            <textarea id="pf-content" value={content} onChange={(e) => setContent(e.target.value)} rows={10} placeholder={portfolio.contentPlaceholder} />
           </div>
         ) : (
           <div className="field">
-            <label htmlFor="pf-file">PDF 파일</label>
+            <label htmlFor="pf-file">{portfolio.file}</label>
             <input id="pf-file" type="file" accept="application/pdf,.pdf" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
           </div>
         )}
@@ -94,26 +95,26 @@ export function PortfolioManager({ initial }: { initial: Item[] }) {
         {status && <p role="status">{status}</p>}
         <div>
           <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy ? "등록 중…" : "등록"}
+            {busy ? portfolio.submitting : portfolio.submit}
           </button>
         </div>
       </form>
 
-      <h2>등록된 포트폴리오</h2>
+      <h2>{portfolio.listTitle}</h2>
       {items.length === 0 ? (
-        <p className="muted">아직 없습니다.</p>
+        <p className="muted">{portfolio.empty}</p>
       ) : (
         <ul className="list" data-testid="portfolio-list">
           {items.map((p) => (
             <li key={p.id} className="list-item">
               <div className="row" style={{ justifyContent: "space-between" }}>
                 <strong>{p.title}</strong>
-                <button type="button" className="btn" onClick={() => remove(p.id)} aria-label={`${p.title} 삭제`}>
-                  삭제
+                <button type="button" className="btn" onClick={() => remove(p.id)} aria-label={portfolio.deleteLabel(p.title)}>
+                  {portfolio.deleteAction}
                 </button>
               </div>
               <span className="muted">
-                {formatDateTime(p.createdAt)} · {p.chars.toLocaleString()}자
+                {formatDateTime(p.createdAt)} · {common.chars(p.chars)}
               </span>
               {p.preview && <p className="muted" style={{ margin: 0, fontSize: 13, whiteSpace: "pre-wrap" }}>{p.preview}{p.chars > 200 ? "…" : ""}</p>}
             </li>

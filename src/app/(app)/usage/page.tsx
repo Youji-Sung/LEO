@@ -1,23 +1,18 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/current-user";
+import { common, usage as text } from "@/content/ko";
 import { formatDateTime, formatTokens, formatUsd } from "@/lib/format";
-import {
-  getUsageSummary,
-  USAGE_FEATURE_LABELS,
-  USAGE_PERIOD_LABELS,
-  USAGE_PERIODS,
-  type UsagePeriod,
-} from "@/services/usage";
+import { getUsageSummary, USAGE_PERIODS, type UsagePeriod } from "@/services/usage";
 import type { UsageFeature } from "@/services/claude/usage";
 
-export const metadata = { title: "사용량 — LEO" };
+export const metadata = { title: common.pageTitle(text.pageTitle) };
 
 function isPeriod(v: string | undefined): v is UsagePeriod {
   return v !== undefined && (USAGE_PERIODS as readonly string[]).includes(v);
 }
 
 function featureLabel(feature: string): string {
-  return USAGE_FEATURE_LABELS[feature as UsageFeature] ?? feature;
+  return text.features[feature as UsageFeature] ?? feature;
 }
 
 function href(period: UsagePeriod, userId?: string): string {
@@ -40,9 +35,9 @@ export default async function UsagePage({
 
   return (
     <div className="stack">
-      <h1>사용량</h1>
+      <h1>{text.pageTitle}</h1>
 
-      <nav className="row" aria-label="기간">
+      <nav className="row" aria-label={text.periodLabel}>
         {USAGE_PERIODS.map((p) => (
           <Link
             key={p}
@@ -50,14 +45,14 @@ export default async function UsagePage({
             className={p === period ? "btn btn-primary" : "btn"}
             aria-current={p === period ? "page" : undefined}
           >
-            {USAGE_PERIOD_LABELS[p]}
+            {text.periods[p]}
           </Link>
         ))}
       </nav>
 
-      <nav className="row" aria-label="사용자">
+      <nav className="row" aria-label={text.userLabel}>
         <Link href={href(period)} className={selectedUserId ? "btn" : "btn btn-primary"} aria-current={selectedUserId ? undefined : "page"}>
-          전체
+          {text.allUsers}
         </Link>
         {summary.byUser.map((u) => (
           <Link
@@ -73,33 +68,33 @@ export default async function UsagePage({
 
       <section className="card">
         <h2>
-          합계 · {USAGE_PERIOD_LABELS[period]}
+          {text.totalsTitle} · {text.periods[period]}
           {selectedUser ? ` · ${selectedUser.name}` : ""}
         </h2>
-        {summary.since ? <p className="muted">{formatDateTime(summary.since)} 이후</p> : null}
+        {summary.since ? <p className="muted">{text.since(formatDateTime(summary.since))}</p> : null}
         <dl className="usage-totals">
           <div>
-            <dt>호출 수</dt>
+            <dt>{text.calls}</dt>
             <dd>{formatTokens(summary.totals.calls)}</dd>
           </div>
           <div>
-            <dt>입력 토큰</dt>
+            <dt>{text.inputTokens}</dt>
             <dd>{formatTokens(summary.totals.inputTokens)}</dd>
           </div>
           <div>
-            <dt>출력 토큰</dt>
+            <dt>{text.outputTokens}</dt>
             <dd>{formatTokens(summary.totals.outputTokens)}</dd>
           </div>
           <div>
-            <dt>캐시 읽기 토큰</dt>
+            <dt>{text.cacheRead}</dt>
             <dd>{formatTokens(summary.totals.cacheReadTokens)}</dd>
           </div>
           <div>
-            <dt>캐시 쓰기 토큰</dt>
+            <dt>{text.cacheWrite}</dt>
             <dd>{formatTokens(summary.totals.cacheWriteTokens)}</dd>
           </div>
           <div>
-            <dt>추정 비용</dt>
+            <dt>{text.cost}</dt>
             <dd>{formatUsd(summary.totals.costUsd)}</dd>
           </div>
         </dl>
@@ -107,16 +102,16 @@ export default async function UsagePage({
 
       <div className="table-wrap">
         <table className="usage-table">
-          <caption>사용자별</caption>
+          <caption>{text.byUser}</caption>
           <thead>
             <tr>
-              <th scope="col">사용자</th>
-              <th scope="col">호출</th>
-              <th scope="col">입력</th>
-              <th scope="col">출력</th>
-              <th scope="col">캐시 읽기</th>
-              <th scope="col">캐시 쓰기</th>
-              <th scope="col">비용</th>
+              <th scope="col">{text.columns.user}</th>
+              <th scope="col">{text.columns.calls}</th>
+              <th scope="col">{text.columns.input}</th>
+              <th scope="col">{text.columns.output}</th>
+              <th scope="col">{text.columns.cacheRead}</th>
+              <th scope="col">{text.columns.cacheWrite}</th>
+              <th scope="col">{text.columns.cost}</th>
             </tr>
           </thead>
           <tbody>
@@ -139,21 +134,21 @@ export default async function UsagePage({
 
       <div className="table-wrap">
         <table className="usage-table">
-          <caption>기능별</caption>
+          <caption>{text.byFeature}</caption>
           <thead>
             <tr>
-              <th scope="col">기능</th>
-              <th scope="col">호출</th>
-              <th scope="col">입력</th>
-              <th scope="col">출력</th>
-              <th scope="col">비용</th>
+              <th scope="col">{text.columns.feature}</th>
+              <th scope="col">{text.columns.calls}</th>
+              <th scope="col">{text.columns.input}</th>
+              <th scope="col">{text.columns.output}</th>
+              <th scope="col">{text.columns.cost}</th>
             </tr>
           </thead>
           <tbody>
             {summary.byFeature.length === 0 ? (
               <tr>
                 <td colSpan={5} className="muted">
-                  기록이 없습니다.
+                  {text.empty}
                 </td>
               </tr>
             ) : (
@@ -173,26 +168,26 @@ export default async function UsagePage({
 
       <div className="table-wrap">
         <table className="usage-table">
-          <caption>최근 호출 50건</caption>
+          <caption>{text.recent}</caption>
           <thead>
             <tr>
-              <th scope="col">시각</th>
-              <th scope="col">사용자</th>
-              <th scope="col">기능</th>
-              <th scope="col">모델</th>
-              <th scope="col">입력</th>
-              <th scope="col">출력</th>
-              <th scope="col">캐시 읽기</th>
-              <th scope="col">캐시 쓰기</th>
-              <th scope="col">비용</th>
-              <th scope="col">지연 ms</th>
+              <th scope="col">{text.columns.time}</th>
+              <th scope="col">{text.columns.user}</th>
+              <th scope="col">{text.columns.feature}</th>
+              <th scope="col">{text.columns.model}</th>
+              <th scope="col">{text.columns.input}</th>
+              <th scope="col">{text.columns.output}</th>
+              <th scope="col">{text.columns.cacheRead}</th>
+              <th scope="col">{text.columns.cacheWrite}</th>
+              <th scope="col">{text.columns.cost}</th>
+              <th scope="col">{text.columns.latency}</th>
             </tr>
           </thead>
           <tbody>
             {summary.recent.length === 0 ? (
               <tr>
                 <td colSpan={10} className="muted">
-                  기록이 없습니다.
+                  {text.empty}
                 </td>
               </tr>
             ) : (

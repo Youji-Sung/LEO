@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { callLive, callSetup, report, themes } from "../src/content/ko";
 import { login } from "./helpers";
 
 async function say(page: Page, text: string) {
@@ -15,11 +16,11 @@ test("통화 시작 → 발화 3회 → 타이머 만료 → 리포트 화면", 
   await login(page);
   await page.goto("/call");
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await page.getByLabel("테마").selectOption("interview");
-  await page.getByLabel("테스트(20초)").check();
-  await page.getByRole("button", { name: "마이크 권한 확인" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "마이크를 사용할 수 있습니다" })).toBeVisible();
-  await page.getByRole("button", { name: "다음" }).click();
+  await page.getByLabel(themes.label).selectOption("interview");
+  await page.getByLabel(callSetup.durationTest).check();
+  await page.getByRole("button", { name: callSetup.micCheck }).click();
+  await expect(page.getByRole("status").filter({ hasText: callSetup.micGranted })).toBeVisible();
+  await page.getByRole("button", { name: callSetup.next }).click();
   await expect(page).toHaveURL(/\/call\/[a-z0-9]+$/);
 
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
@@ -41,7 +42,7 @@ test("통화 시작 → 발화 3회 → 타이머 만료 → 리포트 화면", 
 
   // 타이머 만료 → 리포트 화면
   await expect(page).toHaveURL(/\/history\/[a-z0-9]+\/report$/, { timeout: 40_000 });
-  await expect(page.getByRole("heading", { name: "리포트" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: report.pageTitle })).toBeVisible();
   await expect(page.getByTestId("score")).toHaveCount(4);
   await expect(page.getByTestId("interview-section")).toBeVisible();
 });
@@ -50,14 +51,14 @@ test("음소거와 끊기", async ({ page }) => {
   await login(page);
   await page.goto("/call");
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await page.getByLabel("테마").selectOption("daily");
-  await page.getByRole("button", { name: "다음" }).click();
+  await page.getByLabel(themes.label).selectOption("daily");
+  await page.getByRole("button", { name: callSetup.next }).click();
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
   await page.getByTestId("start-call").click();
   await expect.poll(() => page.evaluate(() => window.__leoFakeVoice!.listening())).toBe(true);
-  await page.getByRole("button", { name: "음소거" }).click();
+  await page.getByRole("button", { name: callLive.mute, exact: true }).click();
   await expect.poll(() => page.evaluate(() => window.__leoFakeVoice!.listening())).toBe(false);
-  await page.getByRole("button", { name: "음소거 해제" }).click();
+  await page.getByRole("button", { name: callLive.unmute }).click();
   await expect.poll(() => page.evaluate(() => window.__leoFakeVoice!.listening())).toBe(true);
   await say(page, "Hello! I just moved here last week.");
   await expect(page.getByTestId("msg-assistant")).toHaveCount(1, { timeout: 15_000 });
@@ -74,11 +75,11 @@ test("음성 인식 미지원 브라우저는 텍스트 입력으로 대체한�
   await login(page);
   await page.goto("/call");
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await page.getByRole("button", { name: "다음" }).click();
+  await page.getByRole("button", { name: callSetup.next }).click();
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
   await page.getByTestId("start-call").click();
-  await expect(page.getByText("음성 인식을 지원하지 않아 텍스트로 대화합니다")).toBeVisible();
-  await page.getByLabel("말할 내용").fill("Nice to meet you.");
-  await page.getByRole("button", { name: "말하기" }).click();
+  await expect(page.getByText(callLive.textModeNotice)).toBeVisible();
+  await page.getByLabel(callLive.textInputLabel).fill("Nice to meet you.");
+  await page.getByRole("button", { name: callLive.say }).click();
   await expect(page.getByTestId("msg-assistant")).toHaveCount(1, { timeout: 15_000 });
 });

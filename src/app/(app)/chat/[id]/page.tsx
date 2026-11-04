@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db";
 import { ChatView } from "@/components/chat/ChatView";
+import { chat, common } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 
-export const metadata = { title: "채팅 — LEO" };
+export const metadata = { title: common.pageTitle(chat.pageTitle) };
 
 export default async function ChatPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();

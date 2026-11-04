@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { callLive, chat } from "@/content/ko";
 import { ApiError, apiJson } from "@/lib/client-fetch";
 import { formatDuration } from "@/lib/format";
 import { streamMessage } from "@/lib/ndjson-client";
@@ -317,13 +318,13 @@ export function CallView(props: Props) {
       <div className="call-head">
         <div>
           <strong>{props.themeLabel}</strong>
-          <span className="muted"> · {formatDuration(durationSec)} 통화</span>
+          <span className="muted"> · {callLive.totalDuration(formatDuration(durationSec))}</span>
         </div>
         <div
           className="call-timer"
           role="timer"
           aria-live="off"
-          aria-label="남은 시간"
+          aria-label={callLive.timerLabel}
           data-testid="timer"
         >
           {formatDuration(remaining)}
@@ -332,10 +333,13 @@ export function CallView(props: Props) {
 
       {phase === "idle" && (
         <div className="card stack call-start">
-          <p>
-            상대가 먼저 인사를 건넵니다. 영어로 자연스럽게 대답하세요. 통화가 끝나면 교정 리포트가
-            만들어집니다.
-          </p>
+          <h2 style={{ marginTop: 0 }}>{callLive.idleTitle}</h2>
+          <p>{callLive.idleBody}</p>
+          <ul>
+            {callLive.idleTips.map((tip) => (
+              <li key={tip}>{tip}</li>
+            ))}
+          </ul>
           <div>
             <button
               type="button"
@@ -343,7 +347,7 @@ export function CallView(props: Props) {
               onClick={startCall}
               data-testid="start-call"
             >
-              통화 시작
+              {callLive.start}
             </button>
           </div>
         </div>
@@ -353,8 +357,8 @@ export function CallView(props: Props) {
         <>
           {!support.stt && (
             <p className="muted" role="status">
-              이 브라우저는 음성 인식을 지원하지 않아 텍스트로 대화합니다.
-              {!support.tts ? " 음성 합성도 지원하지 않아 답변은 글로만 표시됩니다." : ""}
+              {callLive.textModeNotice}
+              {!support.tts ? ` ${callLive.noTtsNotice}` : ""}
             </p>
           )}
           <div className="call-status row" aria-live="polite">
@@ -362,14 +366,14 @@ export function CallView(props: Props) {
               <>
                 <span className={`pill ${speaking ? "pill-on" : ""}`}>
                   {speaking
-                    ? "상대가 말하는 중"
+                    ? callLive.status.speaking
                     : busy
-                      ? "상대가 생각하는 중…"
+                      ? callLive.status.thinking
                       : muted
-                        ? "음소거"
+                        ? callLive.status.muted
                         : support.stt
-                          ? "듣는 중"
-                          : "입력 대기"}
+                          ? callLive.status.listening
+                          : callLive.status.waitingInput}
                 </span>
                 {phase === "live" && (
                   <span className="muted" data-testid="opening-line">
@@ -379,15 +383,17 @@ export function CallView(props: Props) {
               </>
             )}
             {phase === "ending" && (
-              <span role="status">통화를 마치고 리포트를 만드는 중입니다… (30초~1분)</span>
+              <span role="status">
+                {callLive.status.ending} · {callLive.status.endingHint}
+              </span>
             )}
-            {phase === "ended" && <span role="status">리포트로 이동합니다…</span>}
+            {phase === "ended" && <span role="status">{callLive.status.ended}</span>}
           </div>
 
           <div
             className="chat-messages call-transcript"
             role="log"
-            aria-label="실시간 트랜스크립트"
+            aria-label={callLive.logLabel}
           >
             {entries.map((m) => (
               <div key={m.id} className={`bubble bubble-${m.role}`} data-testid={`msg-${m.role}`}>
@@ -396,11 +402,12 @@ export function CallView(props: Props) {
             ))}
             {partial !== null && (
               <div className="bubble bubble-assistant" data-testid="streaming">
-                {partial || "…"}
+                {partial || chat.waiting}
               </div>
             )}
             {interim && (
               <div className="bubble bubble-user interim" data-testid="interim">
+                <span className="sr-only">{callLive.interimLabel}: </span>
                 {interim}
               </div>
             )}
@@ -415,14 +422,14 @@ export function CallView(props: Props) {
           {phase === "live" && !support.stt && (
             <form onSubmit={onTextSubmit} className="chat-input row">
               <label htmlFor="call-text" className="sr-only">
-                말할 내용
+                {callLive.textInputLabel}
               </label>
               <textarea
                 id="call-text"
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 rows={2}
-                placeholder="영어로 입력하고 Enter"
+                placeholder={callLive.textInputPlaceholder}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
                     e.preventDefault();
@@ -431,7 +438,7 @@ export function CallView(props: Props) {
                 }}
               />
               <button type="submit" className="btn btn-primary" disabled={!textInput.trim()}>
-                말하기
+                {callLive.say}
               </button>
             </form>
           )}
@@ -445,12 +452,12 @@ export function CallView(props: Props) {
                 disabled={phase !== "live"}
                 aria-pressed={muted}
               >
-                {muted ? "음소거 해제" : "음소거"}
+                {muted ? callLive.unmute : callLive.mute}
               </button>
             )}
             {showExtend && (
               <button type="button" className="btn" onClick={extend} data-testid="extend">
-                10분 연장
+                {callLive.extend}
               </button>
             )}
             <button
@@ -459,12 +466,11 @@ export function CallView(props: Props) {
               onClick={() => endCall("hangup")}
               disabled={phase !== "live"}
               data-testid="hangup"
+              aria-label={callLive.hangupLabel}
             >
-              끊기
+              {callLive.hangup}
             </button>
-            {endReason === "turn_cap" && (
-              <span className="muted">턴 상한에 도달해 통화를 마칩니다.</span>
-            )}
+            {endReason === "turn_cap" && <span className="muted">{callLive.turnCapEnd}</span>}
           </div>
         </>
       )}

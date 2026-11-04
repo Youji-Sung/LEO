@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/current-user";
+import { common, transcript } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { getOwnedReport } from "@/services/report";
 import { formatDateTime, formatDuration } from "@/lib/format";
 
-export const metadata = { title: "트랜스크립트 — LEO" };
+export const metadata = { title: common.pageTitle(transcript.pageTitle) };
 
 export default async function TranscriptPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
@@ -21,34 +22,38 @@ export default async function TranscriptPage({ params }: { params: Promise<{ id:
   return (
     <>
       <div className="row" style={{ justifyContent: "space-between" }}>
-        <h1 style={{ margin: 0 }}>트랜스크립트</h1>
+        <h1 style={{ margin: 0 }}>{transcript.pageTitle}</h1>
         <div className="row">
           {report ? (
             <Link className="btn btn-primary" href={`/history/${conversation.id}/report`}>
-              리포트 보기
+              {transcript.viewReport}
             </Link>
           ) : (
             <Link className="btn" href={`/history/${conversation.id}/report`}>
-              리포트 생성
+              {transcript.makeReport}
             </Link>
           )}
           {conversation.kind === "chat" && (
             <Link className="btn" href={`/chat/${conversation.id}`}>
-              채팅으로
+              {transcript.toChat}
             </Link>
           )}
         </div>
       </div>
       <p className="muted">
-        {theme?.label ?? conversation.theme} · {conversation.kind === "call" ? "전화 영어" : "채팅"} · {formatDateTime(conversation.startedAt)}
+        {theme?.label ?? conversation.theme} · {conversation.kind === "call" ? common.callLabel : common.chatLabel} · {formatDateTime(conversation.startedAt)}
         {conversation.durationSec ? ` · ${formatDuration(conversation.durationSec)}` : ""}
       </p>
-      <div className="chat-messages" role="log" aria-label="대화 트랜스크립트">
-        {conversation.messages.length === 0 && <p className="muted">메시지가 없습니다.</p>}
+      <div className="chat-messages" role="log" aria-label={transcript.logLabel}>
+        {conversation.messages.length === 0 && <p className="muted">{transcript.empty}</p>}
         {conversation.messages.map((m) => (
           <div key={m.id} className={`bubble bubble-${m.role}`}>
             <div className="bubble-text">{m.content}</div>
-            {m.hint && <div className="bubble-hint">교정 힌트: {m.hint}</div>}
+            {m.hint && (
+              <div className="bubble-hint">
+                {transcript.hintLabel}: {m.hint}
+              </div>
+            )}
           </div>
         ))}
       </div>

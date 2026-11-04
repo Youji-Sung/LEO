@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { errors } from "@/content/ko";
 
 export const DEFAULT_MAX_TURNS = 60;
 
@@ -10,7 +11,7 @@ export function maxTurnsPerConversation(): number {
 
 export class TurnCapError extends Error {
   constructor(public readonly limit: number) {
-    super(`대화 1건당 최대 ${limit}턴까지만 가능합니다. 리포트를 생성하거나 새 대화를 시작하세요.`);
+    super(errors.conversation.turnCap(limit));
     this.name = "TurnCapError";
   }
 }

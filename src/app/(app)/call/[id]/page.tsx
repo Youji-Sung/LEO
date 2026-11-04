@@ -2,10 +2,11 @@ import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db";
 import { CallView } from "@/components/call/CallView";
+import { callLive, common } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { canExtend } from "@/services/call/duration";
 
-export const metadata = { title: "통화 중 — LEO" };
+export const metadata = { title: common.pageTitle(callLive.pageTitle) };
 
 export default async function CallPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();

@@ -1,3 +1,5 @@
+import { errors } from "@/content/ko";
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -18,7 +20,7 @@ export async function toApiError(res: Response): Promise<ApiError> {
   } catch {
     // 본문이 JSON 이 아님
   }
-  return new ApiError(`요청이 실패했습니다 (${res.status}).`, res.status, null);
+  return new ApiError(errors.requestFailed, res.status, null);
 }
 
 export async function readError(res: Response): Promise<string> {

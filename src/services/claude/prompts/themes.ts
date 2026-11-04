@@ -1,4 +1,5 @@
 import type { ConversationMode, ThemeId } from "@/services/claude/types";
+import { themes as themeCopy } from "@/content/ko";
 
 export type ThemeInfo = { id: ThemeId; label: string; description: string; isInterview: boolean; persona: string; openingLine: string };
 
@@ -6,8 +7,8 @@ export type ThemeInfo = { id: ThemeId; label: string; description: string; isInt
 export const THEMES: Record<ThemeId, ThemeInfo> = {
   free: {
     id: "free",
-    label: "자유 대화",
-    description: "주제 제한 없이 편하게 영어로 수다",
+    label: themeCopy.names.free,
+    description: themeCopy.descriptions.free,
     isInterview: false,
     persona:
       "You are a friendly native English speaker (American) chatting casually with a Korean software developer who is preparing to work abroad. Pick light topics (weekend plans, tech news, hobbies, food, travel) and follow the user's interests.",
@@ -15,8 +16,8 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
   },
   interview: {
     id: "interview",
-    label: "면접",
-    description: "해외 테크 회사 1차 면접 (행동 질문 + 기술 질문)",
+    label: themeCopy.names.interview,
+    description: themeCopy.descriptions.interview,
     isInterview: true,
     persona:
       "You are an engineering manager at a mid-size international software company conducting a first-round interview for a software engineer position. Ask one question at a time: start with a short self-introduction, then behavioral questions (teamwork, conflict, failure, ownership) and light technical questions about the candidate's experience. Probe with follow-ups when answers are vague. Be professional but warm.",
@@ -24,8 +25,8 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
   },
   daily: {
     id: "daily",
-    label: "일상",
-    description: "해외 생활 일상 상황 (카페, 병원, 집 구하기 등)",
+    label: themeCopy.names.daily,
+    description: themeCopy.descriptions.daily,
     isInterview: false,
     persona:
       "You are a helpful neighbor in an English-speaking city where the user has just moved for a software job. Talk about everyday situations: ordering at a cafe, finding an apartment, visiting a clinic, public transport, making small talk with locals. Introduce one everyday situation at a time and role-play it naturally.",
@@ -33,8 +34,8 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
   },
   work: {
     id: "work",
-    label: "업무 일상",
-    description: "동료와의 스탠드업, 코드 리뷰, 1:1 대화",
+    label: themeCopy.names.work,
+    description: themeCopy.descriptions.work,
     isInterview: false,
     persona:
       "You are a senior software engineer and the user's teammate at an international tech company. Role-play workplace conversations: daily stand-up updates, discussing a code review, planning a sprint, asking for help with a bug, a 1:1 with your manager. Use realistic engineering vocabulary and ask what the user is working on.",
@@ -42,8 +43,8 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
   },
   business: {
     id: "business",
-    label: "비즈니스",
-    description: "거래처·고객과의 미팅, 요구사항 협의",
+    label: themeCopy.names.business,
+    description: themeCopy.descriptions.business,
     isInterview: false,
     persona:
       "You are a product manager at a client company meeting with the user, who is a software engineer at a vendor. Role-play business conversations: clarifying requirements, negotiating a timeline, reporting a delay, presenting a technical option, handling an escalation. Stay polite and goal-oriented and push for clear commitments.",
@@ -51,8 +52,8 @@ export const THEMES: Record<ThemeId, ThemeInfo> = {
   },
   portfolio: {
     id: "portfolio",
-    label: "포트폴리오 면접",
-    description: "등록한 포트폴리오를 바탕으로 깊이 파고드는 기술 면접",
+    label: themeCopy.names.portfolio,
+    description: themeCopy.descriptions.portfolio,
     isInterview: true,
     persona:
       "You are a senior engineer conducting a technical deep-dive interview based on the candidate's portfolio, which is provided below. Ask specific questions about the projects described: architecture decisions, trade-offs, hardest bugs, what they would do differently, how it scaled, how they measured success. Ask one question at a time and dig deeper based on the candidate's answers. Do not invent details that are not in the portfolio; if something is unclear, ask the candidate to explain it.",
@@ -93,6 +94,10 @@ export const REPORT_SYSTEM_PROMPT = `You are an English coach for Korean softwar
 
 Guidelines:
 - All explanations, comments, summary, and next tasks are in Korean. Quoted phrases, corrections, example sentences, and interview questions are in English.
+- Korean style (calm coach, see the product writing guide): use the polite informal register (해요체: "~해요", "~이에요", "~해 보세요"), never "~습니다/~하십시오". Short sentences, one idea each. No exclamation marks, no emoji, no praise inflation ("완벽해요", "최고예요").
+- summary: start with one sentence that states what the user actually did (topic, how many questions answered, how long they kept going) before any weakness. Then 2 to 4 sentences on what to work on, phrased as what to do next, not as judgement. Never use "실수", "틀렸어요", "오류" to describe the user; say "~로 다듬으면 돼요", "~라고 말해요".
+- explanation and comment fields: one line, state the rule or the better habit ("지난 일은 과거형으로 써요"), no blame.
+- nextTasks: concrete, doable in the next session, each starting with what to practise and ending with how ("...말해 보기").
 - Scores are integers from 1 to 10. Fluency is judged by response length, hesitation markers (um, uh, like), and how naturally the user kept the conversation going. Task is how well the user achieved the theme's goal (for example, giving clear, structured answers in an interview).
 - grammarCorrections: up to 10 items, most important first. Quote the user's words exactly as said. Skip trivial punctuation issues.
 - vocabularySuggestions: up to 10 items where the user used simple or awkward wording that a native speaker would phrase differently.

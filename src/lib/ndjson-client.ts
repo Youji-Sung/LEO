@@ -1,5 +1,6 @@
 import type { StreamEvent } from "@/services/conversation";
 import { toApiError } from "@/lib/client-fetch";
+import { errors } from "@/content/ko";
 
 // 메시지 전송 → NDJSON 스트림을 이벤트 단위로 넘겨준다. 비정상 HTTP 상태는 ApiError(code 포함)로 던진다.
 export async function streamMessage(
@@ -15,7 +16,7 @@ export async function streamMessage(
     signal,
   });
   if (!res.ok) throw await toApiError(res);
-  if (!res.body) throw new Error("응답 본문이 비어 있습니다.");
+  if (!res.body) throw new Error(errors.emptyBody);
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";

@@ -5,18 +5,19 @@ import { hashPassword } from "@/lib/auth/password";
 import { createSession, sessionCookieHeader } from "@/lib/auth/session";
 import { handler, HttpError, parseBody } from "@/lib/http";
 import { isUniqueViolation } from "@/lib/db";
+import { errors } from "@/content/ko";
 
 const schema = z.object({
-  email: z.email("이메일 형식이 아닙니다.").max(200),
-  password: z.string().min(8, "비밀번호는 8자 이상이어야 합니다.").max(200),
-  name: z.string().trim().min(1, "이름을 입력하세요.").max(50),
+  email: z.email(errors.auth.emailFormat).max(200),
+  password: z.string().min(8, errors.auth.passwordMin).max(200),
+  name: z.string().trim().min(1, errors.auth.nameRequired).max(50),
 });
 
 export const POST = handler(async (req: NextRequest) => {
   const body = await parseBody(req, schema);
   const email = body.email.toLowerCase();
   const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) throw new HttpError(409, "이미 가입된 이메일입니다.", "email_taken");
+  if (existing) throw new HttpError(409, errors.auth.emailTaken, "email_taken");
   let user: { id: string; email: string; name: string };
   try {
     user = await prisma.user.create({
@@ -30,7 +31,7 @@ export const POST = handler(async (req: NextRequest) => {
     });
   } catch (e) {
     // 동시 가입으로 unique 제약에 걸린 경우
-    if (isUniqueViolation(e)) throw new HttpError(409, "이미 가입된 이메일입니다.", "email_taken");
+    if (isUniqueViolation(e)) throw new HttpError(409, errors.auth.emailTaken, "email_taken");
     throw e;
   }
   const { token, expiresAt } = await createSession(user.id);

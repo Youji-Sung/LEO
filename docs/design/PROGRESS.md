@@ -24,3 +24,13 @@
 - [x] 디자인 원칙 5개 — 각각 "하지 않는 것" 포함, AUDIT 81건과의 대응표 포함
 - [x] `npm run check`·`npm run test:e2e` — 1단계는 문서만 바꿔 코드 변경이 없다. 0단계 통과 결과(76 단위·18 E2E)가 그대로 유효
 - 미확인: WCAG 2.2 본문 마지막 69,706자(용어 정의)·Apple Typography JSON 뒤 81,026자·M3 라이트/다크 기본 톤 표는 읽지 못했다. 필요한 수치는 Understanding 페이지·Apple Accessibility 표·Material Web 토큰 소스로 대신 확인했다
+
+## 2단계. UX 라이팅 가이드와 문구 개정
+
+- [x] `WRITING.md` — 경어(해요체 전면, 근거 3건), 버튼(주 CTA "~하기"·보조 명사형·확인 대화 행동 이름), 길이·구조, 구두점, 영어 혼용, 숫자·시간, 오류 구조, 빈 상태, 로딩, 확인 대화, 칭찬·교정 균형, 금지 표현 12항, 용어집 24항
+- [x] 개정표 — `STRINGS-REVISED.md`: STRINGS 347행 전부에 개정/유지/삭제와 이유(유지 183, 개정 151, 삭제 13, 합 347 검산), 신규 문구 72개(키·문구·이유). 서브에이전트가 스크립트로 행 번호 1~347 의 유일성과 개정 문구 = `ko.ts` 값 일치를 확인
+- [x] 코드 반영 — `src/content/ko.ts` 한 곳에 모으고 컴포넌트·페이지·서비스·API·음성 어댑터가 참조. 확인: `LC_ALL=C.UTF-8 grep -rn -P "[가-힣]" src/components src/app --include=*.tsx` 에서 주석 아닌 줄 0개(주석 14줄만 남음); `src/lib src/services src/app/api` 에는 ko.ts 임포트, 주석, zod `.describe()`(모델용), 프롬프트, 모의 응답, `ClaudeConfigError`(운영자용 내부 예외), 정규식, AUTH_SECRET 개발 오류만 남음. 이모지 0개
+- [x] 리포트 문체 지시 — `prompts/themes.ts` `REPORT_SYSTEM_PROMPT` 에 한국어 문체 규칙(해요체, 느낌표·과장 금지, 요약 첫 문장은 한 일, 판정어 금지, 코멘트 한 줄, 과제는 "~해 보기") 추가. 모의 응답(`mock-provider.ts`)도 같은 문체로 바꿔 화면·테스트에서 확인. 실제 API 호출 0회
+- [x] 숫자·시간 규칙 구현 — `formatDateTime`(오늘/어제/월일/연도), `formatUsd`(둘째 자리, 1센트 미만), `formatDurationWords` + `tests/unit/format.test.ts` 8개
+- [x] 테스트 — `npm run check` 종료 코드 0(vitest 79개), `npm run test:e2e` 18개 통과(1.8분). E2E·스크린샷 스크립트·단위 테스트는 문구를 `src/content/ko` 에서 임포트해 바뀐 문구 25종(채팅 시작하기, 리포트 만들기, 마이크 확인하기, 테스트 20초, 포트폴리오 추가하기, 대화 내용, 점수, 끝난 대화예요 등)에 맞춤
+- 메모: 2단계 결과는 기존 화면 구조 위에 문구만 바꾼 상태라 after 스크린샷은 4단계 재설계 뒤에 찍는다

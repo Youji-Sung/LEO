@@ -3,11 +3,12 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/current-user";
 import { ReportView } from "@/components/report/ReportView";
 import { ReportRetry } from "@/components/report/ReportRetry";
+import { common, report as text } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { getOwnedReport } from "@/services/report";
 import { formatDateTime } from "@/lib/format";
 
-export const metadata = { title: "리포트 — LEO" };
+export const metadata = { title: common.pageTitle(text.pageTitle) };
 
 export default async function ReportPage({ params }: { params: Promise<{ id: string }> }) {
   const user = await requireUser();
@@ -25,24 +26,24 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   return (
     <>
       <div className="row" style={{ justifyContent: "space-between" }}>
-        <h1 style={{ margin: 0 }}>리포트</h1>
+        <h1 style={{ margin: 0 }}>{text.pageTitle}</h1>
         <div className="row">
           <Link className="btn" href={`/history/${conversation.id}`}>
-            트랜스크립트
+            {text.transcript}
           </Link>
           <Link className="btn" href={backHref}>
-            {conversation.kind === "chat" ? "채팅으로" : "통화 기록"}
+            {conversation.kind === "chat" ? text.backToChat : text.backToHistory}
           </Link>
         </div>
       </div>
       <p className="muted">
-        {theme?.label ?? conversation.theme} · {conversation.kind === "call" ? "전화 영어" : "채팅"} · {formatDateTime(conversation.startedAt)}
-        {conversation.portfolio ? ` · 포트폴리오: ${conversation.portfolio.title}` : ""}
+        {theme?.label ?? conversation.theme} · {conversation.kind === "call" ? common.callLabel : common.chatLabel} · {formatDateTime(conversation.startedAt)}
+        {conversation.portfolio ? ` · ${text.portfolioMeta(conversation.portfolio.title)}` : ""}
       </p>
       {report ? (
         <ReportView report={report} isInterview={Boolean(theme?.isInterview)} />
       ) : (
-        <ReportRetry conversationId={conversation.id} initialError={conversation.report ? "저장된 리포트가 손상되었습니다." : null} />
+        <ReportRetry conversationId={conversation.id} initialError={conversation.report ? text.corrupted : null} />
       )}
     </>
   );

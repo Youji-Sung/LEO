@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useSyncExternalStore, type FormEvent } from "react";
+import { callSetup, common, themes as themeText } from "@/content/ko";
 import { apiJson } from "@/lib/client-fetch";
 
 type Theme = { id: string; label: string; description: string };
@@ -86,18 +88,17 @@ export function CallSetupForm({
   }
 
   const micLabel: Record<MicState, string> = {
-    unknown: "아직 확인하지 않았습니다.",
-    checking: "확인 중…",
-    granted: "마이크를 사용할 수 있습니다.",
-    denied:
-      "마이크 권한이 거부되었습니다. 브라우저 주소창의 권한 설정에서 허용하세요. 텍스트 입력으로도 통화할 수 있습니다.",
-    unavailable: "이 브라우저에서는 마이크를 쓸 수 없습니다. 텍스트 입력으로 통화합니다.",
+    unknown: callSetup.micUnknown,
+    checking: callSetup.micChecking,
+    granted: callSetup.micGranted,
+    denied: callSetup.micDenied,
+    unavailable: callSetup.micUnavailable,
   };
 
   return (
-    <form onSubmit={onSubmit} className="card stack" aria-label="통화 설정">
+    <form onSubmit={onSubmit} className="card stack" aria-label={callSetup.formLabel}>
       <div className="field">
-        <label htmlFor="call-theme">테마</label>
+        <label htmlFor="call-theme">{themeText.label}</label>
         <select id="call-theme" value={theme} onChange={(e) => setTheme(e.target.value)}>
           {themes.map((t) => (
             <option key={t.id} value={t.id}>
@@ -108,12 +109,14 @@ export function CallSetupForm({
       </div>
       {theme === "portfolio" && (
         <div className="field">
-          <label htmlFor="call-portfolio">포트폴리오</label>
+          <label htmlFor="call-portfolio">{callSetup.portfolioLabel}</label>
           {portfolios.length === 0 ? (
-            <p className="muted">
-              등록된 포트폴리오가 없습니다. <a href="/portfolios">포트폴리오 관리</a>에서 먼저
-              등록하세요.
-            </p>
+            <>
+              <p className="muted">{callSetup.portfolioEmpty}</p>
+              <Link className="btn" href="/portfolios">
+                {callSetup.portfolioAdd}
+              </Link>
+            </>
           ) : (
             <select
               id="call-portfolio"
@@ -130,7 +133,7 @@ export function CallSetupForm({
         </div>
       )}
       <fieldset className="field" style={{ border: 0, padding: 0 }}>
-        <legend>통화 시간</legend>
+        <legend>{callSetup.durationLegend}</legend>
         <div className="row">
           {durationOptions.map((m) => (
             <label key={m} className="row" style={{ gap: 4 }}>
@@ -141,40 +144,36 @@ export function CallSetupForm({
                 checked={minutes === m}
                 onChange={() => setMinutes(m)}
               />
-              {m <= 0 ? "테스트(20초)" : `${m}분`}
+              {m <= 0 ? callSetup.durationTest : common.minutes(m)}
             </label>
           ))}
         </div>
       </fieldset>
       <div className="field">
-        <span>마이크</span>
+        <span>{callSetup.micLegend}</span>
         <div className="row">
           <button type="button" className="btn" onClick={checkMic} disabled={mic === "checking"}>
-            마이크 권한 확인
+            {callSetup.micCheck}
           </button>
           <span className={mic === "denied" ? "error" : "muted"} role="status">
             {micLabel[mic]}
           </span>
         </div>
-        {!sttSupported && (
-          <p className="muted">
-            이 브라우저는 음성 인식(Web Speech API)을 지원하지 않습니다. Chrome 을 권장하며, 텍스트
-            입력으로 통화를 진행할 수 있습니다.
-          </p>
-        )}
+        {!sttSupported && <p className="muted">{callSetup.sttUnsupported}</p>}
       </div>
       {error && (
         <p className="error" role="alert">
           {error}
         </p>
       )}
+      <p className="muted">{callSetup.nextHint}</p>
       <div>
         <button
           type="submit"
           className="btn btn-primary"
           disabled={busy || (theme === "portfolio" && !portfolioId)}
         >
-          다음
+          {busy ? callSetup.creating : callSetup.next}
         </button>
       </div>
     </form>

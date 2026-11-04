@@ -2,21 +2,22 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/AuthForm";
+import { auth, common } from "@/content/ko";
 import { getCurrentUser } from "@/lib/auth/current-user";
 
-export const metadata = { title: "회원가입 — LEO" };
+export const metadata = { title: common.pageTitle(auth.signupTitle) };
 
 export default async function SignupPage() {
   if (await getCurrentUser()) redirect("/");
   return (
     <main className="container" style={{ maxWidth: 420 }}>
-      <h1>회원가입</h1>
-      <p className="muted">초대받은 사용자만 가입합니다.</p>
+      <h1>{auth.signupTitle}</h1>
+      <p className="muted">{auth.signupIntro}</p>
       <Suspense>
         <AuthForm mode="signup" />
       </Suspense>
       <p className="muted">
-        이미 계정이 있나요? <Link href="/login">로그인</Link>
+        {auth.haveAccount} <Link href="/login">{auth.toLogin}</Link>
       </p>
     </main>
   );

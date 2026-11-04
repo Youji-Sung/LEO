@@ -6,6 +6,7 @@ import { assertTurnAllowed, TurnCapError } from "@/services/claude/turn-cap";
 import { recordUsage } from "@/services/claude/usage";
 import type { ChatMessage, ConversationMode, ThemeId } from "@/services/claude/types";
 import { THEME_IDS } from "@/services/claude/types";
+import { errors } from "@/content/ko";
 
 export type ConversationKind = ConversationMode;
 
@@ -25,14 +26,10 @@ export async function createConversation(input: {
     const pf = await prisma.portfolio.findFirst({
       where: { id: input.portfolioId, userId: input.userId },
     });
-    if (!pf) throw new HttpError(404, "포트폴리오를 찾을 수 없습니다.", "portfolio_not_found");
+    if (!pf) throw new HttpError(404, errors.portfolio.notFound, "portfolio_not_found");
   }
   if (input.theme === "portfolio" && !input.portfolioId) {
-    throw new HttpError(
-      400,
-      "포트폴리오 면접 테마는 포트폴리오를 골라야 합니다.",
-      "portfolio_required",
-    );
+    throw new HttpError(400, errors.conversation.portfolioRequired, "portfolio_required");
   }
   let hintsEnabled = input.hintsEnabled;
   if (hintsEnabled === undefined) {
@@ -68,7 +65,7 @@ export async function getOwnedConversation(userId: string, id: string) {
       portfolio: { select: { id: true, title: true, content: true } },
     },
   });
-  if (!conv) throw new HttpError(404, "대화를 찾을 수 없습니다.", "conversation_not_found");
+  if (!conv) throw new HttpError(404, errors.conversation.notFound, "conversation_not_found");
   return conv;
 }
 
@@ -153,11 +150,10 @@ async function* sendMessageLocked(input: {
   content: string;
 }): AsyncGenerator<StreamEvent> {
   const conv = await getOwnedConversation(input.userId, input.conversationId);
-  if (conv.endedAt) throw new HttpError(409, "이미 종료된 대화입니다.", "conversation_ended");
+  if (conv.endedAt) throw new HttpError(409, errors.conversation.ended, "conversation_ended");
   const content = input.content.trim();
-  if (!content) throw new HttpError(400, "메시지를 입력하세요.", "empty_message");
-  if (content.length > 4000)
-    throw new HttpError(400, "메시지가 너무 깁니다 (4000자 이하).", "message_too_long");
+  if (!content) throw new HttpError(400, errors.conversation.emptyMessage, "empty_message");
+  if (content.length > 4000) throw new HttpError(400, errors.conversation.tooLong, "message_too_long");
 
   try {
     await assertTurnAllowed(conv.id);
@@ -213,11 +209,7 @@ async function* sendMessageLocked(input: {
     });
     if (r.stopReason === "refusal") {
       await dropUserTurn();
-      push({
-        type: "error",
-        message: "상대가 이 주제에는 답하지 않기로 했습니다. 다른 주제로 대화를 이어가 보세요.",
-        code: "refusal",
-      });
+      push({ type: "error", message: errors.conversation.refusal, code: "refusal" });
       return;
     }
     const assistant = await prisma.message.create({
@@ -273,7 +265,7 @@ export function streamEventsToResponse(events: AsyncIterable<StreamEvent>): Resp
         }
       } catch (e) {
         const status = e instanceof HttpError ? (e.code ?? "error") : "internal";
-        const message = e instanceof HttpError ? e.message : "서버 오류가 발생했습니다.";
+        const message = e instanceof HttpError ? e.message : errors.internal;
         if (!(e instanceof HttpError)) console.error(e);
         controller.enqueue(
           encoder.encode(`${JSON.stringify({ type: "error", message, code: status })}\n`),

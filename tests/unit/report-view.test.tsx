@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ReportView } from "@/components/report/ReportView";
+import { report as reportText } from "@/content/ko";
 import { buildMockReport } from "@/services/claude/mock-provider";
 
 const unescape = (html: string) => html.replace(/&#x27;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&");
@@ -15,11 +16,12 @@ describe("ReportView", () => {
   it("renders every SPEC 2.3 section for an interview report", () => {
     const report = buildMockReport({ theme: "interview", mode: "call", transcript });
     const html = unescape(renderToStaticMarkup(<ReportView report={report} isInterview />));
-    for (const heading of ["요약", "종합 점수", "문법 교정", "어휘 제안", "더 나은 표현", "다음 연습 과제", "면접 피드백", "예상 추가 질문"]) {
+    for (const heading of Object.values(reportText.sections)) {
       expect(html).toContain(heading);
     }
     expect(html).toContain(report.summary);
-    for (const label of ["문법", "어휘", "유창성", "과제 수행"]) expect(html).toContain(`${label} `);
+    const sl = reportText.scoreLabels;
+    for (const label of [sl.grammar, sl.vocabulary, sl.fluency, sl.task]) expect(html).toContain(`${label} `);
     expect((html.match(/data-testid="score"/g) ?? []).length).toBe(4);
     for (const c of report.grammarCorrections) {
       expect(html).toContain(c.original);
@@ -35,12 +37,12 @@ describe("ReportView", () => {
   it("hides interview items for non-interview themes and shows technical clarity for portfolio", () => {
     const daily = buildMockReport({ theme: "daily", mode: "chat", transcript });
     const html = renderToStaticMarkup(<ReportView report={daily} isInterview={false} />);
-    expect(html).not.toContain("면접 피드백");
-    expect(html).not.toContain("기술 설명의 명확성");
+    expect(html).not.toContain(reportText.sections.interview);
+    expect(html).not.toContain(reportText.scoreLabels.technicalClarity);
 
     const pf = buildMockReport({ theme: "portfolio", mode: "call", transcript, portfolioText: "x" });
     const pfHtml = renderToStaticMarkup(<ReportView report={pf} isInterview />);
-    expect(pfHtml).toContain("기술 설명의 명확성");
+    expect(pfHtml).toContain(reportText.scoreLabels.technicalClarity);
     expect((pfHtml.match(/data-testid="score"/g) ?? []).length).toBe(5);
   });
 });

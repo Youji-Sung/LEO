@@ -1,10 +1,11 @@
 import { requireUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db";
 import { CallSetupForm } from "@/components/call/CallSetupForm";
+import { callSetup, common } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { allowShortCalls, CALL_DURATION_OPTIONS_MIN, DEFAULT_CALL_MINUTES } from "@/services/call/duration";
 
-export const metadata = { title: "전화 영어 — LEO" };
+export const metadata = { title: common.pageTitle(callSetup.pageTitle) };
 
 export default async function CallSetupPage() {
   const user = await requireUser();
@@ -17,8 +18,8 @@ export default async function CallSetupPage() {
   if (allowShortCalls()) durationOptions.push(0);
   return (
     <>
-      <h1>전화 영어</h1>
-      <p className="muted">테마를 고르고 마이크를 확인한 뒤 통화를 시작합니다. 상대의 말은 음성으로 읽어 주고, 내 말은 음성 인식으로 받아 적습니다.</p>
+      <h1>{callSetup.pageTitle}</h1>
+      <p className="muted">{callSetup.intro}</p>
       <CallSetupForm
         themes={themes}
         portfolios={portfolios}

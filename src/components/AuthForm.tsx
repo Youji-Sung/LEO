@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, type FormEvent } from "react";
+import { auth } from "@/content/ko";
 import { readError } from "@/lib/client-fetch";
 
 export function AuthForm({ mode }: { mode: "login" | "signup" }) {
@@ -31,26 +32,28 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
       router.push(next && next.startsWith("/") ? next : "/");
       router.refresh();
     } catch {
-      setError("네트워크 오류가 발생했습니다. 다시 시도하세요.");
+      setError(auth.networkError);
     } finally {
       setBusy(false);
     }
   }
 
+  const isLogin = mode === "login";
+
   return (
-    <form onSubmit={onSubmit} className="card" aria-label={mode === "login" ? "로그인" : "회원가입"}>
+    <form onSubmit={onSubmit} className="card" aria-label={isLogin ? auth.loginTitle : auth.signupTitle}>
       {mode === "signup" && (
         <div className="field">
-          <label htmlFor="name">이름</label>
+          <label htmlFor="name">{auth.name}</label>
           <input id="name" value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" />
         </div>
       )}
       <div className="field">
-        <label htmlFor="email">이메일</label>
+        <label htmlFor="email">{auth.email}</label>
         <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
       </div>
       <div className="field">
-        <label htmlFor="password">비밀번호</label>
+        <label htmlFor="password">{auth.password}</label>
         <input
           id="password"
           type="password"
@@ -58,7 +61,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           onChange={(e) => setPassword(e.target.value)}
           required
           minLength={8}
-          autoComplete={mode === "login" ? "current-password" : "new-password"}
+          autoComplete={isLogin ? "current-password" : "new-password"}
         />
       </div>
       {error && (
@@ -67,7 +70,7 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         </p>
       )}
       <button className="btn btn-primary" type="submit" disabled={busy}>
-        {mode === "login" ? "로그인" : "가입하기"}
+        {isLogin ? (busy ? auth.loginBusy : auth.loginButton) : busy ? auth.signupBusy : auth.signupButton}
       </button>
     </form>
   );

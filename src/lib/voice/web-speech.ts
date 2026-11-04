@@ -5,6 +5,7 @@ import type {
   VoiceInfo,
   VoiceSupport,
 } from "@/lib/voice/types";
+import { errors } from "@/content/ko";
 
 // DOM lib 에 SpeechRecognition 생성자 타입이 없어 필요한 부분만 정의한다.
 interface SpeechRecognitionAlternativeLike {
@@ -53,15 +54,16 @@ function errorMessage(error: string): { message: string; fatal: boolean } | null
   switch (error) {
     case "not-allowed":
     case "service-not-allowed":
-      return { message: "마이크 권한이 거부되었습니다.", fatal: true };
+      return { message: errors.voice.permissionDenied, fatal: true };
     case "no-speech":
       return null;
     case "network":
-      return { message: "음성 인식 네트워크 오류입니다.", fatal: false };
+      return { message: errors.voice.network, fatal: false };
     case "audio-capture":
-      return { message: "마이크를 찾을 수 없습니다.", fatal: true };
+      return { message: errors.voice.noMic, fatal: true };
     default:
-      return { message: `음성 인식 오류: ${error}`, fatal: false };
+      console.warn("[voice] recognition error", error);
+      return { message: errors.voice.generic, fatal: false };
   }
 }
 
@@ -86,7 +88,7 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
     if (this.recognition) this.stopListening();
     const Ctor = getRecognitionCtor();
     if (!Ctor) {
-      handlers.onError?.("이 브라우저는 음성 인식을 지원하지 않습니다.");
+      handlers.onError?.(errors.voice.unsupported);
       return;
     }
     const recognition = new Ctor();
@@ -132,7 +134,8 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
     } catch (e) {
       this.recognition = null;
       this.handlers = null;
-      handlers.onError?.(`음성 인식 오류: ${e instanceof Error ? e.message : String(e)}`);
+      console.warn("[voice] recognition.start failed", e);
+      handlers.onError?.(errors.voice.generic);
     }
   }
 
