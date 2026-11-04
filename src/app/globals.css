@@ -932,8 +932,10 @@ fieldset.field > legend {
   border: 1px solid var(--color-divider);
   border-bottom-left-radius: var(--radius-sm);
 }
+/* 흐리게(opacity)는 흰 글자 대비가 3.9:1 로 떨어져(axe) 대비가 보장된 negative-subtle 쌍을 쓴다. */
 .bubble-failed {
-  opacity: 0.75;
+  background: var(--color-negative-subtle);
+  color: var(--color-on-negative-subtle);
   border: 1px dashed var(--color-negative);
 }
 .bubble-failed-label {
