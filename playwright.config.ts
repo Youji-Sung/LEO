@@ -23,7 +23,7 @@ export default defineConfig({
     launchOptions: executablePath ? { executablePath } : {},
   },
   webServer: {
-    command: `bash scripts/e2e-server.sh ${port}`,
+    command: `node scripts/e2e-server.mjs ${port}`,
     url: baseURL,
     timeout: 180_000,
     reuseExistingServer: false,

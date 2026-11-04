@@ -80,7 +80,7 @@ Claude 사용 단가는 `src/config/pricing.ts`에서 바꾼다.
 | `npx tsx scripts/build-tokens.ts [--check] [--table]` | 디자인 토큰 TS → `tokens.css` 생성, 대비 표 출력 |
 | `npm run build && npx tsx scripts/perf.ts` | 프로덕션 서버로 첫 로드 CLS·전송량 측정(`docs/design/PERF.md`) |
 
-E2E는 Playwright가 설치한 Chromium을 쓰고, 없으면 `CHROME_PATH`의 Chrome을 헤드리스로 쓴다. `npm test`와 `npm run test:e2e`를 동시에 돌리지 않는다(둘 다 DB 파일을 새로 만든다).
+E2E는 Playwright가 설치한 Chromium을 쓰고, 없으면 `CHROME_PATH`의 Chrome을 헤드리스로 쓴다. `npm test`와 `npm run test:e2e`를 동시에 돌리지 않는다(둘 다 DB 파일을 새로 만든다). E2E 서버는 `scripts/e2e-server.mjs`가 띄우며 빌드 폴더를 `.next-e2e`로 분리하므로 `npm run dev`가 켜져 있어도 함께 돌 수 있다.
 
 ## 수동 점검 체크리스트 (실제 브라우저)
 
