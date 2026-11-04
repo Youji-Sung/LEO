@@ -1,19 +1,30 @@
+import { Info, TriangleAlert } from "lucide-react";
 import { banner } from "@/content/ko";
 import { hasApiKey, isMockMode } from "@/services/claude";
 
-// 서버 컴포넌트. API 키가 없고 모의 모드도 아니면 모든 화면 위에 안내를 띄운다.
-export function ConfigBanner() {
+// 서버 컴포넌트. 운영 상태 안내. 모의 모드는 조용히(status), 키 없음은 운영자가 고쳐야 하므로 alert.
+export function ConfigBanner({ compact = false }: { compact?: boolean }) {
   if (isMockMode()) {
     return (
       <div className="banner banner-info" role="status">
-        {banner.mock}
+        <Info size={16} aria-hidden="true" />
+        <span>{banner.mock}</span>
       </div>
     );
   }
   if (!hasApiKey()) {
     return (
       <div className="banner banner-warn" role="alert">
-        <strong>{banner.noKeyTitle}</strong> {banner.noKeyBody} <code>{banner.noKeyOperator}</code>
+        <TriangleAlert size={16} aria-hidden="true" />
+        <span>
+          <strong>{banner.noKeyTitle}</strong> {banner.noKeyBody}
+          {compact ? null : (
+            <>
+              {" "}
+              <code>{banner.noKeyOperator}</code>
+            </>
+          )}
+        </span>
       </div>
     );
   }

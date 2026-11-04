@@ -34,3 +34,15 @@
 - [x] 숫자·시간 규칙 구현 — `formatDateTime`(오늘/어제/월일/연도), `formatUsd`(둘째 자리, 1센트 미만), `formatDurationWords` + `tests/unit/format.test.ts` 8개
 - [x] 테스트 — `npm run check` 종료 코드 0(vitest 79개), `npm run test:e2e` 18개 통과(1.8분). E2E·스크린샷 스크립트·단위 테스트는 문구를 `src/content/ko` 에서 임포트해 바뀐 문구 25종(채팅 시작하기, 리포트 만들기, 마이크 확인하기, 테스트 20초, 포트폴리오 추가하기, 대화 내용, 점수, 끝난 대화예요 등)에 맞춤
 - 메모: 2단계 결과는 기존 화면 구조 위에 문구만 바꾼 상태라 after 스크린샷은 4단계 재설계 뒤에 찍는다
+
+## 3단계. 디자인 시스템
+
+- [x] 토큰 — `src/design/tokens.ts`(색 31역할 × 라이트/다크, 간격 10, 라운드 5, 타이포 9, 그림자 3, 모션 7, 브레이크포인트 3, 타깃 2) → `src/app/tokens.css` 생성(`scripts/build-tokens.ts`). `SYSTEM.md` 1~5절에 표와 근거
+- [x] 대비 — `scripts/build-tokens.ts --table` 로 33조합 × 2테마 계산, AA 미달 0. 라이트 최저: 경계/캔버스 3.10:1(UI 3:1), 텍스트 최저 긍정/캔버스 5.32:1. 다크 최저: 경계/표면 4.89:1. `tests/unit/contrast.test.ts` 가 66조합 + tokens.css 동기화 + 다크 표면 밝기 순서를 고정(70개 테스트 통과)
+- [x] 폰트 — Pretendard Variable 다이나믹 서브셋(jsDelivr v1.3.9, `@font-face` 92개 모두 `font-display: swap` 확인) + preconnect, 폴백 스택. CLS 측정은 6단계
+- [x] 아이콘 — `lucide-react` 1.67.0(ISC) 설치, 아이콘 22종 존재 확인. 규칙은 SYSTEM 6절
+- [x] 컴포넌트 17종 구현 — `src/components/ui/`: Button·ButtonLink, Spinner·Skeleton, TextField·TextArea·Select, Choice·ChoiceGroup·CheckRow, Card, Badge, StatusMessage(polite 옵션), Dialog(`<dialog>`), Segmented, EmptyState, Timer, CallStatus, ScoreGauge, DiffText, Bubble, Toast, ThemeSelect. 단위 테스트 `tests/unit/ui/*.test.tsx` 17파일 100개 통과(역할·aria·라벨·변형)
+- [x] 전역 CSS 재작성 — `globals.css` 를 토큰 변수만 쓰도록 전부 다시 씀(reset·타이포·레이아웃·헤더·배너·카드·버튼·폼·선택 카드·배지·상태 메시지·다이얼로그·세그먼트·빈 상태·스피너·목록·말풍선·리포트·사용량·통화·토스트·reduced-motion)
+- [x] 테마 전환 — `UserSettings.theme` + 마이그레이션 `20261104020000_add_theme`, `/api/settings` 가 `theme` 을 받아 쿠키 `leo_theme` 설정, 루트 레이아웃이 쿠키로 `<html data-theme>` 서버 렌더(FOUC 없음), 설정 화면의 ThemeSelect 가 즉시 미리보기. 다크 모드는 토큰 CSS 로 전 화면에 적용(스크린샷 확인은 4단계 after 촬영에서)
+- [x] 전역 헤더 — 데스크톱 가로 메뉴 + 현재 페이지 `aria-current`, 768px 미만은 메뉴 버튼(aria-expanded/controls)으로 여닫는 세로 메뉴. 로그아웃은 ghost 버튼
+- [x] 검증 — `npm run check` 종료 코드 0(lint·typecheck·vitest 33파일 248개·build). `npm run test:e2e` 는 같은 작업 트리에 4단계 통화 설정 재설계가 섞여 있어 18개 중 17개 통과, 실패 1개(포트폴리오 스펙의 `getByLabel("포트폴리오")` 가 테마 카드와 select 두 요소에 걸림)는 셀렉터를 `select#call-portfolio` 로 좁혀 재실행 2/2 통과. 전체 재실행은 4단계 끝에서

@@ -3,6 +3,8 @@ import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { handler, parseBody, requireRequestUser } from "@/lib/http";
 import { CALL_DURATION_OPTIONS_MIN } from "@/services/call/duration";
+import { errors } from "@/content/ko";
+import { THEME_MODES, themeCookieHeader } from "@/lib/theme";
 
 const schema = z.object({
   hintsDefault: z.boolean().optional(),
@@ -12,9 +14,10 @@ const schema = z.object({
     .int()
     .refine(
       (n) => (CALL_DURATION_OPTIONS_MIN as readonly number[]).includes(n),
-      "10, 20, 30 중 하나",
+      errors.settings.badMinutes,
     )
     .optional(),
+  theme: z.enum(THEME_MODES).optional(),
 });
 
 export const GET = handler(async (req: NextRequest) => {
@@ -35,5 +38,7 @@ export const PATCH = handler(async (req: NextRequest) => {
     update: body,
     create: { userId: user.id, ...body },
   });
-  return Response.json({ settings });
+  // 테마는 쿠키에도 둬서 다음 요청의 서버 렌더가 바로 반영한다.
+  const headers = body.theme ? { "Set-Cookie": themeCookieHeader(body.theme) } : undefined;
+  return Response.json({ settings }, { headers });
 });

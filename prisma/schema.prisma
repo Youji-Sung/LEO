@@ -112,5 +112,7 @@ model UserSettings {
   hintsDefault       Boolean @default(false)
   ttsVoice           String?
   defaultCallMinutes Int     @default(10)
+  // system | light | dark (docs/design/SYSTEM.md 1.3)
+  theme              String  @default("system")
   user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
