@@ -19,7 +19,7 @@
 | 화면별 "문제 → 결정 → 근거 → 대안 → after 스크린샷"(8절은 7단계 리뷰로 바뀐 것) | `SCREENS.md` |
 | 상태 표(화면 × 상태), 모션의 reduced-motion 대체, 포커스 규칙 | `STATES.md` |
 | 첫 로드 성능(CLS·전송량) | `PERF.md` |
-| 스크린샷 | `screenshots/before/`, `screenshots/after/`(각 34개 상태 × 1280/390 × 라이트/다크 + `axe.md`), `screenshots/after-widths/`(360/640/768 + 가로 스크롤 검사), `screenshots/after-reduced-motion/` |
+| 스크린샷 | `screenshots/before/`, `screenshots/after/`(42개 상태 × 1280/390 × 라이트/다크 = 168장 + `axe.md`·`overflow.md`), `screenshots/after-widths/`(360/640/768 + 가로 스크롤 검사), `screenshots/after-reduced-motion/` |
 
 코드에서 보는 곳: 문구 `src/content/ko.ts`, 토큰 `src/design/tokens.ts`(생성물 `src/app/tokens.css`), 전역 CSS `src/app/globals.css`, 컴포넌트 `src/components/ui/`, 테마 `src/lib/theme.ts`, 도구 `scripts/screenshots.ts`·`scripts/build-tokens.ts`·`scripts/perf.ts`.
 
@@ -45,11 +45,12 @@
 
 ## 검증 수치 (자세한 것은 PROGRESS.md)
 
-- 단위·통합 테스트 251개, E2E 21개(기본 18 + 키보드 전용 3), 모두 통과.
+- 단위·통합 테스트 252개, E2E 21개(기본 18 + 키보드 전용 3), 모두 통과.
 - 대비: 토큰 조합 66개 전부 AA 이상(최저 라이트 3.10:1 UI, 5.32:1 텍스트).
-- axe: before 118노드(대비 64, h1 44, 스크롤 영역 10) → after 의 최종 수치는 PROGRESS 6단계.
-- 반응형: 360/390/640/768/1280 폭에서 가로 스크롤 0장(262장 자동 검사).
-- 성능: CLS 최대 0.0001, CSS 41.6KB, 폰트 128~368KB(서브셋).
+- axe: before 118노드(대비 64, h1 44, 스크롤 영역 10) → after 0노드(168장, 7단계 리뷰 반영 뒤 재검사).
+- 반응형: 360/390/640/768/1280 폭에서 가로 스크롤 0장(168 + 126 = 294장 자동 검사).
+- 성능: CLS 최대 0.0001, CSS 41.6KB, 폰트 128~368KB(서브셋). 7단계 이후 재측정하지 않음(CSS 변경은 수 줄).
+- 리뷰: A 39건 중 31건 조치, B 23건 중 19건 조치. 미조치 12건은 PROGRESS 7단계에 이유.
 
 ## 운영자가 실제 브라우저에서 볼 것
 
