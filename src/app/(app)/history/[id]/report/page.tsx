@@ -33,7 +33,7 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
     .join(" · ");
 
   return (
-    <>
+    <div className="report-page">
       <div className="page-head">
         <div>
           <h1>{text.pageTitle}</h1>
@@ -54,6 +54,6 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
           initialError={conversation.report ? text.corrupted : null}
         />
       )}
-    </>
+    </div>
   );
 }

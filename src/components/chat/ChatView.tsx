@@ -189,8 +189,10 @@ export function ChatView(props: Props) {
           </span>
         )}
         <span className="spacer" />
-        <label className="check-row">
+        <label className="check-row check-row-switch">
           <input type="checkbox" checked={hints} onChange={toggleHints} disabled={ended} />
+          {/* 무대 디자인이 알약 스위치로 그리는 트랙. 기본에서는 보이지 않는다. */}
+          <span className="switch-track" aria-hidden="true" />
           <span>{chat.hintsToggle}</span>
         </label>
         <Button
@@ -296,6 +298,7 @@ export function ChatView(props: Props) {
           <textarea
             id="chat-input"
             ref={inputRef}
+            lang="en"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}

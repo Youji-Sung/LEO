@@ -536,6 +536,7 @@ export function CallView(props: Props) {
               </label>
               <textarea
                 id="call-text"
+                lang="en"
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 rows={2}

@@ -4,8 +4,10 @@ import { ReportView } from "@/components/report/ReportView";
 import { report as reportText } from "@/content/ko";
 import { buildMockReport } from "@/services/claude/mock-provider";
 
+// 단어 diff 가 바뀐 단어를 span 으로 감싸므로 문장 비교는 태그를 벗기고 한다.
 const unescape = (html: string) =>
   html
+    .replace(/<span class="diff-word[^"]*">([^<]*)<\/span>/g, "$1")
     .replace(/&#x27;/g, "'")
     .replace(/&quot;/g, '"')
     .replace(/&amp;/g, "&");

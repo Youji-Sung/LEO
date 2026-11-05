@@ -4,15 +4,16 @@ import { Bubble } from "@/components/ui/Bubble";
 import { common } from "@/content/ko";
 
 describe("Bubble", () => {
-  it("renders my bubble with a sr-only speaker label and lang=en text", () => {
+  it("renders my bubble with a speaker label outside the bubble and lang=en text", () => {
     const html = renderToStaticMarkup(
       <Bubble speaker="me" data-testid="msg">
         Hello there.
       </Bubble>,
     );
     expect(html).toMatch(/^<div class="bubble-group bubble-group-me">/);
-    expect(html).toContain('<div class="bubble bubble-me" data-testid="msg">');
-    expect(html).toContain(`<span class="sr-only">${common.me}: </span><span lang="en">Hello there.</span>`);
+    expect(html).toContain(
+      `<span class="bubble-speaker"><span class="bubble-speaker-name">${common.me}</span><span class="sr-only">: </span></span><div class="bubble bubble-me" data-testid="msg"><span lang="en">Hello there.</span></div>`,
+    );
     expect(html).not.toContain("bubble-hint");
   });
 
@@ -20,7 +21,9 @@ describe("Bubble", () => {
     const html = renderToStaticMarkup(<Bubble speaker="partner">Hi!</Bubble>);
     expect(html).toContain('class="bubble-group bubble-group-partner"');
     expect(html).toContain('class="bubble bubble-partner"');
-    expect(html).toContain(`<span class="sr-only">${common.partner}: </span>`);
+    expect(html).toContain(
+      `<span class="bubble-speaker-name">${common.partner}</span><span class="sr-only">: </span>`,
+    );
   });
 
   it("marks interim text with a class and includes the interim label in the speaker label", () => {
@@ -30,7 +33,9 @@ describe("Bubble", () => {
       </Bubble>,
     );
     expect(html).toContain('class="bubble bubble-me bubble-interim"');
-    expect(html).toContain(`<span class="sr-only">${common.me} (인식 중): </span>`);
+    expect(html).toContain(
+      `<span class="bubble-speaker-name">${common.me}</span><span class="bubble-speaker-note"> (인식 중)</span><span class="sr-only">: </span>`,
+    );
   });
 
   it("marks a waiting bubble and drops lang=en from its placeholder", () => {
@@ -52,6 +57,8 @@ describe("Bubble", () => {
     );
     expect(html).toContain('</div><div class="bubble-hint" data-testid="hint">');
     expect(html).toContain('aria-hidden="true"');
-    expect(html).toContain('<span><span class="sr-only">교정 힌트: </span>Try: I went to school.</span>');
+    expect(html).toContain(
+      '<span><span class="sr-only">교정 힌트: </span>Try: I went to school.</span>',
+    );
   });
 });

@@ -232,7 +232,7 @@ export const report = {
     task: "과제 수행",
     technicalClarity: "기술 설명의 명확성",
   },
-  scoreOf: (score: number) => `${score}/10`,
+  scoreDenominator: "/10",
   scoreAria: (label: string, score: number) => `${label} ${score}점, 10점 만점`,
   scoreBand: (score: number) =>
     score >= 8 ? "좋아요" : score >= 5 ? "괜찮아요" : "연습이 필요해요",

@@ -1,5 +1,6 @@
 import type { ElementType, HTMLAttributes, ReactNode } from "react";
 
+// 제목은 `.card-head` 로 감싼다. 콘솔 디자인이 제목을 패널 띠로 만들 때 카드 패딩과 독립적으로 다룰 수 있다.
 export function Card({
   as,
   padding = "md",
@@ -24,9 +25,11 @@ export function Card({
       {...rest}
     >
       {title ? (
-        <h2 className="card-title" id={titleId}>
-          {title}
-        </h2>
+        <div className="card-head">
+          <h2 className="card-title" id={titleId}>
+            {title}
+          </h2>
+        </div>
       ) : null}
       {children}
     </Tag>

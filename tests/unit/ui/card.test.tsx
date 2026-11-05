@@ -20,7 +20,9 @@ describe("Card", () => {
       </Card>,
     );
     expect(html).toContain('<section class="card" aria-labelledby="recent">');
-    expect(html).toContain('<h2 class="card-title" id="recent">최근 대화</h2>');
+    expect(html).toContain(
+      '<div class="card-head"><h2 class="card-title" id="recent">최근 대화</h2></div>',
+    );
   });
 
   it("does not add aria-labelledby without a titleId", () => {

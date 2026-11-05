@@ -1,40 +1,7 @@
 /* 시안 "stage" — 연습 무대. :root[data-direction="stage"] 아래에서만 적용된다. 설명: docs/design/directions/stage/README.md */
 
-/* ---------- 1. 토큰: 라이트 ---------- */
+/* ---------- 1. 토큰(색은 src/design/directions.ts → directions/tokens.css 가 생성) ---------- */
 :root[data-direction="stage"] {
-  --color-canvas: #fff6e9;
-  --color-surface: #ffffff;
-  --color-surface-raised: #ffffff;
-  --color-surface-sunken: #ffe9d0;
-  --color-text: #1a1512;
-  --color-text-secondary: #5e5047;
-  --color-text-placeholder: #6b5d53;
-  --color-border: #8a7768;
-  --color-divider: #f1dcc2;
-  --color-accent: #d1370f;
-  --color-on-accent: #ffffff;
-  --color-accent-subtle: #ffe0d5;
-  --color-on-accent-subtle: #8e2408;
-  --color-positive: #1b7a3e;
-  --color-on-positive: #ffffff;
-  --color-positive-subtle: #dcf4e1;
-  --color-on-positive-subtle: #115a2c;
-  --color-caution: #8a5300;
-  --color-on-caution: #ffffff;
-  --color-caution-subtle: #ffeab5;
-  --color-on-caution-subtle: #653c00;
-  --color-negative: #b5173a;
-  --color-on-negative: #ffffff;
-  --color-negative-subtle: #ffdfe4;
-  --color-on-negative-subtle: #8a0f2a;
-  --color-focus: #1a1512;
-  --color-bubble-me: #d1370f;
-  --color-on-bubble-me: #ffffff;
-  --color-bubble-partner: #ffffff;
-  --color-on-bubble-partner: #1a1512;
-  --color-scrim: rgba(26, 21, 18, 0.6);
-  color-scheme: light;
-
   /* 시안 전용: 홈 두 번째 블록(복숭아색 면), 무대(통화) 색 */
   --stage-block: #ffe1c2;
   --stage-on-block: #1a1512;
@@ -67,80 +34,15 @@
   --type-english-weight: 500;
 }
 
-/* ---------- 1. 토큰: 다크(시스템) ---------- */
+/* 무대 전용 토큰의 다크 값 */
 @media (prefers-color-scheme: dark) {
   :root[data-direction="stage"]:not([data-theme="light"]) {
-    --color-canvas: #141210;
-    --color-surface: #1f1b18;
-    --color-surface-raised: #2a2521;
-    --color-surface-sunken: #0d0b0a;
-    --color-text: #fff4e6;
-    --color-text-secondary: #c8b7a8;
-    --color-text-placeholder: #b3a293;
-    --color-border: #9c8a7c;
-    --color-divider: #38302a;
-    --color-accent: #ff7a5c;
-    --color-on-accent: #2b0d05;
-    --color-accent-subtle: #4a1a0e;
-    --color-on-accent-subtle: #ffb9a7;
-    --color-positive: #6fd48c;
-    --color-on-positive: #04301a;
-    --color-positive-subtle: #16331f;
-    --color-on-positive-subtle: #a6e4b8;
-    --color-caution: #f2c56b;
-    --color-on-caution: #3a2600;
-    --color-caution-subtle: #3a2e12;
-    --color-on-caution-subtle: #f7d998;
-    --color-negative: #ff6b7e;
-    --color-on-negative: #3d0410;
-    --color-negative-subtle: #4a1a22;
-    --color-on-negative-subtle: #ffb6c0;
-    --color-focus: #fff4e6;
-    --color-bubble-me: #ff7a5c;
-    --color-on-bubble-me: #2b0d05;
-    --color-bubble-partner: #2a2521;
-    --color-on-bubble-partner: #fff4e6;
-    --color-scrim: rgba(0, 0, 0, 0.65);
-    color-scheme: dark;
     --stage-block: #2a2521;
     --stage-on-block: #fff4e6;
   }
 }
 
-/* ---------- 1. 토큰: 다크(수동) ---------- */
 :root[data-direction="stage"][data-theme="dark"] {
-  --color-canvas: #141210;
-  --color-surface: #1f1b18;
-  --color-surface-raised: #2a2521;
-  --color-surface-sunken: #0d0b0a;
-  --color-text: #fff4e6;
-  --color-text-secondary: #c8b7a8;
-  --color-text-placeholder: #b3a293;
-  --color-border: #9c8a7c;
-  --color-divider: #38302a;
-  --color-accent: #ff7a5c;
-  --color-on-accent: #2b0d05;
-  --color-accent-subtle: #4a1a0e;
-  --color-on-accent-subtle: #ffb9a7;
-  --color-positive: #6fd48c;
-  --color-on-positive: #04301a;
-  --color-positive-subtle: #16331f;
-  --color-on-positive-subtle: #a6e4b8;
-  --color-caution: #f2c56b;
-  --color-on-caution: #3a2600;
-  --color-caution-subtle: #3a2e12;
-  --color-on-caution-subtle: #f7d998;
-  --color-negative: #ff6b7e;
-  --color-on-negative: #3d0410;
-  --color-negative-subtle: #4a1a22;
-  --color-on-negative-subtle: #ffb6c0;
-  --color-focus: #fff4e6;
-  --color-bubble-me: #ff7a5c;
-  --color-on-bubble-me: #2b0d05;
-  --color-bubble-partner: #2a2521;
-  --color-on-bubble-partner: #fff4e6;
-  --color-scrim: rgba(0, 0, 0, 0.65);
-  color-scheme: dark;
   --stage-block: #2a2521;
   --stage-on-block: #fff4e6;
 }
@@ -253,7 +155,7 @@
   padding: var(--space-5);
 }
 [data-direction="stage"] .card > h2:first-child,
-[data-direction="stage"] .card > .card-title:first-child {
+[data-direction="stage"] .card > .card-head:first-child {
   margin-bottom: var(--space-4);
 }
 
@@ -301,7 +203,7 @@
 [data-direction="stage"] .grid-2 > .card:last-child h2 {
   color: inherit;
 }
-[data-direction="stage"] .grid-2 > .card > h2 {
+[data-direction="stage"] .grid-2 > .card .card-title {
   font-size: 2rem;
   line-height: 1.05;
   font-weight: 900;
@@ -460,6 +362,51 @@
   width: 22px;
   height: 22px;
 }
+/* 교정 힌트 토글 = 알약 스위치. 네이티브 체크박스는 보이지 않게 두고(접근성·포커스 유지) 트랙을 그린다. */
+[data-direction="stage"] .check-row-switch {
+  position: relative;
+}
+[data-direction="stage"] .check-row-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+}
+[data-direction="stage"] .switch-track {
+  display: inline-block;
+  flex: none;
+  position: relative;
+  width: 46px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  transition: background-color var(--motion-fast) var(--motion-ease-standard);
+}
+[data-direction="stage"] .switch-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  transition: transform var(--motion-fast) var(--motion-ease-standard);
+}
+[data-direction="stage"] .check-row-switch:has(input:checked) .switch-track {
+  background: var(--color-accent);
+}
+[data-direction="stage"] .check-row-switch:has(input:checked) .switch-track::after {
+  transform: translateX(20px);
+}
+[data-direction="stage"] .check-row-switch:has(input:focus-visible) .switch-track {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+[data-direction="stage"] .check-row-switch:has(input:disabled) .switch-track {
+  opacity: 0.5;
+}
 
 /* ---------- 7. 배지·상태 메시지·구분 ---------- */
 [data-direction="stage"] .badge {
@@ -469,6 +416,12 @@
   letter-spacing: -0.01em;
   background: var(--color-surface-sunken);
   color: var(--color-text);
+}
+/* 헤더의 모의 모드 칩: 코랄 문법에 맞춰 황색 대신 중립 알약 */
+[data-direction="stage"] .site-mode .badge-caution {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  border: 2px solid var(--color-divider);
 }
 [data-direction="stage"] .status {
   border-radius: var(--radius-md);
@@ -565,6 +518,27 @@
 }
 [data-direction="stage"] .bubble-group {
   gap: var(--space-2);
+}
+/* 화자 라벨을 알약 밖 작은 글자로 */
+[data-direction="stage"] .bubble-speaker {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 0 var(--space-4);
+  clip: auto;
+  overflow: visible;
+  white-space: normal;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--color-text-secondary);
+}
+[data-direction="stage"] .bubble-group-me .bubble-speaker {
+  color: var(--color-accent);
+}
+[data-direction="stage"] .bubble-speaker-note {
+  font-weight: 600;
 }
 [data-direction="stage"] .bubble {
   padding: var(--space-4) var(--space-6);
@@ -688,6 +662,23 @@
   line-height: 1;
   letter-spacing: -0.04em;
 }
+[data-direction="stage"] .score-den {
+  font-size: 1.5rem;
+  font-weight: 800;
+  opacity: 0.85;
+}
+/* 가장 낮은 점수(오늘의 과제)는 한 줄 전체를 차지하고 숫자가 더 크다 */
+[data-direction="stage"] .score[data-lowest="true"] {
+  grid-column: 1 / -1;
+}
+[data-direction="stage"] .score[data-lowest="true"] .score-value {
+  font-size: 4.5rem;
+}
+[data-direction="stage"] .report-toc a[aria-current="true"] {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-on-accent);
+}
 [data-direction="stage"] .score-bar {
   height: 12px;
   border: 0;
@@ -771,40 +762,8 @@
   color: var(--color-text);
 }
 
-/* ---------- 12. 통화: 라이트·다크 공통 어두운 무대 ---------- */
+/* ---------- 12. 통화: 라이트·다크 공통 어두운 무대(색 토큰은 directions/tokens.css) ---------- */
 [data-direction="stage"] .call-shell {
-  --color-canvas: #141210;
-  --color-surface: #1f1b18;
-  --color-surface-raised: #2a2521;
-  --color-surface-sunken: #0d0b0a;
-  --color-text: #fff4e6;
-  --color-text-secondary: #c8b7a8;
-  --color-text-placeholder: #b3a293;
-  --color-border: #9c8a7c;
-  --color-divider: #38302a;
-  --color-accent: #ff7a5c;
-  --color-on-accent: #2b0d05;
-  --color-accent-subtle: #4a1a0e;
-  --color-on-accent-subtle: #ffb9a7;
-  --color-positive: #6fd48c;
-  --color-on-positive: #04301a;
-  --color-positive-subtle: #16331f;
-  --color-on-positive-subtle: #a6e4b8;
-  --color-caution: #f2c56b;
-  --color-on-caution: #3a2600;
-  --color-caution-subtle: #3a2e12;
-  --color-on-caution-subtle: #f7d998;
-  --color-negative: #ff6b7e;
-  --color-on-negative: #3d0410;
-  --color-negative-subtle: #4a1a22;
-  --color-on-negative-subtle: #ffb6c0;
-  --color-focus: #fff4e6;
-  --color-bubble-me: #ff7a5c;
-  --color-on-bubble-me: #2b0d05;
-  --color-bubble-partner: #2a2521;
-  --color-on-bubble-partner: #fff4e6;
-  --color-scrim: rgba(0, 0, 0, 0.65);
-  color-scheme: dark;
   background: var(--color-canvas);
   color: var(--color-text);
 }
@@ -844,12 +803,27 @@
 [data-direction="stage"] .timer[data-warning="true"] {
   color: var(--color-caution);
 }
-[data-direction="stage"] .timer-ring {
-  width: 48px;
-  height: 48px;
+[data-direction="stage"] .timer {
+  display: grid;
+  gap: var(--space-3);
 }
-[data-direction="stage"] .timer-ring circle {
-  stroke-width: 5;
+/* 남은 비율은 링 대신 숫자 아래 알약 막대로 */
+[data-direction="stage"] .timer-ring {
+  display: none;
+}
+[data-direction="stage"] .timer-bar {
+  display: block;
+  height: 12px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--color-text) 22%, transparent);
+  overflow: hidden;
+}
+[data-direction="stage"] .timer-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: currentColor;
+  transition: width 0.5s linear;
 }
 [data-direction="stage"] .call-main {
   gap: var(--space-5);

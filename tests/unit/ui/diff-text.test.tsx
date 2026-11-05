@@ -5,10 +5,17 @@ import { report } from "@/content/ko";
 
 describe("DiffText", () => {
   it("renders both labelled lines with lang=en and no strikethrough", () => {
-    const html = renderToStaticMarkup(<DiffText original="I go to school yesterday." corrected="I went to school yesterday." />);
+    const html = renderToStaticMarkup(
+      <DiffText original="I go to school yesterday." corrected="I went to school yesterday." />,
+    );
     expect(html).toMatch(/^<div class="diff">/);
-    expect(html).toContain(`<span class="diff-label">${report.original}</span><span class="orig" lang="en">I go to school yesterday.</span>`);
-    expect(html).toContain(`<span class="diff-label">${report.corrected}</span><span class="fixed" lang="en">I went to school yesterday.</span>`);
+    // 바뀐 단어("go" → "went")만 span 으로 감싼다. 기본 디자인은 모양을 바꾸지 않는다.
+    expect(html).toContain(
+      `<span class="diff-label">${report.original}</span><span class="orig" lang="en">I <span class="diff-word diff-word-removed">go</span> to school yesterday.</span>`,
+    );
+    expect(html).toContain(
+      `<span class="diff-label">${report.corrected}</span><span class="fixed" lang="en">I <span class="diff-word diff-word-added">went</span> to school yesterday.</span>`,
+    );
     expect(html).not.toContain("<del");
     expect(html).not.toContain("<s>");
     expect(html).not.toContain("diff-explain");
@@ -16,15 +23,34 @@ describe("DiffText", () => {
   });
 
   it("renders explanation, meaning and example when given", () => {
-    const html = renderToStaticMarkup(<DiffText original="a" corrected="b" explanation="과거 시제를 써요." meaning="어제 학교에 갔다" example="I went home early." />);
+    const html = renderToStaticMarkup(
+      <DiffText
+        original="a"
+        corrected="b"
+        explanation="과거 시제를 써요."
+        meaning="어제 학교에 갔다"
+        example="I went home early."
+      />,
+    );
     expect(html).toContain('<p class="diff-explain">과거 시제를 써요.</p>');
     expect(html).toContain(`<p class="diff-explain">${report.meaning}: 어제 학교에 갔다</p>`);
-    expect(html).toContain(`<p class="diff-example">${report.example}: <span lang="en">I went home early.</span></p>`);
+    expect(html).toContain(
+      `<p class="diff-example">${report.example}: <span lang="en">I went home early.</span></p>`,
+    );
   });
 
   it("accepts custom line labels", () => {
-    const html = renderToStaticMarkup(<DiffText original="a" corrected="b" originalLabel="원래 표현" correctedLabel="더 자연스러운 표현" />);
-    expect(html).toContain('<span class="diff-label">원래 표현</span>');
+    const html = renderToStaticMarkup(
+      <DiffText
+        original="a"
+        corrected="b"
+        originalLabel="원래 표현"
+        correctedLabel="더 자연스러운 표현"
+      />,
+    );
+    expect(html).toContain(
+      '<span class="diff-label">원래 표현</span><span class="orig" lang="en"><span class="diff-word diff-word-removed">a</span></span>',
+    );
     expect(html).toContain('<span class="diff-label">더 자연스러운 표현</span>');
     expect(html).not.toContain(report.original);
   });

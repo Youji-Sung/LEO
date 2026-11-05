@@ -5,8 +5,11 @@ import { RouteFocus } from "@/components/RouteFocus";
 import { meta } from "@/content/ko";
 import { DIRECTION_COOKIE, DIRECTION_FONTS, resolveDirection } from "@/lib/direction";
 import { THEME_COOKIE, themeAttribute } from "@/lib/theme";
+import { dark, light } from "@/design/tokens";
+import { directionPalettes } from "@/design/directions";
 import "./tokens.css";
 import "./globals.css";
+import "./directions/tokens.css";
 import "./directions/study.css";
 import "./directions/stage.css";
 import "./directions/console.css";
@@ -16,21 +19,23 @@ export const metadata: Metadata = {
   description: meta.siteDescription,
 };
 
-// 라이트/다크 주소창 색은 tokens.ts 의 canvas 값과 같다. 수동 테마면 그 값 하나만 준다.
+// 라이트/다크 주소창 색은 현재 디자인(기본 또는 시안)의 canvas 값과 같다. 수동 테마면 그 값 하나만 준다.
 export async function generateViewport(): Promise<Viewport> {
   const store = await cookies();
   const theme = themeAttribute(store.get(THEME_COOKIE)?.value);
+  const direction = resolveDirection(store.get(DIRECTION_COOKIE)?.value);
+  const palette = direction ? directionPalettes[direction] : { light, dark };
   return {
     width: "device-width",
     initialScale: 1,
     themeColor:
       theme === "light"
-        ? "#f4f4f1"
+        ? palette.light.canvas
         : theme === "dark"
-          ? "#131315"
+          ? palette.dark.canvas
           : [
-              { media: "(prefers-color-scheme: light)", color: "#f4f4f1" },
-              { media: "(prefers-color-scheme: dark)", color: "#131315" },
+              { media: "(prefers-color-scheme: light)", color: palette.light.canvas },
+              { media: "(prefers-color-scheme: dark)", color: palette.dark.canvas },
             ],
   };
 }

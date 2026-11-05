@@ -25,14 +25,29 @@ describe("ScoreGauge", () => {
     const html = renderToStaticMarkup(<ScoreGauge label={label} score={score} comment="한마디" />);
     expect(html).toContain('data-testid="score"');
     expect(html).toContain(`data-band="${band}"`);
-    expect(html).toContain(`role="img" aria-label="${report.scoreAria(label, score)}, ${report.scoreBand(score)}"`);
+    expect(html).toContain(
+      `role="img" aria-label="${report.scoreAria(label, score)}, ${report.scoreBand(score)}"`,
+    );
     expect(html).toContain(`<span class="badge badge-${tone}">${report.scoreBand(score)}</span>`);
-    expect(html).toContain(`<span class="score-value">${report.scoreOf(score)}</span>`);
+    expect(html).toContain(
+      `<span class="score-value"><span class="score-num">${score}</span><span class="score-den">${report.scoreDenominator}</span></span>`,
+    );
     expect(html).toContain(`style="width:${score * 10}%"`);
   });
 
+  it("marks the lowest score only when asked", () => {
+    expect(
+      renderToStaticMarkup(<ScoreGauge label={label} score={3} comment="c" lowest />),
+    ).toContain('data-lowest="true"');
+    expect(renderToStaticMarkup(<ScoreGauge label={label} score={3} comment="c" />)).not.toContain(
+      "data-lowest",
+    );
+  });
+
   it("renders the visible label and comment", () => {
-    const html = renderToStaticMarkup(<ScoreGauge label={label} score={7} comment="관사를 더 신경 쓰세요." />);
+    const html = renderToStaticMarkup(
+      <ScoreGauge label={label} score={7} comment="관사를 더 신경 쓰세요." />,
+    );
     expect(html).toContain(`<span class="t-label">${label}</span>`);
     expect(html).toContain('<p class="score-comment">관사를 더 신경 쓰세요.</p>');
     expect(html).toContain(

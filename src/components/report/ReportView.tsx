@@ -1,4 +1,5 @@
 import { ButtonLink, Card, DiffText, ScoreGauge } from "@/components/ui";
+import { ReportToc } from "@/components/report/ReportToc";
 import { report as text } from "@/content/ko";
 import type { Report } from "@/services/claude/schemas/report";
 
@@ -27,15 +28,24 @@ export function ReportView({
     { id: "tasks", title: text.sections.nextTasks },
   ];
 
+  // 가장 낮은 점수(같으면 앞의 것)를 "오늘의 과제"로 표시한다. 디자인이 크기를 달리 줄 수 있다.
+  const scoreItems = [
+    { label: text.scoreLabels.grammar, ...report.scores.grammar },
+    { label: text.scoreLabels.vocabulary, ...report.scores.vocabulary },
+    { label: text.scoreLabels.fluency, ...report.scores.fluency },
+    { label: text.scoreLabels.task, ...report.scores.task },
+    ...(report.technicalClarity
+      ? [{ label: text.scoreLabels.technicalClarity, ...report.technicalClarity }]
+      : []),
+  ];
+  const lowestIndex = scoreItems.reduce(
+    (best, s, i) => (s.score < scoreItems[best]!.score ? i : best),
+    0,
+  );
+
   return (
     <div className="report">
-      <nav className="report-toc" aria-label={text.toc}>
-        {sections.map((s) => (
-          <a key={s.id} href={`#${s.id}`}>
-            {s.title}
-          </a>
-        ))}
-      </nav>
+      <ReportToc sections={sections} />
 
       <Card as="section" id="summary" title={text.sections.summary} titleId={titleId("summary")}>
         <p>{report.summary}</p>
@@ -43,13 +53,15 @@ export function ReportView({
 
       <Card as="section" id="scores" title={text.sections.scores} titleId={titleId("scores")}>
         <div className="scores">
-          <ScoreGauge label={text.scoreLabels.grammar} {...report.scores.grammar} />
-          <ScoreGauge label={text.scoreLabels.vocabulary} {...report.scores.vocabulary} />
-          <ScoreGauge label={text.scoreLabels.fluency} {...report.scores.fluency} />
-          <ScoreGauge label={text.scoreLabels.task} {...report.scores.task} />
-          {report.technicalClarity && (
-            <ScoreGauge label={text.scoreLabels.technicalClarity} {...report.technicalClarity} />
-          )}
+          {scoreItems.map((s, i) => (
+            <ScoreGauge
+              key={s.label}
+              label={s.label}
+              score={s.score}
+              comment={s.comment}
+              lowest={i === lowestIndex}
+            />
+          ))}
         </div>
       </Card>
 
