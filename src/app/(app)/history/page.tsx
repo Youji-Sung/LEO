@@ -21,7 +21,8 @@ export default async function HistoryPage({
   const user = await requireUser();
   const { kind } = await searchParams;
   const filter = kind === "chat" || kind === "call" ? kind : undefined;
-  const conversations = await listConversations(user.id, filter);
+  // 만들기만 하고 말하지 않은 대화는 홈과 같은 기준으로 숨긴다(외부 피드백 3).
+  const conversations = await listConversations(user.id, filter, { onlyWithContent: true });
 
   return (
     <div className="stack">
@@ -52,15 +53,12 @@ export default async function HistoryPage({
           {conversations.map((c) => {
             const isCall = c.kind === "call";
             const kindLabel = isCall ? common.callLabel : common.chatLabel;
-            const hasMessages = c._count.messages > 0;
-            // 메시지가 없는 대화에는 리포트 버튼을 두지 않는다(AUDIT K2).
+            // 목록의 대화는 모두 내가 한 말이나 리포트가 있으므로 리포트 버튼을 둘 수 있다(AUDIT K2).
             const action = c.report
               ? { href: `/history/${c.id}/report`, label: history.report }
               : !isCall && !c.endedAt
                 ? { href: `/chat/${c.id}`, label: history.continueChat }
-                : hasMessages
-                  ? { href: `/history/${c.id}/report`, label: history.makeReport }
-                  : null;
+                : { href: `/history/${c.id}/report`, label: history.makeReport };
             return (
               <li key={c.id} className="list-item">
                 <div className="list-main">
@@ -70,9 +68,7 @@ export default async function HistoryPage({
                   </Link>
                   <span className="list-meta">
                     <span>{formatDateTime(c.startedAt)}</span>
-                    <span>
-                      {hasMessages ? common.messagesCount(c._count.messages) : history.noMessages}
-                    </span>
+                    <span>{common.messagesCount(c._count.messages)}</span>
                     {displayedCallSec(c) ? <span>{formatDurationWords(displayedCallSec(c)!)}</span> : null}
                     {c.endedAt ? (
                       <Badge>{common.ended}</Badge>
@@ -82,13 +78,11 @@ export default async function HistoryPage({
                     {c.report ? <Badge tone="accent">{common.hasReport}</Badge> : null}
                   </span>
                 </div>
-                {action ? (
-                  <div className="list-actions">
-                    <ButtonLink href={action.href} variant="secondary">
-                      {action.label}
-                    </ButtonLink>
-                  </div>
-                ) : null}
+                <div className="list-actions">
+                  <ButtonLink href={action.href} variant="secondary">
+                    {action.label}
+                  </ButtonLink>
+                </div>
               </li>
             );
           })}

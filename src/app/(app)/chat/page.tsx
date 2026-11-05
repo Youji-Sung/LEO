@@ -14,7 +14,8 @@ export default async function ChatListPage() {
   const user = await requireUser();
   const [settings, conversations] = await Promise.all([
     prisma.userSettings.findUnique({ where: { userId: user.id } }),
-    listConversations(user.id, "chat"),
+    // 시작만 하고 아무 말도 하지 않은 채팅은 기록·홈과 같은 기준으로 숨긴다(외부 피드백 3).
+    listConversations(user.id, "chat", { onlyWithContent: true }),
   ]);
   const themes = Object.values(THEMES)
     .filter((t) => t.id !== "portfolio")

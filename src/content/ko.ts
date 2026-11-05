@@ -273,7 +273,6 @@ export const history = {
   report: "리포트 보기",
   continueChat: "이어서 채팅",
   makeReport: "리포트 만들기",
-  noMessages: "주고받은 말 없음",
 } as const;
 
 export const portfolio = {

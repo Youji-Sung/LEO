@@ -4,6 +4,7 @@ import { requireUser } from "@/lib/auth/current-user";
 import { prisma } from "@/lib/db";
 import { common, home, nav } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
+import { hasContentWhere } from "@/services/conversation";
 import { formatDateTime } from "@/lib/format";
 import { Badge, ButtonLink, Card, EmptyState } from "@/components/ui";
 
@@ -15,12 +16,9 @@ function themeLabel(theme: string): string {
 
 export default async function HomePage() {
   const user = await requireUser();
-  // 메시지도 리포트도 없는 미완 통화는 최근 목록에서 뺀다(AUDIT D1).
+  // 내가 한 말도 리포트도 없는 대화는 최근 목록에서 뺀다(AUDIT D1, 외부 피드백 3).
   const recent = await prisma.conversation.findMany({
-    where: {
-      userId: user.id,
-      OR: [{ messages: { some: {} } }, { report: { isNot: null } }],
-    },
+    where: { userId: user.id, ...hasContentWhere },
     orderBy: { updatedAt: "desc" },
     take: 5,
     include: { report: { select: { id: true } }, _count: { select: { messages: true } } },
