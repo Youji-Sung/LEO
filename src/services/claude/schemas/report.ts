@@ -59,6 +59,33 @@ function clampScore(n: number): number {
   return Math.min(10, Math.max(1, Math.round(n)));
 }
 
+// 비교용 정규화: 대소문자·공백·구두점 차이는 같은 문장으로 본다.
+export function canonical(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[‘’]/g, "'")
+    .replace(/[^\p{L}\p{N}' ]+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// 사소한 교정(원문과 구두점·대소문자만 다름)과 같은 원문의 중복 항목을 뺀다(외부 피드백 6).
+// 프롬프트에 같은 규칙이 있지만 모델 출력은 보장되지 않으므로 저장 전에 한 번 더 거른다.
+export function dedupeCorrections<T extends { original: string }>(
+  items: T[],
+  replacement: (item: T) => string,
+): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const item of items) {
+    const key = canonical(item.original);
+    if (!key || key === canonical(replacement(item)) || seen.has(key)) continue;
+    seen.add(key);
+    out.push(item);
+  }
+  return out;
+}
+
 // 점수 범위와 항목 수를 SPEC 2.3 에 맞춘다.
 export function normalizeReport(report: Report): Report {
   const fix = (s: { score: number; comment: string }) => ({ ...s, score: clampScore(s.score) });
@@ -70,9 +97,9 @@ export function normalizeReport(report: Report): Report {
       fluency: fix(report.scores.fluency),
       task: fix(report.scores.task),
     },
-    grammarCorrections: report.grammarCorrections.slice(0, 10),
-    vocabularySuggestions: report.vocabularySuggestions.slice(0, 10),
-    betterExpressions: report.betterExpressions.slice(0, 3),
+    grammarCorrections: dedupeCorrections(report.grammarCorrections, (c) => c.corrected).slice(0, 10),
+    vocabularySuggestions: dedupeCorrections(report.vocabularySuggestions, (v) => v.better).slice(0, 10),
+    betterExpressions: dedupeCorrections(report.betterExpressions, (b) => b.native).slice(0, 3),
     nextTasks: report.nextTasks.slice(0, 3),
     interview: report.interview
       ? { ...report.interview, followUpQuestions: report.interview.followUpQuestions.slice(0, 3) }
