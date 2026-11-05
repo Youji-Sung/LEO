@@ -3,10 +3,12 @@
  * 자체 Next 개발 서버를 띄우므로 실제 API 는 호출하지 않는다.
  *
  *   npx tsx scripts/screenshots.ts --phase before|after [--axe] [--only call] [--reduced-motion] [--port 3150]
- *   npx tsx scripts/screenshots.ts --direction study|stage|console [--axe] [--port 3151]   (시각 방향 시안)
+ *   npx tsx scripts/screenshots.ts --direction basic|study|stage|console [--axe] [--port 3151]   (디자인 시안, 전체 상태)
+ *   npx tsx scripts/screenshots.ts --direction study --compare                                   (1차 비교 세트 9개 상태만)
  *
  * 출력: docs/design/screenshots/{phase}/{상태}--{폭}-{light|dark}.png, index.md, (--axe) axe.json·axe.md
- *       --direction 이면 docs/design/directions/{이름}/shots/
+ *       --direction 이면 docs/design/screenshots/directions/{이름}/ (--widths 는 /widths, --reduced-motion 은 /reduced-motion)
+ *       --direction --compare 이면 docs/design/directions/{이름}/shots/
  * Linux/macOS 기준(npx 를 셸로 실행한다).
  */
 import { execSync, spawn, type ChildProcess } from "node:child_process";
@@ -26,7 +28,7 @@ import {
   report,
   settings,
 } from "../src/content/ko";
-import { DIRECTION_COOKIE, isDirection } from "../src/lib/direction";
+import { DIRECTION_COOKIE, isDirectionChoice } from "../src/lib/direction";
 
 type Phase = "before" | "after";
 type Scheme = "light" | "dark";
@@ -43,11 +45,14 @@ function opt(name: string): string | undefined {
 
 const phase = (opt("phase") ?? "before") as Phase;
 if (phase !== "before" && phase !== "after") throw new Error("--phase 는 before 또는 after");
-// --direction study|stage|console : 시각 방향 시안(docs/design/directions/<이름>/shots/)을 찍는다.
-// 쿠키 leo_direction 을 넣고, 시안 비교용 화면 세트(00-understanding.md 6절)만 찍는다(--only 로 바꿀 수 있다).
+// --direction basic|study|stage|console : 디자인 시안(사용자 설정)으로 전체 상태를 찍는다. basic 은 쿠키 없음.
+// --compare 를 붙이면 1차 세션의 비교 세트 9개 상태만 docs/design/directions/<이름>/shots/ 에 찍는다.
 const direction = opt("direction");
-if (direction !== undefined && !isDirection(direction))
-  throw new Error("--direction 은 study, stage, console 중 하나");
+if (direction !== undefined && !isDirectionChoice(direction))
+  throw new Error("--direction 은 basic, study, stage, console 중 하나");
+const compareSet = flag("compare");
+if (compareSet && (!direction || direction === "basic"))
+  throw new Error("--compare 는 --direction study|stage|console 과 함께 쓴다");
 const DIRECTION_SET = [
   "login",
   "home",
@@ -67,30 +72,33 @@ const onlyList = only
       .split(",")
       .map((x) => x.trim())
       .filter(Boolean)
-  : direction
+  : compareSet
     ? DIRECTION_SET
     : [];
 function wanted(id: string): boolean {
   return (
     onlyList.length === 0 ||
     onlyList.includes("all") ||
-    onlyList.some((o) => (direction ? id === o : id.includes(o)))
+    onlyList.some((o) => (compareSet ? id === o : id.includes(o)))
   );
 }
 const PORT = Number(opt("port") ?? 3150);
 const BASE = `http://localhost:${PORT}`;
 const ROOT = process.cwd();
 const label = direction ?? phase;
-const OUT = direction
-  ? path.join(ROOT, "docs", "design", "directions", direction, "shots")
-  : path.join(
-      ROOT,
-      "docs",
-      "design",
-      "screenshots",
-      phase + (reducedMotion ? "-reduced-motion" : "") + (opt("widths") ? "-widths" : ""),
-    );
-// 시안 촬영은 셋이 동시에 돌 수 있으므로 DB 파일과 Next 빌드 폴더를 포트별로 나눈다.
+const variantDir = reducedMotion ? "reduced-motion" : opt("widths") ? "widths" : "";
+const OUT = compareSet
+  ? path.join(ROOT, "docs", "design", "directions", direction!, "shots")
+  : direction
+    ? path.join(ROOT, "docs", "design", "screenshots", "directions", direction, variantDir)
+    : path.join(
+        ROOT,
+        "docs",
+        "design",
+        "screenshots",
+        phase + (reducedMotion ? "-reduced-motion" : "") + (opt("widths") ? "-widths" : ""),
+      );
+// 시안 촬영은 넷이 동시에 돌 수 있으므로 DB 파일과 Next 빌드 폴더를 포트별로 나눈다.
 const DB_FILE = direction ? `shots-${PORT}.db` : "shots.db";
 const EMAIL = "dev1@leo.local";
 const PASSWORD = process.env.SEED_USER_PASSWORD ?? "leo-pass-1234";
@@ -238,7 +246,7 @@ async function newContext(browser: Browser, v: Variant): Promise<BrowserContext>
   await context.addInitScript(() => {
     window.__LEO_FAKE_VOICE = true;
   });
-  if (direction) {
+  if (direction && direction !== "basic") {
     await context.addCookies([
       { name: DIRECTION_COOKIE, value: direction, url: BASE, sameSite: "Lax" },
     ]);
@@ -463,6 +471,31 @@ const STATES: State[] = [
       await c.page.getByTestId("mic-status").filter({ hasText: callSetup.micGranted }).waitFor();
     },
   },
+  // 마이크 권한 거부·장치 없음(외부 피드백 4): 가짜 어댑터를 끄고 getUserMedia 가 거부하게 한다.
+  ...(["denied", "notfound"] as const).map(
+    (kind): State => ({
+      id: `call-setup-mic-${kind}`,
+      title: kind === "denied" ? "통화 설정 · 마이크 권한 거부" : "통화 설정 · 마이크 없음",
+      auth: "auth",
+      run: async (c) => {
+        // 문자열로 넣는다: tsx(esbuild) 가 함수 안의 함수 표현식을 __name 헬퍼로 감싸 브라우저에서 ReferenceError 가 난다.
+        const errorName = kind === "denied" ? "NotAllowedError" : "NotFoundError";
+        await c.page.addInitScript(
+          `window.__LEO_FAKE_VOICE = false;
+           Object.defineProperty(navigator.mediaDevices, "getUserMedia", {
+             configurable: true,
+             value: function () { return Promise.reject(new DOMException("blocked", "${errorName}")); },
+           });`,
+        );
+        await go(c.page, "/call");
+        await c.page.getByRole("button", { name: callSetup.micCheck }).click();
+        await c.page
+          .getByTestId("mic-status")
+          .filter({ hasText: kind === "denied" ? callSetup.micDenied : callSetup.micNotFound })
+          .waitFor();
+      },
+    }),
+  ),
   {
     id: "call-idle",
     title: "통화 · 시작 전",
@@ -525,6 +558,38 @@ const STATES: State[] = [
       await go(c.page, `/call/${id}`);
       await c.page.getByTestId("start-call").click();
       await c.page.getByText(callLive.textModeNotice).waitFor();
+    },
+  },
+  {
+    id: "call-mic-denied",
+    title: "통화 · 마이크 권한 거부로 글 입력 전환",
+    auth: "auth",
+    run: async (c) => {
+      const id = await createConversation(c.context, {
+        kind: "call",
+        theme: "daily",
+        durationMin: 10,
+      });
+      await go(c.page, `/call/${id}`);
+      await startCall(c.page);
+      await c.page.evaluate((m) => window.__leoFakeVoice!.fail(m, true), errors.voice.permissionDenied);
+      await c.page.locator("main").getByRole("status").filter({ hasText: errors.voice.permissionDenied }).waitFor();
+    },
+  },
+  {
+    id: "call-send-error",
+    title: "통화 · 보내지 못한 말 + 다시 보내기",
+    auth: "auth",
+    run: async (c) => {
+      const id = await createConversation(c.context, {
+        kind: "call",
+        theme: "free",
+        durationMin: 10,
+      });
+      await go(c.page, `/call/${id}`);
+      await startCall(c.page);
+      await say(c.page, "Hello MOCK_ERROR");
+      await c.page.locator("main").getByRole("button", { name: common.retrySend }).waitFor({ timeout: 20_000 });
     },
   },
   {
@@ -809,7 +874,7 @@ function writeAxeReport(): void {
   lines.push(
     `# axe-core 결과 (${label})`,
     "",
-    `실행: \`npx tsx scripts/screenshots.ts ${direction ? `--direction ${direction}` : `--phase ${phase}`} --axe\` · 태그 wcag2a/2aa/21a/21aa/22aa/best-practice · 스크린샷 ${axeRecords.length}장 검사`,
+    `실행: \`npx tsx scripts/screenshots.ts ${direction ? `--direction ${direction}${compareSet ? " --compare" : ""}` : `--phase ${phase}`}${reducedMotion ? " --reduced-motion" : ""}${widthsOpt ? ` --widths ${widthsOpt}` : ""} --axe\` · 태그 wcag2a/2aa/21a/21aa/22aa/best-practice · 스크린샷 ${axeRecords.length}장 검사`,
     "",
   );
   for (const rec of axeRecords) {

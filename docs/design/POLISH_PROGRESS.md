@@ -15,3 +15,7 @@
 
 - [x] 6건 각각 조치와 이유 — 위 표, 결정은 `DECISIONS.md` 1단계 — 조치 6/6
 - [x] 조치한 것의 테스트 — 통합 4개(`call-opening.test.ts`), 단위 1개(`report-schema`), E2E 수정 1개·추가 2개(`call.spec`, `chat.spec`) — 모두 통과(아래 검증)
+- [x] 단계 끝 `npm run check` — 항목별 커밋 전 매번 실행 — 종료 코드 0(단위 265개, 빌드 성공)
+- [x] 단계 끝 `npm run test:e2e` — 전체 — 23개 통과(2.2분)
+- 촬영 스크립트 확장: `--direction basic|study|stage|console` 이 전체 상태를 `screenshots/directions/<시안>/` 에 찍고, 상태 4개 추가(`call-setup-mic-denied`, `call-setup-mic-notfound`, `call-mic-denied`, `call-send-error`). 기본 시안으로 5개 상태 × 4 = 20장 시험 촬영, 가로 스크롤 0. 네 시안 전수 촬영은 2단계
+- 미확인: 피드백 6 의 실제 모델 출력 효과(모의 모드만 실행), 피드백 4 의 실제 브라우저 권한 팝업 흐름(가짜 어댑터·getUserMedia 모킹으로 대체)
