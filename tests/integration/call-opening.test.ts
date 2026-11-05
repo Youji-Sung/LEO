@@ -1,8 +1,14 @@
 import { NextRequest } from "next/server";
 import { beforeAll, describe, expect, it } from "vitest";
 import { POST as signup } from "@/app/api/auth/signup/route";
-import { GET as listConversations, POST as createConversation } from "@/app/api/conversations/route";
-import { GET as getConversation, PATCH as patchConversation } from "@/app/api/conversations/[id]/route";
+import {
+  GET as listConversations,
+  POST as createConversation,
+} from "@/app/api/conversations/route";
+import {
+  GET as getConversation,
+  PATCH as patchConversation,
+} from "@/app/api/conversations/[id]/route";
 import { POST as postMessage } from "@/app/api/conversations/[id]/messages/route";
 import { POST as postReport } from "@/app/api/conversations/[id]/report/route";
 import { prisma } from "@/lib/db";
@@ -23,7 +29,10 @@ function req(path: string, init: { method?: string; body?: unknown } = {}) {
 const ctx = (id: string) => ({ params: Promise.resolve({ id }) });
 
 type ConvView = {
-  conversation: { startedAt: string; messages: Array<{ role: string; content: string; index: number }> };
+  conversation: {
+    startedAt: string;
+    messages: Array<{ role: string; content: string; index: number }>;
+  };
 };
 
 async function newCall(theme = "interview"): Promise<string> {
@@ -73,6 +82,7 @@ describe("call opening line (외부 피드백 1)", () => {
     const before = await readConv(id);
     expect(before.conversation.messages).toHaveLength(0);
 
+    await new Promise((r) => setTimeout(r, 15));
     const started = await patchConversation(
       req(`/api/conversations/${id}`, { method: "PATCH", body: { started: true } }),
       ctx(id),
@@ -80,10 +90,14 @@ describe("call opening line (외부 피드백 1)", () => {
     expect(started.status).toBe(200);
     const after = await readConv(id);
     expect(after.conversation.messages).toEqual([
-      expect.objectContaining({ role: "assistant", content: THEMES.interview.openingLine, index: 0 }),
+      expect.objectContaining({
+        role: "assistant",
+        content: THEMES.interview.openingLine,
+        index: 0,
+      }),
     ]);
     expect(new Date(after.conversation.startedAt).getTime()).toBeGreaterThan(
-      new Date(before.conversation.startedAt).getTime() - 1,
+      new Date(before.conversation.startedAt).getTime(),
     );
 
     // 두 번째 시작(새로고침 뒤 이어하기)은 메시지를 더하지도 시작 시각을 바꾸지도 않는다.
@@ -158,19 +172,25 @@ describe("lists hide conversations without the user's words (외부 피드백 3)
       req("/api/conversations", { body: { kind: "chat", theme: "free" } }),
       {},
     );
-    const emptyChatId = ((await emptyChat.json()) as { conversation: { id: string } }).conversation.id;
+    const emptyChatId = ((await emptyChat.json()) as { conversation: { id: string } }).conversation
+      .id;
     const spoken = await newCall("free");
     await patchConversation(
       req(`/api/conversations/${spoken}`, { method: "PATCH", body: { started: true } }),
       ctx(spoken),
     );
     await (
-      await postMessage(req(`/api/conversations/${spoken}/messages`, { body: { content: "Hi!" } }), ctx(spoken))
+      await postMessage(
+        req(`/api/conversations/${spoken}/messages`, { body: { content: "Hi!" } }),
+        ctx(spoken),
+      )
     ).text();
 
     const all = (await listService(userId)).map((c) => c.id);
     expect(all).toEqual(expect.arrayContaining([startedOnly, emptyChatId, spoken]));
-    const shown = (await listService(userId, undefined, { onlyWithContent: true })).map((c) => c.id);
+    const shown = (await listService(userId, undefined, { onlyWithContent: true })).map(
+      (c) => c.id,
+    );
     expect(shown).toContain(spoken);
     expect(shown).not.toContain(startedOnly);
     expect(shown).not.toContain(emptyChatId);

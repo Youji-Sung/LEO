@@ -767,7 +767,12 @@ const LIMIT_STATES: State[] = [
       await go(c.page, `/chat/${id}`);
       await c.page.getByLabel(chat.inputLabel).fill("One more?");
       await c.page.getByLabel(chat.inputLabel).press("Enter");
-      await c.page.locator("main").getByRole("alert").waitFor();
+      // 한도 안내는 오류가 아니라 안내(info, role=status)다(5단계 결정).
+      await c.page
+        .locator("main")
+        .getByRole("status")
+        .filter({ hasText: errors.conversation.turnCap(1) })
+        .waitFor();
     },
   },
   {

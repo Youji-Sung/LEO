@@ -7,6 +7,7 @@
 - 구현 계획: `docs/PLAN.md`
 - 진행 기록(단계별 검증 결과, 미확인 항목): `docs/PROGRESS.md`
 - UI/UX 개선(디자인 시스템·문구·화면별 근거·스크린샷): `docs/design/README.md`
+- 디자인 4종(기본·서재·무대·콘솔)의 비교·상태·남은 과제: `docs/design/directions/README.md`, 다듬기 기록 `docs/design/POLISH_PROGRESS.md`
 
 ## 기능
 
@@ -16,7 +17,7 @@
 - **기록**: 통화·채팅 목록, 트랜스크립트와 리포트 열람
 - **포트폴리오**: 텍스트/마크다운 붙여넣기 또는 PDF 업로드(텍스트 추출), 여러 개 등록, "포트폴리오 면접" 테마에서 선택
 - **사용량**: 사용자별·기간별 토큰·추정 비용 합계, 기능별 분포, 최근 호출 50건
-- **설정**: 테마 모드(시스템/라이트/다크), 교정 힌트 기본값, 상대 목소리, 통화 기본 길이
+- **설정**: 테마 모드(시스템/라이트/다크), 디자인(기본·서재·무대·콘솔 — 색·서체·형태만 다르고 기능은 같다, `docs/design/directions/README.md`), 교정 힌트 기본값, 상대 목소리, 통화 기본 길이
 
 ## 기술 스택
 
@@ -24,7 +25,7 @@
 - Prisma 7 + SQLite (`better-sqlite3` 어댑터). 스키마는 Postgres 호환
 - `@anthropic-ai/sdk` 1.x — 모델 `claude-opus-5`, 스트리밍, 구조화 출력, 프롬프트 캐싱, 서버 측 refusal fallback
 - Vitest(단위·통합), Playwright(E2E, 가짜 VoiceAdapter 주입), `@axe-core/playwright`(접근성 자동 점검)
-- UI: 전역 CSS + 디자인 토큰(`src/design/tokens.ts` → `src/app/tokens.css`, 라이트·다크), 컴포넌트 `src/components/ui/`, 문구 `src/content/ko.ts`, 서체 Pretendard Variable(jsDelivr 다이나믹 서브셋), 아이콘 `lucide-react`
+- UI: 전역 CSS + 디자인 토큰(`src/design/tokens.ts` → `src/app/tokens.css`, 라이트·다크), 디자인 4종(`src/design/directions.ts` → `src/app/directions/tokens.css` + `src/app/directions/<디자인>.css`), 컴포넌트 `src/components/ui/`, 문구 `src/content/ko.ts`, 서체 Pretendard Variable(jsDelivr 다이나믹 서브셋; 서재·콘솔은 Google Fonts 추가), 아이콘 `lucide-react`
 
 ## 설치와 실행
 
@@ -77,9 +78,9 @@ Claude 사용 단가는 `src/config/pricing.ts`에서 바꾼다.
 | `npm run db:seed` | 개발용 사용자 2명 시드 |
 | `npx tsx scripts/smoke-claude.ts` | 실제 API 로 리포트 생성 1회 호출해 키·모델 확인(비용 발생, 약 $0.1) |
 | `npx tsx scripts/screenshots.ts --phase after [--axe] [--widths 360,640,768] [--reduced-motion] [--only call,chat]` | 모의 서버를 띄워 모든 화면·상태를 1280/390 × 라이트/다크로 촬영(`docs/design/screenshots/`), axe 검사·가로 스크롤 검사 |
-| `npx tsx scripts/screenshots.ts --direction study\|stage\|console [--axe]` | 시각 방향 시안의 비교용 화면 세트를 `docs/design/directions/<시안>/shots/` 에 촬영. 시안을 보는 법은 `docs/design/directions/README.md` |
+| `npx tsx scripts/screenshots.ts --direction basic\|study\|stage\|console [--axe] [--widths …] [--reduced-motion] [--compare]` | 디자인 하나를 골라 모든 화면·상태를 `docs/design/screenshots/directions/<디자인>/` 에 촬영(`--compare` 는 1차 비교 세트 9개만 `docs/design/directions/<디자인>/shots/`). 디자인 설명은 `docs/design/directions/README.md` |
 | `npx tsx scripts/build-tokens.ts [--check] [--table]` | 디자인 토큰 TS → `tokens.css` 생성, 대비 표 출력 |
-| `npm run build && npx tsx scripts/perf.ts` | 프로덕션 서버로 첫 로드 CLS·전송량 측정(`docs/design/PERF.md`) |
+| `npm run build && npx tsx scripts/perf.ts [--direction basic\|study\|stage\|console]` | 프로덕션 서버로 첫 로드 CLS·전송량 측정(`docs/design/PERF.md`, 디자인을 주면 `docs/design/screenshots/directions/<디자인>/perf.md`) |
 
 E2E는 Playwright가 설치한 Chromium을 쓰고, 없으면 `CHROME_PATH`의 Chrome을 헤드리스로 쓴다. `npm test`와 `npm run test:e2e`를 동시에 돌리지 않는다(둘 다 DB 파일을 새로 만든다). E2E 서버는 `scripts/e2e-server.mjs`가 띄우며 빌드 폴더를 `.next-e2e`로 분리하므로 `npm run dev`가 켜져 있어도 함께 돌 수 있다.
 

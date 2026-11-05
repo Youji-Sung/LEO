@@ -7,7 +7,9 @@ function words(text: string): string[] {
 }
 
 function key(word: string): string {
-  return word.toLowerCase().replace(/[^\p{L}\p{N}']+/gu, "");
+  const k = word.toLowerCase().replace(/[^\p{L}\p{N}']+/gu, "");
+  // 구두점만 있는 토큰("—", ",")은 서로 같은 단어로 묶이지 않게 원문을 키로 쓴다.
+  return k || word;
 }
 
 export function diffWords(

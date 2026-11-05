@@ -859,7 +859,29 @@
 }
 [data-direction="study"] .table-wrap {
   border-radius: 0;
-  border-color: var(--color-divider);
+  border: 0;
+  border-top: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-divider);
+  background:
+    linear-gradient(to right, var(--color-canvas) 30%, transparent) left / 40px 100% no-repeat
+      local,
+    linear-gradient(to left, var(--color-canvas) 30%, transparent) right / 40px 100% no-repeat
+      local,
+    linear-gradient(to right, var(--color-scrim), transparent) left / 14px 100% no-repeat scroll,
+    linear-gradient(to left, var(--color-scrim), transparent) right / 14px 100% no-repeat scroll,
+    var(--color-canvas);
+}
+[data-direction="study"] .table th:first-child,
+[data-direction="study"] .table td:first-child {
+  background: var(--color-canvas);
+}
+[data-direction="study"] .table caption {
+  font-family: var(--font-serif-kr);
+  padding-left: 0;
+}
+[data-direction="study"] .usage-totals {
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-divider);
 }
 [data-direction="study"] .usage-totals dd {
   font-family: var(--font-serif-en);

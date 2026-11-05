@@ -417,6 +417,23 @@
   background: var(--color-surface-sunken);
   color: var(--color-text);
 }
+/* 상태 배지는 뜻대로: 진행 중 초록, 리포트 있음·테마 코랄, 주의 황색, 종료 중립 */
+[data-direction="stage"] .badge-accent {
+  background: var(--color-accent-subtle);
+  color: var(--color-on-accent-subtle);
+}
+[data-direction="stage"] .badge-positive {
+  background: var(--color-positive-subtle);
+  color: var(--color-on-positive-subtle);
+}
+[data-direction="stage"] .badge-caution {
+  background: var(--color-caution-subtle);
+  color: var(--color-on-caution-subtle);
+}
+[data-direction="stage"] .badge-negative {
+  background: var(--color-negative-subtle);
+  color: var(--color-on-negative-subtle);
+}
 /* 헤더의 모의 모드 칩: 코랄 문법에 맞춰 황색 대신 중립 알약 */
 [data-direction="stage"] .site-mode .badge-caution {
   background: var(--color-surface-sunken);
@@ -430,8 +447,14 @@
   font-weight: 600;
   border: 2px solid transparent;
 }
+/* 정보 안내는 코랄(행동색)이 아니라 복숭아 중립 면 */
 [data-direction="stage"] .status-info {
-  border-color: var(--color-accent-subtle);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  border-color: var(--color-divider);
+}
+[data-direction="stage"] .status-info svg {
+  color: var(--color-text-secondary);
 }
 [data-direction="stage"] .status-success {
   border-color: var(--color-positive);

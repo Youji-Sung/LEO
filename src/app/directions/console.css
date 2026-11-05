@@ -215,7 +215,6 @@
 /* ---------- 배너 ---------- */
 [data-direction="console"] .banner {
   border-bottom: 1px solid var(--color-divider);
-  font-family: var(--font-mono);
   font-size: var(--type-caption-size);
 }
 
@@ -427,6 +426,11 @@
 [data-direction="console"] .segmented a:last-child,
 [data-direction="console"] .segmented button:last-child {
   border-right: 0;
+}
+/* overflow: hidden 안이라 포커스 링을 안쪽에 그린다 */
+[data-direction="console"] .segmented a:focus-visible,
+[data-direction="console"] .segmented button:focus-visible {
+  outline-offset: -3px;
 }
 [data-direction="console"] .segmented a[aria-current="page"],
 [data-direction="console"] .segmented button[aria-pressed="true"] {
@@ -645,6 +649,11 @@
   line-height: 1.6;
   background: var(--color-surface);
 }
+/* 한국어 플레이스홀더는 Sans KR 로(영어 입력만 모노) */
+[data-direction="console"] .chat-input textarea::placeholder,
+[data-direction="console"] .call-text-form textarea::placeholder {
+  font-family: var(--font-sans);
+}
 [data-direction="console"] .chat-input-hint {
   font-family: var(--font-mono);
   font-size: 0.6875rem;
@@ -796,6 +805,18 @@
 [data-direction="console"] .diff > .fixed-suggest::before {
   color: var(--color-accent);
 }
+/* 제안(어휘·표현)의 원문은 틀린 줄이 아니다: 빨강 대신 중립 행, 단어 강조도 없음 */
+[data-direction="console"] .diff:has(> .fixed-suggest) > .diff-label:nth-child(1),
+[data-direction="console"] .diff:has(> .fixed-suggest) > .orig {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+[data-direction="console"] .diff:has(> .fixed-suggest) > .orig::before {
+  color: var(--color-text-secondary);
+}
+[data-direction="console"] .diff:has(> .fixed-suggest) .diff-word-removed {
+  background: transparent;
+}
 [data-direction="console"] .diff > .diff-explain,
 [data-direction="console"] .diff > .diff-example {
   padding: var(--space-2) var(--space-3);
@@ -839,9 +860,13 @@
 [data-direction="console"] .table {
   font-size: var(--type-caption-size);
 }
+/* 표 제목도 패널 띠처럼 */
 [data-direction="console"] .table caption {
   font-family: var(--font-sans);
   font-size: var(--type-small-size);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface-sunken);
+  border-bottom: 1px solid var(--color-divider);
 }
 [data-direction="console"] .table thead th {
   font-weight: 600;
@@ -884,7 +909,7 @@
 [data-direction="console"] .timer-bar {
   display: block;
   position: relative;
-  width: 10ch;
+  width: 10rem;
   height: 12px;
   border: 1px solid var(--color-border);
   background: var(--color-surface-sunken);

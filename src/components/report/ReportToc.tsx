@@ -8,17 +8,18 @@ export function ReportToc({ sections }: { sections: { id: string; title: string 
   const [current, setCurrent] = useState<string | null>(null);
   useEffect(() => {
     if (typeof IntersectionObserver === "undefined") return;
-    const visible = new Map<string, number>();
+    const visible = new Set<string>();
     const observer = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
-          if (e.isIntersecting) visible.set(e.target.id, e.boundingClientRect.top);
+          if (e.isIntersecting) visible.add(e.target.id);
           else visible.delete(e.target.id);
         }
-        // 보이는 절 중 화면 위쪽에 가장 가까운 것
+        // 보이는 절 중 화면 위쪽에 가장 가까운 것(위치는 지금 다시 잰다)
         let best: string | null = null;
         let bestTop = Infinity;
-        for (const [id, top] of visible) {
+        for (const id of visible) {
+          const top = document.getElementById(id)?.getBoundingClientRect().top ?? Infinity;
           if (top < bestTop) {
             best = id;
             bestTop = top;

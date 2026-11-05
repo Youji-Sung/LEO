@@ -2,7 +2,9 @@
 
 2026-11-04 클라우드 세션이 `PLAN.md` 0~8단계를 수행한 결과. 모든 결정은 근거와 함께 남겼고, before/after 스크린샷과 자동 검사 결과가 저장소에 있다.
 
-> 후속(같은 날): 시각 방향 시안 3개(서재·무대·콘솔)를 `directions/` 에 두었다. 비교표·보는 방법·추천·선택 칸은 `directions/README.md`. 전제는 `VISUAL_BRIEF.md`, 순서는 `VISUAL_PLAN.md`.
+> 후속(같은 날): 시각 방향 시안 3개(서재·무대·콘솔)를 `directions/` 에 두었다(전제 `VISUAL_BRIEF.md`, 순서 `VISUAL_PLAN.md`).
+>
+> 후속(2026-11-05): 운영자가 넷(기본·서재·무대·콘솔)을 모두 사용자 기능으로 두기로 했고, 2차 세션이 네 디자인을 전 화면에서 다듬었다. 비교표·상태·남은 과제는 `directions/README.md`, 계획 `POLISH_PLAN.md`, 진행·수치 `POLISH_PROGRESS.md`, 결정 `DECISIONS.md` "시안 4종 다듬기", 스크린샷 `screenshots/directions/<디자인>/`(46개 상태 × 4변형 + `widths/` + `reduced-motion/` + `perf.md`).
 
 ## 무엇을 어디서 보는가
 

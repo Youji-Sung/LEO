@@ -52,6 +52,10 @@ export function CallView(props: Props) {
   const [lastFailed, setLastFailed] = useState<string | null>(null);
   // 마이크 권한 거부·장치 없음으로 글 입력으로 바뀐 이유. 오류가 아니라 안내 하나로 보여 준다(외부 피드백 4).
   const [fallbackNotice, setFallbackNotice] = useState<string | null>(null);
+  // 재시작 가능한 음성 인식 오류(4초 뒤 사라짐). 전송 오류와 자리를 나눠 다시 보내기가 가려지지 않게 한다.
+  const [voiceNotice, setVoiceNotice] = useState<string | null>(null);
+  // 다시 보내기(키보드 조작)에서 생긴 오류는 포커스를 메시지로 옮긴다. 말로 한 발화의 오류는 흐름을 끊지 않는다.
+  const [errorFocus, setErrorFocus] = useState(false);
   const [endReason, setEndReason] = useState<string | null>(null);
   const [textInput, setTextInput] = useState("");
 
@@ -72,6 +76,9 @@ export function CallView(props: Props) {
   const extendBusyRef = useRef(false);
   const failedIdRef = useRef<string | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
+  const textInputRef = useRef<HTMLTextAreaElement>(null);
+  // 통화 시작 PATCH(첫 인사를 index 0 으로 저장). 첫 발화 전송은 이것이 끝난 뒤에 한다.
+  const startedRef = useRef<Promise<void>>(Promise.resolve());
 
   const markFailed = (id: string | null, content: string | null) => {
     failedIdRef.current = id;
@@ -173,6 +180,7 @@ export function CallView(props: Props) {
       finishInflight = r;
     });
     try {
+      await startedRef.current;
       await streamMessage(props.conversationId, next, (ev) => {
         if (ev.type === "delta") {
           setPartial((p) => (p ?? "") + ev.text);
@@ -257,6 +265,7 @@ export function CallView(props: Props) {
       },
       onFinal: (text) => {
         setInterim("");
+        setErrorFocus(false);
         bargeIn();
         enqueueUtterance(text);
       },
@@ -268,11 +277,13 @@ export function CallView(props: Props) {
           adapter.stopListening();
           setSupport((sup) => ({ ...sup, stt: false }));
           setFallbackNotice(message);
+          // 음소거 버튼이 사라지므로 포커스를 새 입력창으로 옮긴다(WCAG 2.4.3).
+          setTimeout(() => textInputRef.current?.focus(), 0);
           return;
         }
-        setError(message);
+        setVoiceNotice(message);
         // 재시작 가능한 오류는 다시 듣기 시작하면 지운다.
-        setTimeout(() => setError((cur) => (cur === message ? null : cur)), 4000);
+        setTimeout(() => setVoiceNotice((cur) => (cur === message ? null : cur)), 4000);
       },
       onEnd: () => {
         // 브라우저가 무음 등으로 인식을 멈추면 다시 켠다.
@@ -301,10 +312,14 @@ export function CallView(props: Props) {
       Math.max(0, durationRef.current - Math.floor((Date.now() - startedAtRef.current) / 1000)),
     );
     if (!resuming) {
-      void apiJson(`/api/conversations/${props.conversationId}`, {
+      // 첫 발화보다 먼저 서버가 시작(첫 인사 index 0)을 기록해야 하므로 processQueue 가 이 약속을 기다린다.
+      // 듣기는 바로 시작하고, 실패해도 통화는 진행한다.
+      startedRef.current = apiJson(`/api/conversations/${props.conversationId}`, {
         method: "PATCH",
         body: JSON.stringify({ started: true }),
-      }).catch(() => undefined);
+      })
+        .then(() => undefined)
+        .catch(() => undefined);
       speakSentence(props.openingLine, speakGenRef.current);
     }
     startListening();
@@ -357,6 +372,10 @@ export function CallView(props: Props) {
       durationRef.current = r.durationSec;
       setDurationSec(r.durationSec);
       setExtendable(r.canExtend);
+      // 연장 버튼은 1분 경고 밖에서 사라지므로, 거기 있던 포커스를 끊기 버튼으로 옮긴다(WCAG 2.4.3).
+      // Button 은 ref 를 밖으로 내지 않아 testid 로 찾는다.
+      if (document.activeElement?.getAttribute("data-testid") === "extend")
+        document.querySelector<HTMLElement>('[data-testid="hangup"]')?.focus();
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -369,6 +388,7 @@ export function CallView(props: Props) {
     const t = textInput.trim();
     if (!t) return;
     setTextInput("");
+    setErrorFocus(false);
     bargeIn();
     enqueueUtterance(t);
   }
@@ -377,8 +397,11 @@ export function CallView(props: Props) {
     const text = lastFailed;
     if (!text) return;
     setError(null);
+    setErrorFocus(true);
     bargeIn();
     enqueueUtterance(text);
+    // 버튼이 담긴 메시지가 사라지므로 포커스를 대화 영역으로 옮긴다. 다시 실패하면 오류 메시지가 포커스를 받는다.
+    logRef.current?.focus();
   }
 
   const showExtend = phase === "live" && extendable && remaining <= WARN_AT_SEC;
@@ -468,6 +491,7 @@ export function CallView(props: Props) {
               ref={logRef}
               className="chat-messages call-transcript"
               role="log"
+              tabIndex={-1}
               aria-label={callLive.logLabel}
             >
               <Bubble speaker="partner" data-testid="opening-line">
@@ -504,9 +528,15 @@ export function CallView(props: Props) {
               </div>
             </div>
 
+            {voiceNotice && (
+              <StatusMessage tone="warning" polite>
+                {voiceNotice}
+              </StatusMessage>
+            )}
             {error && (
               <StatusMessage
                 tone={errorTone}
+                focus={errorFocus && errorTone === "error"}
                 action={
                   lastFailed && phase === "live" ? (
                     <Button onClick={retryFailed} disabled={busy}>
@@ -536,6 +566,7 @@ export function CallView(props: Props) {
               </label>
               <textarea
                 id="call-text"
+                ref={textInputRef}
                 lang="en"
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}

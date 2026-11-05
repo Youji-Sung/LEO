@@ -106,6 +106,8 @@ export function ChatView(props: Props) {
           setFailedId(tempId);
           setLastFailed(content);
         } else {
+          // 한도·종료는 사실 고지라 오류색이 아니라 안내(통화 화면과 같은 톤).
+          setErrorTone("info");
           setMessages((m) => m.filter((x) => x.id !== tempId));
         }
       } else {
