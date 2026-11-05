@@ -79,9 +79,20 @@ CLAUDE.md 를 읽고, docs/design/VISUAL_BRIEF.md 와 docs/design/VISUAL_PLAN.md
 - 산출물을 docs/design/directions/ 에 정리하고 push 한 뒤 멈춰. 어느 시안도 적용하지 말고 2차 작업을 시작하지 마.
 ```
 
-## 세션 프롬프트 (다음: 시안 4종 다듬기)
+## 세션 프롬프트 (시안 4종 다듬기)
 
-운영자 결정(2026-11-05)으로 시안을 고르지 않고 넷을 모두 사용자 기능으로 유지한다. 범위는 `docs/design/VISUAL_BRIEF.md`의 "다음 작업" 절. 단계별 계획은 세션을 시작하기 전에 운영자와 함께 쓴다.
+모델은 **Opus 5**로 둔다(claude.ai/code의 모델 선택기, 또는 세션 안에서 `/model opus`). Network access는 `Full`.
+
+```
+CLAUDE.md 를 읽고, docs/design/VISUAL_BRIEF.md 의 "다음 작업" 절과 docs/design/POLISH_PLAN.md 를 읽은 뒤 POLISH_PLAN 의 1~6단계를 순서대로 끝까지 수행해.
+
+- 기본·서재·무대·콘솔 넷은 모두 사용자가 설정에서 고르는 정식 기능이다. 하나를 없애거나 기본값을 바꾸지 마.
+- 어떻게 고칠지는 네가 정하고 docs/design/DECISIONS.md 에 "결정 · 근거 · 기각한 대안"으로 적어. 사용자에게 묻지 마.
+- 항목 하나를 끝낼 때마다 npm run check 를 통과시키고 커밋·push 해. 단계 끝에는 npm run test:e2e 도 통과시켜.
+- 모든 확인은 네 시안 전부에 대해 해. 결과는 docs/design/POLISH_PROGRESS.md 에 수치와 함께 적고, 확인 못 한 것은 "미확인"으로 남겨.
+- 실제 Claude API 는 호출하지 마(CLAUDE_MOCK=1).
+- 6단계 마무리 보고를 마지막 메시지로 남겨.
+```
 
 ## 이전 세션 프롬프트 (UI/UX 개선, 완료됨 2026-11-04)
 

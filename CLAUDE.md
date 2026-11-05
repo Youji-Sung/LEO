@@ -4,7 +4,7 @@
 
 ## 현재 작업
 
-**디자인 시안 4종 다듬기.** 작업 전에 반드시 읽는다: `docs/design/VISUAL_BRIEF.md`의 "다음 작업" 절 → `docs/design/directions/README.md`와 시안별 README. 기본·서재·무대·콘솔은 모두 사용자가 설정에서 고르는 정식 기능이다. 하나를 고르거나 없애지 않는다. 다음 세션의 단계별 계획은 운영자가 시작할 때 준다.
+**디자인 시안 4종 다듬기.** 작업 전에 반드시 읽는다: `docs/design/VISUAL_BRIEF.md`의 "다음 작업" 절 → `docs/design/POLISH_PLAN.md`(단계와 완료 조건) → `docs/design/directions/README.md`와 시안별 README. 기본·서재·무대·콘솔은 모두 사용자가 설정에서 고르는 정식 기능이다. 하나를 고르거나 없애지 않는다. 항목 하나를 끝낼 때마다 커밋·push한다.
 
 이전 작업 문서: 기능 구현은 `docs/SPEC.md`·`docs/PLAN.md`·`docs/DECISIONS.md`(완료, 2026-11-03), UI/UX 개선은 `docs/design/BRIEF.md`·`docs/design/PLAN.md`(완료, 2026-11-04), 시안 3개 제작은 `docs/design/VISUAL_PLAN.md`(완료, 2026-11-04). 외부 공개 절차는 `docs/DEPLOY_TUNNEL.md`.
 
