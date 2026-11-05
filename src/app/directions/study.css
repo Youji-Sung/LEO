@@ -527,7 +527,8 @@
   border-radius: 0;
   padding: var(--space-4) 0;
 }
-[data-direction="study"] .list-main a {
+[data-direction="study"] .list-main a,
+[data-direction="study"] .list-main > strong {
   font-family: var(--font-serif-kr);
   font-weight: 600;
   font-size: 1.0625rem;

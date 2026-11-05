@@ -3,7 +3,7 @@ import nextTs from "eslint-config-next/typescript";
 import prettier from "eslint-config-prettier";
 
 const config = [
-  { ignores: [".next/**", ".next-e2e/**", "node_modules/**", "src/generated/**", "playwright-report/**", "test-results/**", "next-env.d.ts"] },
+  { ignores: [".next/**", ".next-e2e/**", ".next-shots-*/**", "node_modules/**", "src/generated/**", "playwright-report/**", "test-results/**", "next-env.d.ts"] },
   ...nextVitals,
   ...nextTs,
   prettier,

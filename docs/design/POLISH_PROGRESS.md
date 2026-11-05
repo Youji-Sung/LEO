@@ -19,3 +19,17 @@
 - [x] 단계 끝 `npm run test:e2e` — 전체 — 23개 통과(2.2분)
 - 촬영 스크립트 확장: `--direction basic|study|stage|console` 이 전체 상태를 `screenshots/directions/<시안>/` 에 찍고, 상태 4개 추가(`call-setup-mic-denied`, `call-setup-mic-notfound`, `call-mic-denied`, `call-send-error`). 기본 시안으로 5개 상태 × 4 = 20장 시험 촬영, 가로 스크롤 0. 네 시안 전수 촬영은 2단계
 - 미확인: 피드백 6 의 실제 모델 출력 효과(모의 모드만 실행), 피드백 4 의 실제 브라우저 권한 팝업 흐름(가짜 어댑터·getUserMedia 모킹으로 대체)
+
+## 2단계. 미촬영 화면을 네 시안으로 촬영하고 깨진 곳 수정
+
+- [x] 촬영 — `npx tsx scripts/screenshots.ts --direction <basic|study|stage|console> --axe --port 315x` 4회(기본 3150, 서재 3151, 무대 3152, 콘솔 3153) — **시안당 46개 상태(계획의 42 + 1단계 추가 4) × 4변형 = 184장, 합 736장**, 촬영 실패 0. 위치 `screenshots/directions/<시안>/`(`index.md`, `axe.md`, `axe.json`, `overflow.md`)
+- [x] axe — 네 시안 각 184장, 태그 wcag2a/2aa/21a/21aa/22aa/best-practice — **위반 0건 × 4**(`screenshots/directions/<시안>/axe.md`)
+- [x] 가로 스크롤 — 네 시안 각 184장 — **0장 × 4**(`overflow.md`)
+- [x] 깨진 곳 점검 — 서브에이전트 4개(시안당 1개)에게 결함 기준(겹침·넘침·안 보임·토큰 미적용·대비·레이아웃)만 주고 184장 전부 열게 함. 연 파일 184/184 × 4 — 보고 결함: 기본 1건, 서재 3건, 무대 0건, 콘솔 아래 표. 메인 세션이 보고된 장면을 직접 열어 확인
+  | 보고 | 판정 | 조치 |
+  |---|---|---|
+  | 사용량 390 의 표가 카드 오른쪽에서 잘림(네 시안 공통, 기본·서재·무대 보고) | 설계된 가로 스크롤 영역(`.table-wrap`, 스크롤 그림자 + 첫 열 고정, 2026-11-04 결정). 전체 페이지 캡처는 스크롤 안쪽을 못 찍는다 | 미조치(의도) |
+  | 서재 `chat-nokey-error` 390 에서 고정 입력창이 오류 상자의 [다시 보내기] 아래를 덮음(무대도 같은 관찰) | API 키 배너로 문서가 뷰포트(844px)보다 길어져 `fullPage` 캡처가 고정 입력창을 문서 중간에 그린 것. 같은 구조의 `chat-error` 390(문서 = 뷰포트)은 겹치지 않음 | 미조치(캡처 방식, `index.md` 설명) |
+  | 서재 포트폴리오 목록 제목이 세리프가 아님(10장) | 목록 제목이 `<a>` 가 아니라 `<strong>` 이라 `.list-main a` 규칙이 안 먹음 | **조치**: `.list-main > strong` 도 세리프 |
+  | API 키 없음 배너의 운영자 안내 문장 전체가 `<code>` 라 한글 자간이 벌어짐(무대 관찰, 네 시안 공통) | 마크업 문제 | **조치**: `.env`·`LEO_ANTHROPIC_API_KEY` 만 `<code>` 로 감쌈(`ConfigBanner`) |
+- 참고(결함 아님으로 판정): 마우스 호버 위치의 선택 카드 회색, 다이얼로그 스크림이 긴 문서 하단을 안 덮는 것, 토스트·입력창이 문서 중간에 찍히는 것 — 모두 `fullPage` 캡처 방식
