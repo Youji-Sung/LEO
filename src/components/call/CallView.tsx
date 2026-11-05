@@ -46,6 +46,12 @@ export function CallView(props: Props) {
   const [busy, setBusy] = useState(false);
   const [speaking, setSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorTone, setErrorTone] = useState<"error" | "info">("error");
+  // 보내지 못한 말: 말풍선은 남기고 다시 보내기로 잇는다(채팅과 같은 규칙, 외부 피드백 5).
+  const [failedId, setFailedId] = useState<string | null>(null);
+  const [lastFailed, setLastFailed] = useState<string | null>(null);
+  // 마이크 권한 거부·장치 없음으로 글 입력으로 바뀐 이유. 오류가 아니라 안내 하나로 보여 준다(외부 피드백 4).
+  const [fallbackNotice, setFallbackNotice] = useState<string | null>(null);
   const [endReason, setEndReason] = useState<string | null>(null);
   const [textInput, setTextInput] = useState("");
 
@@ -64,7 +70,14 @@ export function CallView(props: Props) {
   const sttDisabledRef = useRef(false);
   const inflightRef = useRef<Promise<void> | null>(null);
   const extendBusyRef = useRef(false);
+  const failedIdRef = useRef<string | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
+
+  const markFailed = (id: string | null, content: string | null) => {
+    failedIdRef.current = id;
+    setFailedId(id);
+    setLastFailed(content);
+  };
 
   const setPhaseBoth = (p: Phase) => {
     phaseRef.current = p;
@@ -142,8 +155,15 @@ export function CallView(props: Props) {
     busyRef.current = true;
     setBusy(true);
     setError(null);
+    setErrorTone("error");
     const tempId = `tmp-${Date.now()}`;
-    setEntries((e) => [...e, { id: tempId, role: "user", content: next }]);
+    // 이전에 보내지 못한 말풍선은 새 말과 함께 내린다.
+    const previousFailed = failedIdRef.current;
+    markFailed(null, null);
+    setEntries((e) => [
+      ...e.filter((x) => x.id !== previousFailed),
+      { id: tempId, role: "user", content: next },
+    ]);
     setPartial("");
     const gen = speakGenRef.current;
     const splitter = new SentenceSplitter((s) => speakSentence(s, gen));
@@ -165,17 +185,40 @@ export function CallView(props: Props) {
             { id: ev.message.id, role: "assistant", content: ev.message.content },
           ]);
         } else if (ev.type === "error") {
-          setEntries((e) => e.filter((x) => x.id !== tempId));
-          // 대화 횟수 한도는 종료 안내 한 줄로만 알린다(오류 메시지 중복 금지).
-          if (ev.code === "turn_cap") void endCall("turn_cap");
-          else setError(ev.message);
+          if (ev.code === "turn_cap") {
+            // 대화 횟수 한도는 종료 안내 한 줄로만 알린다(오류 메시지 중복 금지).
+            setEntries((e) => e.filter((x) => x.id !== tempId));
+            void endCall("turn_cap");
+          } else if (ev.code === "refusal") {
+            // 거부는 오류가 아니라 안내. 서버가 사용자 턴을 지웠으므로 화면에서도 내린다.
+            setEntries((e) => e.filter((x) => x.id !== tempId));
+            setErrorTone("info");
+            setError(ev.message);
+          } else {
+            // 서버가 사용자 턴을 지웠으므로 같은 내용으로 다시 보낼 수 있다.
+            markFailed(tempId, next);
+            setError(ev.message);
+          }
         }
       });
       if (!done) splitter.flush();
     } catch (e) {
-      setEntries((en) => en.filter((x) => x.id !== tempId));
-      if (e instanceof ApiError && e.code === "turn_cap") void endCall("turn_cap");
-      else setError((e as Error).message);
+      if (e instanceof ApiError) {
+        if (e.code === "turn_cap") {
+          setEntries((en) => en.filter((x) => x.id !== tempId));
+          void endCall("turn_cap");
+        } else if (e.code === "conversation_ended") {
+          setEntries((en) => en.filter((x) => x.id !== tempId));
+          setError(e.message);
+        } else {
+          markFailed(tempId, next);
+          setError(e.message);
+        }
+      } else {
+        // 연결이 끊긴 경우: 서버가 답변을 저장했을 수 있어 재전송 대신 새로고침을 권한다(채팅과 같은 규칙).
+        setEntries((en) => en.filter((x) => x.id !== tempId));
+        setError(callLive.networkError);
+      }
     } finally {
       setPartial(null);
       busyRef.current = false;
@@ -218,15 +261,18 @@ export function CallView(props: Props) {
         enqueueUtterance(text);
       },
       onError: (message, fatal) => {
-        setError(message);
-        // 재시작 가능한 오류는 다시 듣기 시작하면 지운다.
-        if (!fatal) setTimeout(() => setError((cur) => (cur === message ? null : cur)), 4000);
         if (fatal) {
-          // 권한 거부·마이크 없음: 재시작하지 않고 텍스트 입력으로 바꾼다.
+          // 권한 거부·마이크 없음: 재시작하지 않고 글 입력으로 바꾼다. 글로 대화하는 것은 정상 경로라
+          // 오류 메시지 대신 이유를 담은 안내 하나만 보여 준다(외부 피드백 4).
           sttDisabledRef.current = true;
           adapter.stopListening();
           setSupport((sup) => ({ ...sup, stt: false }));
+          setFallbackNotice(message);
+          return;
         }
+        setError(message);
+        // 재시작 가능한 오류는 다시 듣기 시작하면 지운다.
+        setTimeout(() => setError((cur) => (cur === message ? null : cur)), 4000);
       },
       onEnd: () => {
         // 브라우저가 무음 등으로 인식을 멈추면 다시 켠다.
@@ -327,6 +373,14 @@ export function CallView(props: Props) {
     enqueueUtterance(t);
   }
 
+  function retryFailed() {
+    const text = lastFailed;
+    if (!text) return;
+    setError(null);
+    bargeIn();
+    enqueueUtterance(text);
+  }
+
   const showExtend = phase === "live" && extendable && remaining <= WARN_AT_SEC;
   const warn = phase === "live" && remaining <= WARN_AT_SEC;
   const state: CallState =
@@ -399,7 +453,7 @@ export function CallView(props: Props) {
 
             {!support.stt && (
               <StatusMessage tone="info">
-                {callLive.textModeNotice}
+                {fallbackNotice ?? callLive.textModeNotice}
                 {!support.tts ? ` ${callLive.noTtsNotice}` : ""}
               </StatusMessage>
             )}
@@ -423,6 +477,8 @@ export function CallView(props: Props) {
                 <Bubble
                   key={m.id}
                   speaker={m.role === "user" ? "me" : "partner"}
+                  failed={m.id === failedId}
+                  failedLabel={chat.failedLabel}
                   data-testid={`msg-${m.role}`}
                 >
                   {m.content}
@@ -448,7 +504,22 @@ export function CallView(props: Props) {
               </div>
             </div>
 
-            {error && <StatusMessage tone="error">{error}</StatusMessage>}
+            {error && (
+              <StatusMessage
+                tone={errorTone}
+                action={
+                  lastFailed && phase === "live" ? (
+                    <Button onClick={retryFailed} disabled={busy}>
+                      {common.retrySend}
+                    </Button>
+                  ) : error === callLive.networkError ? (
+                    <Button onClick={() => window.location.reload()}>{chat.refresh}</Button>
+                  ) : undefined
+                }
+              >
+                {error}
+              </StatusMessage>
+            )}
             {endReason === "turn_cap" && (
               <StatusMessage tone="info">{callLive.turnCapEnd}</StatusMessage>
             )}

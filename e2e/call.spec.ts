@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { callLive, callSetup, common, report, transcript } from "../src/content/ko";
+import { callLive, callSetup, chat, common, errors, report, transcript } from "../src/content/ko";
 import { THEMES } from "../src/services/claude/prompts/themes";
 import { login, selectTheme } from "./helpers";
 
@@ -74,6 +74,54 @@ test("음소거와 끊기", async ({ page }) => {
   await page.getByTestId("hangup").click();
   await expect(page).toHaveURL(/\/history\/[a-z0-9]+\/report$/, { timeout: 30_000 });
   await expect(page.getByTestId("interview-section")).toHaveCount(0);
+});
+
+test("마이크를 쓸 수 없게 되면 오류가 아니라 안내 하나로 글 입력으로 바꾼다", async ({ page }) => {
+  await login(page);
+  await page.goto("/call");
+  await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
+  await selectTheme(page, "daily");
+  await page.getByRole("button", { name: callSetup.next }).click();
+  await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
+  await page.getByTestId("start-call").click();
+  await expect.poll(() => page.evaluate(() => window.__leoFakeVoice!.listening())).toBe(true);
+  // 브라우저가 마이크 권한 거부를 알려 온 상황(외부 피드백 4)
+  await page.evaluate((m) => window.__leoFakeVoice!.fail(m, true), errors.voice.permissionDenied);
+  const main = page.locator("main");
+  await expect(main.getByRole("status").filter({ hasText: errors.voice.permissionDenied })).toBeVisible();
+  await expect(main.getByRole("alert")).toHaveCount(0);
+  await expect(main.getByText(callLive.textModeNotice)).toHaveCount(0);
+  await page.getByLabel(callLive.textInputLabel).fill("Nice to meet you.");
+  await page.getByRole("button", { name: callLive.say }).click();
+  await expect(page.getByTestId("msg-assistant")).toHaveCount(1, { timeout: 15_000 });
+});
+
+test("보내지 못한 말은 남고 다시 보내기로 재전송한다", async ({ page }) => {
+  await login(page);
+  await page.goto("/call");
+  await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
+  await selectTheme(page, "free");
+  await page.getByRole("button", { name: callSetup.next }).click();
+  await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
+  await page.getByTestId("start-call").click();
+  await expect.poll(() => page.evaluate(() => window.__leoFakeVoice!.listening())).toBe(true);
+  await say(page, "Hello MOCK_ERROR");
+  const main = page.locator("main");
+  await expect(main.getByRole("alert")).toBeVisible({ timeout: 15_000 });
+  // 실패한 말풍선은 남고(외부 피드백 5) 다시 보내기 버튼이 있다
+  await expect(page.getByTestId("msg-user")).toHaveCount(1);
+  await expect(page.getByText(chat.failedLabel)).toBeVisible();
+  const retry = main.getByRole("button", { name: common.retrySend });
+  await expect(retry).toBeVisible();
+  await retry.click();
+  await expect(main.getByRole("alert")).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId("msg-user")).toHaveCount(1);
+  // 다른 말을 하면 실패한 말풍선은 내려가고 대화가 이어진다
+  await say(page, "Hello again!");
+  await expect(page.getByTestId("msg-assistant")).toHaveCount(1, { timeout: 15_000 });
+  await expect(page.getByTestId("msg-user")).toHaveCount(1);
+  await expect(page.getByText(chat.failedLabel)).toHaveCount(0);
+  await expect(main.getByRole("alert")).toHaveCount(0);
 });
 
 test("음성 인식 미지원 브라우저는 텍스트 입력으로 대체한다", async ({ page }) => {

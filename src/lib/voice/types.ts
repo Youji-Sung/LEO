@@ -45,4 +45,6 @@ export type FakeVoiceControls = {
   listening(): boolean;
   // 지원 여부를 바꿔 미지원 브라우저를 흉내 낸다 (다음 isSupported 호출부터 반영)
   setSupport(support: VoiceSupport): void;
+  // 인식 오류가 났다고 가정 (권한 거부·마이크 없음은 fatal)
+  fail(message: string, fatal?: boolean): void;
 };

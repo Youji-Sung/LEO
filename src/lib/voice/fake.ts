@@ -29,6 +29,7 @@ export class FakeVoiceAdapter implements VoiceAdapter {
       spoken: () => this.spoken(),
       listening: () => this.listening(),
       setSupport: (support) => this.setSupport(support),
+      fail: (message, fatal) => this.handlers?.onError?.(message, fatal),
     };
   }
 

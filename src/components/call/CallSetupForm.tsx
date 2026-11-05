@@ -17,7 +17,7 @@ import {
 
 type Theme = { id: string; label: string; description: string };
 type Portfolio = { id: string; title: string };
-type MicState = "unknown" | "checking" | "granted" | "denied" | "unavailable";
+type MicState = "unknown" | "checking" | "granted" | "denied" | "notFound" | "unavailable";
 
 export function CallSetupForm({
   themes,
@@ -67,8 +67,10 @@ export function CallSetupForm({
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((t) => t.stop());
       setMic("granted");
-    } catch {
-      setMic("denied");
+    } catch (e) {
+      // 장치가 없는 것(NotFoundError)은 권한 거부와 다른 안내를 한다(외부 피드백 4).
+      const name = e instanceof DOMException ? e.name : "";
+      setMic(name === "NotFoundError" || name === "OverconstrainedError" ? "notFound" : "denied");
     }
   }
 
@@ -101,9 +103,11 @@ export function CallSetupForm({
     checking: callSetup.micChecking,
     granted: callSetup.micGranted,
     denied: callSetup.micDenied,
+    notFound: callSetup.micNotFound,
     unavailable: callSetup.micUnavailable,
   };
-  const micTone = mic === "granted" ? "success" : mic === "denied" ? "error" : "info";
+  // 글로 통화하는 것은 정상 경로라 오류색을 쓰지 않는다. 권한 거부만 사용자가 바꿀 수 있는 일이라 주의색.
+  const micTone = mic === "granted" ? "success" : mic === "denied" ? "warning" : "info";
   const portfolioMissing = theme === "portfolio" && portfolios.length === 0;
 
   return (
