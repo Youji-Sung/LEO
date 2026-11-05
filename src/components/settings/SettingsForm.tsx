@@ -11,10 +11,12 @@ import {
   Button,
   Card,
   CheckRow,
+  DirectionSelect,
   Select,
   StatusMessage,
   ThemeSelect,
   useToast,
+  type DirectionChoice,
 } from "@/components/ui";
 
 type Settings = {
@@ -27,9 +29,11 @@ type Settings = {
 export function SettingsForm({
   initial,
   durationOptions,
+  direction,
 }: {
   initial: Settings;
   durationOptions: number[];
+  direction: DirectionChoice;
 }) {
   const [form, setForm] = useState<Settings>(initial);
   // null = 아직 안 불러옴(힌트 숨김), [] = 불러왔는데 없음
@@ -80,8 +84,9 @@ export function SettingsForm({
 
   return (
     <form onSubmit={onSubmit} className="stack-lg" aria-label={text.formLabel}>
-      <Card as="section" title={text.appearanceTitle} titleId="settings-appearance">
+      <Card as="section" title={text.appearanceTitle} titleId="settings-appearance" className="stack">
         <ThemeSelect value={form.theme} onChange={(theme) => setForm((f) => ({ ...f, theme }))} />
+        <DirectionSelect value={direction} />
       </Card>
 
       <Card as="section" title={text.chatTitle} titleId="settings-chat">

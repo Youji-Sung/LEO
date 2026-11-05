@@ -114,5 +114,7 @@ model UserSettings {
   defaultCallMinutes Int     @default(10)
   // system | light | dark (docs/design/SYSTEM.md 1.3)
   theme              String  @default("system")
+  // basic | study | stage | console (docs/design/directions/README.md)
+  direction          String  @default("basic")
   user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -14,6 +14,7 @@ export default defineConfig({
       DATABASE_URL: "file:./test.db",
       AUTH_SECRET: "test-secret-test-secret-test-secret",
       LEO_ALLOW_SHORT_CALLS: "1",
+      LEO_ALLOW_SIGNUP: "1",
     },
     fileParallelism: false,
   },

@@ -79,9 +79,9 @@ CLAUDE.md 를 읽고, docs/design/VISUAL_BRIEF.md 와 docs/design/VISUAL_PLAN.md
 - 산출물을 docs/design/directions/ 에 정리하고 push 한 뒤 멈춰. 어느 시안도 적용하지 말고 2차 작업을 시작하지 마.
 ```
 
-## 세션 프롬프트 (2차: 선택한 방향 반영)
+## 세션 프롬프트 (다음: 시안 4종 다듬기)
 
-운영자가 `docs/design/directions/README.md`의 "선택" 칸을 채워 push한 뒤에 쓴다. 2차 계획은 선택 내용을 보고 작성한다.
+운영자 결정(2026-11-05)으로 시안을 고르지 않고 넷을 모두 사용자 기능으로 유지한다. 범위는 `docs/design/VISUAL_BRIEF.md`의 "다음 작업" 절. 단계별 계획은 세션을 시작하기 전에 운영자와 함께 쓴다.
 
 ## 이전 세션 프롬프트 (UI/UX 개선, 완료됨 2026-11-04)
 

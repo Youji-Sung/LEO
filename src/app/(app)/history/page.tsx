@@ -4,6 +4,7 @@ import { common, history } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { listConversations } from "@/services/conversation";
 import { formatDateTime, formatDurationWords } from "@/lib/format";
+import { displayedCallSec } from "@/services/call/duration";
 import { Badge, ButtonLink, EmptyState, Segmented } from "@/components/ui";
 
 export const metadata = { title: common.pageTitle(history.pageTitle) };
@@ -72,7 +73,7 @@ export default async function HistoryPage({
                     <span>
                       {hasMessages ? common.messagesCount(c._count.messages) : history.noMessages}
                     </span>
-                    {c.durationSec ? <span>{formatDurationWords(c.durationSec)}</span> : null}
+                    {displayedCallSec(c) ? <span>{formatDurationWords(displayedCallSec(c)!)}</span> : null}
                     {c.endedAt ? (
                       <Badge>{common.ended}</Badge>
                     ) : (

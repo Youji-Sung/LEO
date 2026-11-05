@@ -1,0 +1,242 @@
+[
+  {
+    "shot": "login",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "login",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "login",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "login",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "home",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "home",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "home",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "home",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-hints",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-hints",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "chat-hints",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "chat-hints",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-setup",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "call-setup",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-setup",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "call-setup",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-idle",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "call-idle",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-idle",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "call-idle",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-live",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "call-muted",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "call-ending",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "report-call-interview",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "call-live",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-muted",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-ending",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "report-call-interview",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-live",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "call-muted",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "call-ending",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "report-call-interview",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "call-live",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-muted",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "call-ending",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "report-call-interview",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "report-chat-interview",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "report-chat-interview",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "report-chat-interview",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "report-chat-interview",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "history",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "history",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "history",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "history",
+    "variant": "390-dark",
+    "violations": []
+  },
+  {
+    "shot": "settings",
+    "variant": "1280-light",
+    "violations": []
+  },
+  {
+    "shot": "settings",
+    "variant": "1280-dark",
+    "violations": []
+  },
+  {
+    "shot": "settings",
+    "variant": "390-light",
+    "violations": []
+  },
+  {
+    "shot": "settings",
+    "variant": "390-dark",
+    "violations": []
+  }
+]

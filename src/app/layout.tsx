@@ -3,9 +3,13 @@ import { cookies } from "next/headers";
 import { HydrationMarker } from "@/components/HydrationMarker";
 import { RouteFocus } from "@/components/RouteFocus";
 import { meta } from "@/content/ko";
+import { DIRECTION_COOKIE, DIRECTION_FONTS, resolveDirection } from "@/lib/direction";
 import { THEME_COOKIE, themeAttribute } from "@/lib/theme";
 import "./tokens.css";
 import "./globals.css";
+import "./directions/study.css";
+import "./directions/stage.css";
+import "./directions/console.css";
 
 export const metadata: Metadata = {
   title: meta.siteTitle,
@@ -38,11 +42,23 @@ const PRETENDARD_CSS =
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const store = await cookies();
   const theme = themeAttribute(store.get(THEME_COOKIE)?.value);
+  // 시각 방향 시안(1차 세션): 쿠키/환경 변수로 고른 시안의 속성과 폰트만 더한다. 없으면 현행.
+  const direction = resolveDirection(store.get(DIRECTION_COOKIE)?.value);
+  const fonts = direction ? DIRECTION_FONTS[direction] : [];
   return (
-    <html lang="ko" data-theme={theme}>
+    <html lang="ko" data-theme={theme} data-direction={direction}>
       <head>
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
         <link rel="stylesheet" href={PRETENDARD_CSS} crossOrigin="anonymous" />
+        {fonts.length > 0 ? (
+          <>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+            {fonts.map((href) => (
+              <link key={href} rel="stylesheet" href={href} />
+            ))}
+          </>
+        ) : null}
       </head>
       <body>
         <HydrationMarker />

@@ -84,6 +84,15 @@ export async function updateConversation(
   return prisma.conversation.update({ where: { id }, data: patch });
 }
 
+// 첫 메시지로 제목을 만든다. 40자를 넘으면 단어 경계에서 자르고 말줄임표를 붙인다.
+export function makeTitle(content: string, max = 40): string {
+  const text = content.trim().replace(/\s+/g, " ");
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace >= max / 2 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`;
+}
+
 export function toChatMessages(messages: Array<{ role: string; content: string }>): ChatMessage[] {
   return messages
     .filter(
@@ -167,14 +176,21 @@ async function* sendMessageLocked(input: {
   const userMessage = await prisma.message.create({
     data: { conversationId: conv.id, role: "user", content, index: lastIndex + 1 },
   });
-  if (!conv.title)
+  const titleFromThisTurn = !conv.title;
+  if (titleFromThisTurn)
     await prisma.conversation.update({
       where: { id: conv.id },
-      data: { title: content.slice(0, 40) },
+      data: { title: makeTitle(content) },
     });
   // 응답을 받지 못한 사용자 턴은 지워서 턴 상한과 다음 호출 히스토리에 남지 않게 한다(클라이언트가 같은 내용으로 재시도한다).
-  const dropUserTurn = () =>
-    prisma.message.delete({ where: { id: userMessage.id } }).catch(() => undefined);
+  // 이 턴으로 붙인 제목도 같이 되돌린다.
+  const dropUserTurn = async () => {
+    await prisma.message.delete({ where: { id: userMessage.id } }).catch(() => undefined);
+    if (titleFromThisTurn)
+      await prisma.conversation
+        .update({ where: { id: conv.id }, data: { title: null } })
+        .catch(() => undefined);
+  };
 
   const provider = getClaudeProvider();
   const mode: ConversationMode = conv.kind === "call" ? "call" : "chat";

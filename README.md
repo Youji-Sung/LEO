@@ -77,6 +77,7 @@ Claude 사용 단가는 `src/config/pricing.ts`에서 바꾼다.
 | `npm run db:seed` | 개발용 사용자 2명 시드 |
 | `npx tsx scripts/smoke-claude.ts` | 실제 API 로 리포트 생성 1회 호출해 키·모델 확인(비용 발생, 약 $0.1) |
 | `npx tsx scripts/screenshots.ts --phase after [--axe] [--widths 360,640,768] [--reduced-motion] [--only call,chat]` | 모의 서버를 띄워 모든 화면·상태를 1280/390 × 라이트/다크로 촬영(`docs/design/screenshots/`), axe 검사·가로 스크롤 검사 |
+| `npx tsx scripts/screenshots.ts --direction study\|stage\|console [--axe]` | 시각 방향 시안의 비교용 화면 세트를 `docs/design/directions/<시안>/shots/` 에 촬영. 시안을 보는 법은 `docs/design/directions/README.md` |
 | `npx tsx scripts/build-tokens.ts [--check] [--table]` | 디자인 토큰 TS → `tokens.css` 생성, 대비 표 출력 |
 | `npm run build && npx tsx scripts/perf.ts` | 프로덕션 서버로 첫 로드 CLS·전송량 측정(`docs/design/PERF.md`) |
 

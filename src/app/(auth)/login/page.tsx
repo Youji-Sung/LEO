@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { AuthForm } from "@/components/AuthForm";
 import { auth, common } from "@/content/ko";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { isSignupAllowed } from "@/lib/auth/signup-gate";
 
 export const metadata = { title: common.pageTitle(auth.loginTitle) };
 
@@ -22,9 +23,11 @@ export default async function LoginPage() {
       <Suspense>
         <AuthForm mode="login" />
       </Suspense>
-      <p className="muted">
-        {auth.noAccount} <Link href="/signup">{auth.toSignup}</Link>
-      </p>
+      {isSignupAllowed() ? (
+        <p className="muted">
+          {auth.noAccount} <Link href="/signup">{auth.toSignup}</Link>
+        </p>
+      ) : null}
     </main>
   );
 }
