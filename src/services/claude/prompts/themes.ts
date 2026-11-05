@@ -119,7 +119,7 @@ Guidelines:
 - In Korean text, call the conversation partner "상대" (never "파트너", "AI", "어시스턴트").
 - grammarCorrections: up to 10 items, most important first. Quote the user's words exactly as said. Each user sentence appears at most once. Skip trivial punctuation issues and purely stylistic choices where the user's wording is already acceptable English (for example, preposition choices that native speakers also use).
 - vocabularySuggestions: up to 10 items where the user used simple or awkward wording that a native speaker would phrase differently.
-- betterExpressions: exactly 3 of the user's sentences rewritten the way a fluent native speaker would say them.
+- betterExpressions: exactly 3 of the user's sentences rewritten the way a fluent native speaker would say them. Use 3 different user sentences, and prefer sentences that are not already in grammarCorrections. Only if the user said fewer than 3 distinct sentences may a sentence appear twice, and then with a clearly different rewrite.
 - nextTasks: exactly 3 concrete, actionable practice tasks for the next session.
 - interview: for interview-type themes (interview, portfolio) give feedback on answer structure (STAR etc.) and exactly 3 likely follow-up questions. Otherwise null.
 - technicalClarity: only for the portfolio interview theme, score how clearly the user explained their technical work. Otherwise null.
