@@ -12,6 +12,11 @@ test("로그인 → 새 채팅 → 메시지 3회 → 리포트 생성, 새로�
   await expect(page).toHaveURL(/\/chat\/[a-z0-9]+$/);
   const url = page.url();
 
+  // 빈 채팅의 예문은 "예시" 라벨과 따옴표(q)로 예문임이 드러난다(외부 피드백 2)
+  const example = page.locator(".empty-example");
+  await expect(example).toContainText(chat.emptyExampleLabel);
+  await expect(example.locator('q[lang="en"]')).toHaveText(chat.emptyExample);
+
   const input = page.getByLabel(chat.inputLabel);
   const sayings = [
     "Hi, I am backend developer for five years.",

@@ -774,6 +774,18 @@ fieldset.field > legend {
 .empty .btn {
   margin-top: var(--space-2);
 }
+/* 빈 채팅의 예문: 라벨 + 따옴표로 "예시"임을 드러낸다 */
+.empty-example {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+}
+.empty-example q {
+  quotes: "\201C" "\201D";
+  font-style: italic;
+}
 
 /* ---------- spinner / skeleton ---------- */
 .spinner {

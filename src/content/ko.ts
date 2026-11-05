@@ -118,6 +118,7 @@ export const chat = {
   untitled: "제목 없음",
   logLabel: "대화",
   emptyTitle: "영어로 첫 메시지를 보내 보세요",
+  emptyExampleLabel: "예시",
   emptyExample: "Hi! Can I tell you about my week?",
   hintLabel: "교정 힌트",
   waiting: "답변을 기다리는 중",
@@ -158,6 +159,7 @@ export const callSetup = {
   micDenied:
     "마이크 권한이 꺼져 있어요. 주소창 왼쪽 자물쇠에서 마이크를 허용하거나, 글로 통화할 수도 있어요.",
   micUnavailable: "이 브라우저에서는 마이크를 쓸 수 없어요. 글로 통화해요.",
+  micNotFound: "마이크를 찾지 못했어요. 글로 통화해요.",
   sttUnsupported:
     "이 브라우저는 음성 인식을 지원하지 않아요. Chrome을 권하고, 지금은 글로 통화할 수 있어요.",
   nextHint: "다음 화면에서 통화를 시작해요.",
@@ -203,6 +205,7 @@ export const callLive = {
   hangup: "끊기",
   hangupLabel: "통화 끊기",
   turnCapEnd: "대화 횟수 한도에 닿아 통화를 마쳐요.",
+  networkError: "연결이 끊겨 답변을 받지 못했어요. 화면을 새로고침하면 통화를 이어 갈 수 있어요.",
 } as const;
 
 export const report = {

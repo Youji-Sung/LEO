@@ -644,7 +644,7 @@
   font-family: var(--font-sans);
   font-size: var(--type-small-size);
 }
-[data-direction="study"] .empty p[lang="en"] {
+[data-direction="study"] .empty q[lang="en"] {
   font-style: italic;
 }
 @media (max-width: 479.98px) {

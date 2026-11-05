@@ -224,11 +224,13 @@ export function ChatView(props: Props) {
       <div className="chat-messages" role="log" aria-label={chat.logLabel}>
         {messages.length === 0 && (
           // 예문은 영어라 lang="en" 이 필요해 EmptyState 의 body 대신 행동 자리에 둔다.
+          // "예시" 라벨과 따옴표로 예문임을 드러낸다(외부 피드백 2).
           <EmptyState
             title={chat.emptyTitle}
             action={
-              <p lang="en" className="muted">
-                {chat.emptyExample}
+              <p className="empty-example">
+                <Badge>{chat.emptyExampleLabel}</Badge>
+                <q lang="en">{chat.emptyExample}</q>
               </p>
             }
           />
