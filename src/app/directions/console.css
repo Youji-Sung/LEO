@@ -873,9 +873,9 @@
 }
 [data-direction="console"] .timer {
   display: grid;
-  grid-template-columns: auto auto;
-  align-items: center;
-  gap: var(--space-3);
+  justify-items: end;
+  gap: var(--space-1);
+  flex: none;
 }
 [data-direction="console"] .timer-ring {
   display: none;

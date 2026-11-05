@@ -1360,6 +1360,9 @@ fieldset.field > legend {
   stroke-linecap: round;
   transition: stroke-dashoffset 0.5s linear;
 }
+.timer-text {
+  white-space: nowrap;
+}
 /* 남은 비율 가로 막대: 기본 디자인은 링을 쓰므로 숨긴다(서재·무대·콘솔이 켠다) */
 .timer-bar {
   display: none;
