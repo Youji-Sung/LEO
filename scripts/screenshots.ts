@@ -259,6 +259,13 @@ async function login(context: BrowserContext): Promise<void> {
     data: { email: EMAIL, password: PASSWORD },
   });
   if (!res.ok()) throw new Error(`로그인 실패 ${res.status()}`);
+  // 로그인 응답이 사용자 설정의 시안으로 쿠키를 덮어쓰므로, 실제 사용자처럼 설정에 저장해 쿠키를 다시 받는다.
+  if (direction) {
+    const saved = await context.request.patch(`${BASE}/api/settings`, {
+      data: { direction },
+    });
+    if (!saved.ok()) throw new Error(`시안 설정 실패 ${saved.status()}`);
+  }
 }
 
 async function api<T>(
@@ -472,30 +479,28 @@ const STATES: State[] = [
     },
   },
   // 마이크 권한 거부·장치 없음(외부 피드백 4): 가짜 어댑터를 끄고 getUserMedia 가 거부하게 한다.
-  ...(["denied", "notfound"] as const).map(
-    (kind): State => ({
-      id: `call-setup-mic-${kind}`,
-      title: kind === "denied" ? "통화 설정 · 마이크 권한 거부" : "통화 설정 · 마이크 없음",
-      auth: "auth",
-      run: async (c) => {
-        // 문자열로 넣는다: tsx(esbuild) 가 함수 안의 함수 표현식을 __name 헬퍼로 감싸 브라우저에서 ReferenceError 가 난다.
-        const errorName = kind === "denied" ? "NotAllowedError" : "NotFoundError";
-        await c.page.addInitScript(
-          `window.__LEO_FAKE_VOICE = false;
+  ...(["denied", "notfound"] as const).map((kind): State => ({
+    id: `call-setup-mic-${kind}`,
+    title: kind === "denied" ? "통화 설정 · 마이크 권한 거부" : "통화 설정 · 마이크 없음",
+    auth: "auth",
+    run: async (c) => {
+      // 문자열로 넣는다: tsx(esbuild) 가 함수 안의 함수 표현식을 __name 헬퍼로 감싸 브라우저에서 ReferenceError 가 난다.
+      const errorName = kind === "denied" ? "NotAllowedError" : "NotFoundError";
+      await c.page.addInitScript(
+        `window.__LEO_FAKE_VOICE = false;
            Object.defineProperty(navigator.mediaDevices, "getUserMedia", {
              configurable: true,
              value: function () { return Promise.reject(new DOMException("blocked", "${errorName}")); },
            });`,
-        );
-        await go(c.page, "/call");
-        await c.page.getByRole("button", { name: callSetup.micCheck }).click();
-        await c.page
-          .getByTestId("mic-status")
-          .filter({ hasText: kind === "denied" ? callSetup.micDenied : callSetup.micNotFound })
-          .waitFor();
-      },
-    }),
-  ),
+      );
+      await go(c.page, "/call");
+      await c.page.getByRole("button", { name: callSetup.micCheck }).click();
+      await c.page
+        .getByTestId("mic-status")
+        .filter({ hasText: kind === "denied" ? callSetup.micDenied : callSetup.micNotFound })
+        .waitFor();
+    },
+  })),
   {
     id: "call-idle",
     title: "통화 · 시작 전",
@@ -572,8 +577,15 @@ const STATES: State[] = [
       });
       await go(c.page, `/call/${id}`);
       await startCall(c.page);
-      await c.page.evaluate((m) => window.__leoFakeVoice!.fail(m, true), errors.voice.permissionDenied);
-      await c.page.locator("main").getByRole("status").filter({ hasText: errors.voice.permissionDenied }).waitFor();
+      await c.page.evaluate(
+        (m) => window.__leoFakeVoice!.fail(m, true),
+        errors.voice.permissionDenied,
+      );
+      await c.page
+        .locator("main")
+        .getByRole("status")
+        .filter({ hasText: errors.voice.permissionDenied })
+        .waitFor();
     },
   },
   {
@@ -589,7 +601,10 @@ const STATES: State[] = [
       await go(c.page, `/call/${id}`);
       await startCall(c.page);
       await say(c.page, "Hello MOCK_ERROR");
-      await c.page.locator("main").getByRole("button", { name: common.retrySend }).waitFor({ timeout: 20_000 });
+      await c.page
+        .locator("main")
+        .getByRole("button", { name: common.retrySend })
+        .waitFor({ timeout: 20_000 });
     },
   },
   {

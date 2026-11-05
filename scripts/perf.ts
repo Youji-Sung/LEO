@@ -1,18 +1,24 @@
 /*
  * 프로덕션 빌드(next start)로 첫 로드 성능을 잰다: 폰트·CSS·JS 전송량, CLS(layout-shift 누적), 로드 시간.
- *   npm run build && npx tsx scripts/perf.ts [--port 3160]
- * 결과: docs/design/PERF.md 에 표로 쓴다. 실제 Claude 호출 없음(CLAUDE_MOCK=1).
+ *   npm run build && npx tsx scripts/perf.ts [--port 3160] [--direction basic|study|stage|console]
+ * 결과: docs/design/PERF.md 에 표로 쓴다. --direction 이면 쿠키 leo_direction 을 넣고
+ *       docs/design/screenshots/directions/<시안>/perf.md 에 쓴다. 실제 Claude 호출 없음(CLAUDE_MOCK=1).
  */
 import { execSync, spawn, type ChildProcess } from "node:child_process";
-import { rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { chromium, type Page } from "@playwright/test";
+import { DIRECTION_COOKIE, isDirectionChoice } from "../src/lib/direction";
 
 const portIdx = process.argv.indexOf("--port");
 const PORT = portIdx >= 0 ? Number(process.argv[portIdx + 1]) : 3160;
+const dirIdx = process.argv.indexOf("--direction");
+const direction = dirIdx >= 0 ? process.argv[dirIdx + 1] : undefined;
+if (direction !== undefined && !isDirectionChoice(direction))
+  throw new Error("--direction 은 basic, study, stage, console 중 하나");
 const BASE = `http://localhost:${PORT}`;
 const ROOT = process.cwd();
-const DB = "perf.db";
+const DB = direction ? `perf-${direction}.db` : "perf.db";
 
 function env(): NodeJS.ProcessEnv {
   return {
@@ -122,12 +128,19 @@ async function main(): Promise<void> {
   const rows: Metric[] = [];
   try {
     const context = await browser.newContext({ locale: "ko-KR" });
+    if (direction && direction !== "basic") {
+      await context.addCookies([
+        { name: DIRECTION_COOKIE, value: direction, url: BASE, sameSite: "Lax" },
+      ]);
+    }
     const page = await context.newPage();
     rows.push(await measure(page, "/login", 1280));
     rows.push(await measure(page, "/login", 390));
     await context.request.post(`${BASE}/api/auth/login`, {
       data: { email: "dev1@leo.local", password: "leo-pass-1234" },
     });
+    // 로그인이 저장된 시안으로 쿠키를 덮어쓰므로 설정에 저장해 쿠키를 다시 받는다.
+    if (direction) await context.request.patch(`${BASE}/api/settings`, { data: { direction } });
     for (const url of ["/", "/chat", "/call", "/history", "/settings"]) {
       rows.push(await measure(page, url, 1280));
       rows.push(await measure(page, url, 390));
@@ -146,9 +159,9 @@ async function main(): Promise<void> {
   }
   const kb = (n: number) => `${(n / 1024).toFixed(1)}KB`;
   const lines = [
-    "# 첫 로드 성능 (6단계)",
+    direction ? `# 첫 로드 성능 (디자인 시안 ${direction})` : "# 첫 로드 성능 (6단계)",
     "",
-    `측정: \`npm run build && npx tsx scripts/perf.ts\` — 프로덕션 서버(next start, 모의 모드), Chromium headless, 캐시 없는 새 컨텍스트, 각 URL 을 1280·390 폭으로 1회. 바이트는 전송 크기(content-length 또는 본문 길이). CLS 는 PerformanceObserver layout-shift 누적(입력 없는 것만), 로드 후 1.5초까지. 날짜: ${new Date().toISOString().slice(0, 10)}`,
+    `측정: \`npm run build && npx tsx scripts/perf.ts${direction ? ` --direction ${direction}` : ""}\` — 프로덕션 서버(next start, 모의 모드), Chromium headless, 캐시 없는 새 컨텍스트, 각 URL 을 1280·390 폭으로 1회. 바이트는 전송 크기(content-length 또는 본문 길이). CLS 는 PerformanceObserver layout-shift 누적(입력 없는 것만), 로드 후 1.5초까지. 날짜: ${new Date().toISOString().slice(0, 10)}`,
     "",
     "| URL | 폭 | CLS | DCL(ms) | load(ms) | HTML | CSS | JS | 폰트(파일 수) |",
     "|---|---:|---:|---:|---:|---:|---:|---:|---:|",
@@ -159,7 +172,11 @@ async function main(): Promise<void> {
     "",
     "기준: CLS 0.1 미만이 '좋음'(web.dev Core Web Vitals, 확인 못 함 — 값은 일반적으로 알려진 임계값이며 이번 조사에서 원문을 읽지 않았다). 폰트는 다이나믹 서브셋이라 화면에 쓰인 글자 범위만 받는다.",
   ];
-  writeFileSync(path.join(ROOT, "docs", "design", "PERF.md"), lines.join("\n") + "\n");
+  const out = direction
+    ? path.join(ROOT, "docs", "design", "screenshots", "directions", direction, "perf.md")
+    : path.join(ROOT, "docs", "design", "PERF.md");
+  mkdirSync(path.dirname(out), { recursive: true });
+  writeFileSync(out, lines.join("\n") + "\n");
   process.stdout.write(lines.join("\n") + "\n");
 }
 
