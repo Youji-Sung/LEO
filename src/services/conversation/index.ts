@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import { HttpError } from "@/lib/http";
+import type { Prisma } from "@/generated/prisma/client";
 import { getClaudeProvider } from "@/services/claude";
 import { describeClaudeError } from "@/services/claude/errors";
 import { assertTurnAllowed, TurnCapError } from "@/services/claude/turn-cap";
@@ -48,9 +49,17 @@ export async function createConversation(input: {
   });
 }
 
-export async function listConversations(userId: string, kind?: ConversationKind) {
+export async function listConversations(
+  userId: string,
+  kind?: ConversationKind,
+  options: { onlyWithContent?: boolean } = {},
+) {
   return prisma.conversation.findMany({
-    where: { userId, ...(kind ? { kind } : {}) },
+    where: {
+      userId,
+      ...(kind ? { kind } : {}),
+      ...(options.onlyWithContent ? hasContentWhere : {}),
+    },
     orderBy: { updatedAt: "desc" },
     include: { _count: { select: { messages: true } }, report: { select: { id: true } } },
   });
@@ -101,6 +110,36 @@ export function toChatMessages(messages: Array<{ role: string; content: string }
     )
     .map((m) => ({ role: m.role, content: m.content }));
 }
+
+// Claude API 로 보낼 히스토리. 첫 메시지는 user 여야 하므로 앞에 저장된 상대의 첫 인사(assistant)는 뺀다.
+export function toProviderMessages(messages: ChatMessage[]): ChatMessage[] {
+  const first = messages.findIndex((m) => m.role === "user");
+  return first < 0 ? [] : messages.slice(first);
+}
+
+// 통화 시작: 시작 시각을 기록하고 상대의 첫 인사를 첫 메시지(index 0)로 저장한다.
+// 첫 인사는 리포트·대화 내용·메시지 수에 들어가고, API 히스토리에서는 toProviderMessages 가 뺀다.
+export async function startCall(userId: string, id: string, openingLine: string) {
+  const release = await acquireConversationLock(id);
+  try {
+    const conv = await getOwnedConversation(userId, id);
+    if (conv.kind !== "call") throw new HttpError(400, errors.conversation.notACall, "not_a_call");
+    if (conv.endedAt) throw new HttpError(409, errors.conversation.callEnded, "call_ended");
+    // 이미 시작한 통화(메시지가 있음)는 시작 시각을 바꾸지 않는다.
+    if (conv.messages.length > 0) return conv;
+    await prisma.message.create({
+      data: { conversationId: id, role: "assistant", content: openingLine, index: 0 },
+    });
+    return prisma.conversation.update({ where: { id }, data: { startedAt: new Date() } });
+  } finally {
+    release();
+  }
+}
+
+// 목록·홈에 보일 대화: 내가 한 말이 하나라도 있거나 리포트가 있는 것. 만들기만 하고 말하지 않은 대화는 숨긴다.
+export const hasContentWhere: Prisma.ConversationWhereInput = {
+  OR: [{ messages: { some: { role: "user" } } }, { report: { isNot: null } }],
+};
 
 // 같은 대화에 대한 동시 전송을 직렬화한다(단일 프로세스). 메시지 index 충돌과 턴 상한 우회를 막는다.
 const conversationLocks = new Map<string, Promise<void>>();
@@ -171,7 +210,7 @@ async function* sendMessageLocked(input: {
     throw e;
   }
 
-  const history = toChatMessages(conv.messages);
+  const history = toProviderMessages(toChatMessages(conv.messages));
   const lastIndex = conv.messages.length > 0 ? conv.messages[conv.messages.length - 1]!.index : -1;
   const userMessage = await prisma.message.create({
     data: { conversationId: conv.id, role: "user", content, index: lastIndex + 1 },

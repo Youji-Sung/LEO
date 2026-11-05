@@ -21,16 +21,21 @@ export default async function CallPage({ params }: { params: Promise<{ id: strin
   if (!conv) notFound();
   if (conv.endedAt) redirect(`/history/${conv.id}/report`);
   const theme = THEMES[conv.theme as keyof typeof THEMES];
+  // 통화를 시작하면 상대의 첫 인사가 index 0 의 assistant 메시지로 저장된다. 화면에서는 따로 그리므로 목록에서 뺀다.
+  const opening = conv.messages[0]?.role === "assistant" ? conv.messages[0] : null;
   return (
     <CallView
       conversationId={conv.id}
       themeLabel={theme?.label ?? conv.theme}
-      openingLine={theme?.openingLine ?? "Hello! Let's get started."}
+      openingLine={opening?.content ?? theme?.openingLine ?? "Hello! Let's get started."}
       durationSec={conv.durationSec ?? 600}
       startedAtMs={conv.startedAt.getTime()}
+      started={conv.messages.length > 0}
       extendable={canExtend(conv.durationSec ?? 600)}
       ttsVoice={settings?.ttsVoice ?? null}
-      initialMessages={conv.messages.map((m) => ({ id: m.id, role: m.role, content: m.content }))}
+      initialMessages={conv.messages
+        .filter((m) => m !== opening)
+        .map((m) => ({ id: m.id, role: m.role, content: m.content }))}
     />
   );
 }

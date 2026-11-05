@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
-import { callLive, callSetup, report } from "../src/content/ko";
+import { callLive, callSetup, common, report, transcript } from "../src/content/ko";
+import { THEMES } from "../src/services/claude/prompts/themes";
 import { login, selectTheme } from "./helpers";
 
 async function say(page: Page, text: string) {
@@ -45,6 +46,14 @@ test("통화 시작 → 발화 3회 → 타이머 만료 → 리포트 화면", 
   await expect(page.getByRole("heading", { name: report.pageTitle })).toBeVisible();
   await expect(page.getByTestId("score")).toHaveCount(4);
   await expect(page.getByTestId("interview-section")).toBeVisible();
+
+  // 상대의 첫 인사가 대화 내용과 메시지 수에 들어간다(외부 피드백 1): 인사 1 + 내 말 3 + 답 3
+  const conversationId = page.url().match(/\/history\/([a-z0-9]+)\/report$/)![1]!;
+  await page.goto(`/history/${conversationId}`);
+  await expect(page.getByRole("heading", { name: transcript.pageTitle })).toBeVisible();
+  await expect(page.getByRole("log").getByText(THEMES.interview.openingLine)).toBeVisible();
+  await page.goto("/history");
+  await expect(page.getByTestId("history-list")).toContainText(common.messagesCount(7));
 });
 
 test("음소거와 끊기", async ({ page }) => {

@@ -23,6 +23,8 @@ type Props = {
   durationSec: number;
   // 서버에 기록된 통화 시작 시각. 새로고침 시 남은 시간 계산에 쓴다.
   startedAtMs: number;
+  // 이미 시작한 통화(첫 인사가 저장됨)면 새로고침 뒤 이어서 진행한다.
+  started: boolean;
   extendable: boolean;
   ttsVoice: string | null;
   initialMessages: Entry[];
@@ -246,7 +248,7 @@ export function CallView(props: Props) {
     adapterRef.current = adapter;
     const sup = adapter.isSupported();
     setSupport(sup);
-    const resuming = props.initialMessages.length > 0;
+    const resuming = props.started;
     startedAtRef.current = resuming ? props.startedAtMs : Date.now();
     setPhaseBoth("live");
     setRemaining(
