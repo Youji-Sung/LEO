@@ -4,9 +4,9 @@
 
 ## 현재 작업
 
-**시각 방향 시안 (1차 세션).** 작업 전에 반드시 읽는다: `docs/design/VISUAL_BRIEF.md` → `docs/design/VISUAL_PLAN.md`. 이 작업은 **시안 3개를 push한 뒤 멈추는** 작업이다. 아래 "작업 방식"의 "끝까지 수행"과 "단계마다 테스트 통과"는 이 작업에서는 VISUAL_PLAN의 규칙이 우선한다.
+**디자인 시안 4종 다듬기.** 작업 전에 반드시 읽는다: `docs/design/VISUAL_BRIEF.md`의 "다음 작업" 절 → `docs/design/directions/README.md`와 시안별 README. 기본·서재·무대·콘솔은 모두 사용자가 설정에서 고르는 정식 기능이다. 하나를 고르거나 없애지 않는다. 다음 세션의 단계별 계획은 운영자가 시작할 때 준다.
 
-이전 작업 문서: 기능 구현은 `docs/SPEC.md`·`docs/PLAN.md`·`docs/DECISIONS.md`, UI/UX 개선은 `docs/design/BRIEF.md`·`docs/design/PLAN.md`(완료, 2026-11-04).
+이전 작업 문서: 기능 구현은 `docs/SPEC.md`·`docs/PLAN.md`·`docs/DECISIONS.md`(완료, 2026-11-03), UI/UX 개선은 `docs/design/BRIEF.md`·`docs/design/PLAN.md`(완료, 2026-11-04), 시안 3개 제작은 `docs/design/VISUAL_PLAN.md`(완료, 2026-11-04). 외부 공개 절차는 `docs/DEPLOY_TUNNEL.md`.
 
 ## 작업 방식
 

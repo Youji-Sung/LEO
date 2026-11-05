@@ -1,12 +1,24 @@
-// 시각 방향 시안 전환(1차 세션). 쿠키 leo_direction 또는 LEO_DIRECTION 환경 변수로 고른다.
-// 값이 없으면 현행 디자인이다. 근거: docs/design/directions/01-exploration.md 4절.
+// 디자인 시안(사용자 기능). DB(UserSettings.direction)와 쿠키(leo_direction)에 같은 값을 두고,
+// 루트 레이아웃이 쿠키로 <html data-direction> 을 서버 렌더한다. "basic" 은 기본 디자인(쿠키 없음).
 export const DIRECTION_COOKIE = "leo_direction";
 export const DIRECTION_QUERY = "direction";
 export const DIRECTIONS = ["study", "stage", "console"] as const;
 export type Direction = (typeof DIRECTIONS)[number];
+export const DIRECTION_CHOICES = ["basic", ...DIRECTIONS] as const;
+export type DirectionChoice = (typeof DIRECTION_CHOICES)[number];
 
 export function isDirection(v: unknown): v is Direction {
   return typeof v === "string" && (DIRECTIONS as readonly string[]).includes(v);
+}
+
+export function isDirectionChoice(v: unknown): v is DirectionChoice {
+  return typeof v === "string" && (DIRECTION_CHOICES as readonly string[]).includes(v);
+}
+
+export function directionCookieHeader(choice: DirectionChoice): string {
+  const secure = (process.env.APP_URL ?? "").startsWith("https://") ? "; Secure" : "";
+  const value = choice === "basic" ? "off" : choice;
+  return `${DIRECTION_COOKIE}=${value}; Path=/; SameSite=Lax; Max-Age=${60 * 60 * 24 * 365}${secure}`;
 }
 
 export function resolveDirection(cookieValue: string | undefined): Direction | undefined {
