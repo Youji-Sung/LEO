@@ -1,6 +1,6 @@
 "use client";
 
-import { Mic, MicOff, Phone, PhoneOff, Plus, Send } from "lucide-react";
+import { Mic, MicOff, Phone, PhoneOff, Plus, Send, Volume2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { callLive, chat, common } from "@/content/ko";
@@ -9,6 +9,7 @@ import { formatDurationWords } from "@/lib/format";
 import { streamMessage } from "@/lib/ndjson-client";
 import { getVoiceAdapter } from "@/lib/voice";
 import { SentenceSplitter } from "@/lib/voice/sentence-splitter";
+import { UtteranceBuffer } from "@/lib/voice/utterance-buffer";
 import type { VoiceAdapter, VoiceSupport } from "@/lib/voice/types";
 import { Bubble, Button, CallStatus, Card, StatusMessage, Timer } from "@/components/ui";
 import type { CallState } from "@/components/ui/CallStatus";
@@ -23,6 +24,7 @@ type Props = {
   durationSec: number;
   // 서버에 기록된 통화 시작 시각. 새로고침 시 남은 시간 계산에 쓴다.
   startedAtMs: number;
+  initialRemainingSec: number;
   // 이미 시작한 통화(첫 인사가 저장됨)면 새로고침 뒤 이어서 진행한다.
   started: boolean;
   extendable: boolean;
@@ -39,12 +41,17 @@ export function CallView(props: Props) {
   const [entries, setEntries] = useState<Entry[]>(props.initialMessages);
   const [interim, setInterim] = useState("");
   const [partial, setPartial] = useState<string | null>(null);
-  const [remaining, setRemaining] = useState(props.durationSec);
+  const [remaining, setRemaining] = useState(props.initialRemainingSec);
   const [durationSec, setDurationSec] = useState(props.durationSec);
   const [extendable, setExtendable] = useState(props.extendable);
   const [muted, setMuted] = useState(false);
   const [busy, setBusy] = useState(false);
   const [speaking, setSpeaking] = useState(false);
+  const [listening, setListening] = useState(false);
+  const [reviewSpeech, setReviewSpeech] = useState(false);
+  const [editingSpeech, setEditingSpeech] = useState(false);
+  const [draftInput, setDraftInput] = useState("");
+  const [playbackNotice, setPlaybackNotice] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [errorTone, setErrorTone] = useState<"error" | "info">("error");
   // 보내지 못한 말: 말풍선은 남기고 다시 보내기로 잇는다(채팅과 같은 규칙, 외부 피드백 5).
@@ -77,8 +84,17 @@ export function CallView(props: Props) {
   const failedIdRef = useRef<string | null>(null);
   const logRef = useRef<HTMLDivElement>(null);
   const textInputRef = useRef<HTMLTextAreaElement>(null);
+  const textValueRef = useRef("");
   // 통화 시작 PATCH(첫 인사를 index 0 으로 저장). 첫 발화 전송은 이것이 끝난 뒤에 한다.
   const startedRef = useRef<Promise<void>>(Promise.resolve());
+  const utteranceRef = useRef<UtteranceBuffer | null>(null);
+  const reviewRef = useRef(false);
+  const editingRef = useRef(false);
+  const recognitionActiveRef = useRef(false);
+  const recognitionRetriesRef = useRef(0);
+  const pendingSpeechRef = useRef(0);
+  const playbackBlockedRef = useRef(false);
+  const latestReplyRef = useRef(props.initialMessages.findLast((m) => m.role === "assistant")?.content ?? props.openingLine);
 
   const markFailed = (id: string | null, content: string | null) => {
     failedIdRef.current = id;
@@ -93,20 +109,37 @@ export function CallView(props: Props) {
 
   // gen 은 응답(또는 인사)이 시작될 때의 세대. 끼어들기로 세대가 바뀌면 같은 응답의 뒤 문장도 모두 버린다.
   const speakSentence = useCallback(
-    (sentence: string, gen: number) => {
+    (sentence: string, gen: number, immediate = false) => {
       const adapter = adapterRef.current;
       if (!adapter || !adapter.isSupported().tts) return;
-      speakChainRef.current = speakChainRef.current
-        .then(async () => {
-          if (gen !== speakGenRef.current || phaseRef.current !== "live") return;
-          setSpeaking(true);
-          try {
-            await adapter.speak(sentence, { voiceId: props.ttsVoice });
-          } finally {
-            if (!adapter.isSpeaking()) setSpeaking(false);
+      pendingSpeechRef.current += 1;
+      const run = async () => {
+        try {
+          if (gen !== speakGenRef.current || phaseRef.current !== "live" || playbackBlockedRef.current) return;
+          // iPhone에서는 인식과 합성을 겹치지 않는다. 스피커 소리의 재인식도 방지한다.
+          if (adapter.isSupported().duplex === false) {
+            if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+            recognitionActiveRef.current = false;
+            adapter.stopListening();
+            setListening(false);
           }
-        })
-        .catch(() => undefined);
+          setSpeaking(true);
+          await adapter.speak(sentence, { voiceId: props.ttsVoice });
+        } catch {
+          if (phaseRef.current === "live" && gen === speakGenRef.current) {
+            playbackBlockedRef.current = true;
+            setPlaybackNotice(callLive.playbackError);
+          }
+        } finally {
+          pendingSpeechRef.current -= 1;
+          if (pendingSpeechRef.current === 0 && phaseRef.current === "live") {
+            setSpeaking(false);
+            restartListeningRef.current();
+          }
+        }
+      };
+      // 첫 인사·다시 듣기는 클릭 핸들러 안에서 직접 speak를 호출한다.
+      speakChainRef.current = immediate ? run() : speakChainRef.current.then(run);
     },
     [props.ttsVoice],
   );
@@ -124,6 +157,12 @@ export function CallView(props: Props) {
     async (reason: string) => {
       if (endingRef.current) return;
       endingRef.current = true;
+      const pending = [...queueRef.current];
+      if (!reviewRef.current && !editingRef.current) {
+        const draft = utteranceRef.current?.confirmedText();
+        if (draft) pending.push(draft);
+      }
+      utteranceRef.current?.clear();
       setEndReason(reason);
       setPhaseBoth("ending");
       const adapter = adapterRef.current;
@@ -135,6 +174,14 @@ export function CallView(props: Props) {
       // 진행 중인 답변이 있으면 저장될 때까지(최대 30초) 기다려 리포트에 포함한다.
       if (inflightRef.current) {
         await Promise.race([inflightRef.current, new Promise((r) => setTimeout(r, 30_000))]);
+      }
+      // 자동 전송 대기 중이던 확정 발화도 종료 리포트에 포함한다. 확인 모드의 초안은 자동 제출하지 않는다.
+      if (reason !== "turn_cap") {
+        await startedRef.current;
+        for (const text of pending) {
+          try { await streamMessage(props.conversationId, text, () => undefined); }
+          catch { break; }
+        }
       }
       try {
         await apiJson(`/api/conversations/${props.conversationId}`, {
@@ -186,6 +233,7 @@ export function CallView(props: Props) {
           setPartial((p) => (p ?? "") + ev.text);
           splitter.push(ev.text);
         } else if (ev.type === "done") {
+          latestReplyRef.current = ev.message.content;
           done = true;
           splitter.flush();
           setEntries((e) => [
@@ -254,22 +302,32 @@ export function CallView(props: Props) {
       !adapter ||
       !adapter.isSupported().stt ||
       sttDisabledRef.current ||
+      recognitionActiveRef.current ||
+      editingRef.current ||
+      document.hidden ||
+      (adapter.isSupported().duplex === false && adapter.isSpeaking()) ||
       mutedRef.current ||
       phaseRef.current !== "live"
     )
       return;
+    recognitionActiveRef.current = true;
     adapter.startListening({
+      onStart: () => { setListening(true); setVoiceNotice(null); },
+      onSpeechStart: () => utteranceRef.current?.activity(),
       onInterim: (text) => {
         if (text.trim()) bargeIn();
-        setInterim(text);
+        utteranceRef.current?.preview(text);
       },
       onFinal: (text) => {
-        setInterim("");
+        recognitionRetriesRef.current = 0;
         setErrorFocus(false);
         bargeIn();
-        enqueueUtterance(text);
+        utteranceRef.current?.final(text);
       },
       onError: (message, fatal) => {
+        recognitionActiveRef.current = false;
+        setListening(false);
+        recognitionRetriesRef.current += 1;
         if (fatal) {
           // 권한 거부·마이크 없음: 재시작하지 않고 글 입력으로 바꾼다. 글로 대화하는 것은 정상 경로라
           // 오류 메시지 대신 이유를 담은 안내 하나만 보여 준다(외부 피드백 4).
@@ -286,14 +344,15 @@ export function CallView(props: Props) {
         setTimeout(() => setVoiceNotice((cur) => (cur === message ? null : cur)), 4000);
       },
       onEnd: () => {
+        recognitionActiveRef.current = false;
+        setListening(false);
         // 브라우저가 무음 등으로 인식을 멈추면 다시 켠다.
-        if (phaseRef.current === "live" && !mutedRef.current && !sttDisabledRef.current) {
+        if (phaseRef.current === "live" && !mutedRef.current && !sttDisabledRef.current && recognitionRetriesRef.current < 3) {
           if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
           restartTimerRef.current = setTimeout(() => restartListeningRef.current(), 300);
         }
       },
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [bargeIn]);
 
   useEffect(() => {
@@ -301,11 +360,24 @@ export function CallView(props: Props) {
   }, [startListening]);
 
   function startCall() {
+    if (phaseRef.current === "live") return;
     const adapter = getVoiceAdapter();
     adapterRef.current = adapter;
+    adapter.stopListening();
+    adapter.cancelSpeech();
+    recognitionActiveRef.current = false;
     const sup = adapter.isSupported();
     setSupport(sup);
+    utteranceRef.current?.dispose();
+    utteranceRef.current = new UtteranceBuffer(setInterim, enqueueUtterance);
+    utteranceRef.current.setAutomatic(!reviewRef.current);
+    recognitionRetriesRef.current = 0;
+    playbackBlockedRef.current = false;
     const resuming = props.started;
+    if (resuming) {
+      try { adapter.activateAudio?.(); }
+      catch { setPlaybackNotice(callLive.playbackError); }
+    }
     startedAtRef.current = resuming ? props.startedAtMs : Date.now();
     setPhaseBoth("live");
     setRemaining(
@@ -320,26 +392,47 @@ export function CallView(props: Props) {
       })
         .then(() => undefined)
         .catch(() => undefined);
-      speakSentence(props.openingLine, speakGenRef.current);
+      speakSentence(props.openingLine, speakGenRef.current, true);
     }
     startListening();
   }
 
   // 타이머: 만료되면 자동 종료 → 리포트
   useEffect(() => {
-    if (phase !== "live") return;
+    if (phase !== "live" && !(phase === "idle" && props.started)) return;
     const t = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - startedAtRef.current) / 1000);
+      const startedAt = phase === "idle" ? props.startedAtMs : startedAtRef.current;
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
       const left = durationRef.current - elapsed;
       setRemaining(Math.max(0, left));
-      if (left <= 0) void endCall("timeout");
+      if (left <= 0 && phase === "live") void endCall("timeout");
     }, 500);
     return () => clearInterval(t);
-  }, [phase, endCall]);
+  }, [phase, endCall, props.started, props.startedAtMs]);
 
   useEffect(() => {
+    const visibility = () => {
+      if (phaseRef.current !== "live") return;
+      if (document.hidden) {
+        utteranceRef.current?.activity();
+        if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+        recognitionActiveRef.current = false;
+        adapterRef.current?.stopListening();
+        speakGenRef.current += 1;
+        adapterRef.current?.cancelSpeech();
+        setListening(false);
+        setSpeaking(false);
+      } else {
+        if (!editingRef.current && !mutedRef.current) utteranceRef.current?.setAutomatic(!reviewRef.current);
+        restartListeningRef.current();
+      }
+    };
+    document.addEventListener("visibilitychange", visibility);
     return () => {
+      document.removeEventListener("visibilitychange", visibility);
       phaseRef.current = "ended";
+      utteranceRef.current?.dispose();
+      speakGenRef.current += 1;
       if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
       adapterRef.current?.stopListening();
       adapterRef.current?.cancelSpeech();
@@ -356,9 +449,59 @@ export function CallView(props: Props) {
     mutedRef.current = next;
     setMuted(next);
     if (next) {
+      recognitionActiveRef.current = false;
       adapterRef.current?.stopListening();
-      setInterim("");
-    } else startListening();
+      setListening(false);
+      utteranceRef.current?.activity();
+    } else {
+      utteranceRef.current?.setAutomatic(!reviewRef.current);
+      startListening();
+    }
+  }
+
+  function retryMic() {
+    bargeIn();
+    if (restartTimerRef.current) clearTimeout(restartTimerRef.current);
+    adapterRef.current?.stopListening();
+    recognitionActiveRef.current = false;
+    recognitionRetriesRef.current = 0;
+    sttDisabledRef.current = false;
+    mutedRef.current = false;
+    setMuted(false);
+    setListening(false);
+    setFallbackNotice(null);
+    setSupport(adapterRef.current?.isSupported() ?? { stt: false, tts: false });
+    utteranceRef.current?.setAutomatic(!reviewRef.current);
+    startListening();
+  }
+
+  function replay() {
+    bargeIn();
+    playbackBlockedRef.current = false;
+    setPlaybackNotice(null);
+    speakSentence(latestReplyRef.current, speakGenRef.current, true);
+  }
+
+  function editSpeech() {
+    utteranceRef.current?.activity();
+    editingRef.current = true;
+    setEditingSpeech(true);
+    setDraftInput(utteranceRef.current?.text() ?? "");
+    recognitionActiveRef.current = false;
+    adapterRef.current?.stopListening();
+    setListening(false);
+  }
+
+  function sendSpeech(discard = false) {
+    adapterRef.current?.stopListening();
+    recognitionActiveRef.current = false;
+    if (discard) utteranceRef.current?.clear();
+    else utteranceRef.current?.send(editingRef.current ? draftInput : undefined);
+    editingRef.current = false;
+    setEditingSpeech(false);
+    setDraftInput("");
+    utteranceRef.current?.setAutomatic(!reviewRef.current);
+    startListening();
   }
 
   async function extend() {
@@ -385,8 +528,10 @@ export function CallView(props: Props) {
 
   function onTextSubmit(e: FormEvent) {
     e.preventDefault();
-    const t = textInput.trim();
-    if (!t) return;
+    const t = textValueRef.current.trim();
+    if (!t || phaseRef.current !== "live") return;
+    // 상태 렌더를 기다리지 않고 입력을 소비해 같은 틱의 두 번째 submit을 막는다.
+    textValueRef.current = "";
     setTextInput("");
     setErrorFocus(false);
     bargeIn();
@@ -394,6 +539,7 @@ export function CallView(props: Props) {
   }
 
   function retryFailed() {
+    if (busyRef.current || !failedIdRef.current) return;
     const text = lastFailed;
     if (!text) return;
     setError(null);
@@ -417,17 +563,17 @@ export function CallView(props: Props) {
             ? "thinking"
             : muted
               ? "muted"
-              : support.stt
+              : support.stt && listening
                 ? "listening"
                 : "waiting";
   const statusSub =
     phase === "ending"
       ? callLive.status.endingHint
       : state === "speaking"
-        ? callLive.idleTips[0]
+        ? (support.duplex === false ? callLive.exclusiveHint : callLive.duplexHint)
         : state === "muted"
           ? callLive.status.mutedHint
-          : undefined;
+          : support.stt && !listening && !editingSpeech ? callLive.micStarting : undefined;
 
   return (
     <main className="call-shell">
@@ -449,15 +595,24 @@ export function CallView(props: Props) {
           <Card
             as="section"
             className="call-idle"
-            title={callLive.idleTitle}
+            title={props.started ? callLive.resumeTitle : callLive.idleTitle}
             titleId="call-idle-title"
           >
-            <p>{callLive.idleBody}</p>
+            <p>{props.started ? callLive.resumeBody : callLive.idleBody}</p>
             <ul>
               {callLive.idleTips.map((tip) => (
                 <li key={tip}>{tip}</li>
               ))}
             </ul>
+            <p className="muted">{callLive.pauseHint}</p>
+            <label className="row">
+              <input type="checkbox" checked={reviewSpeech} onChange={(e) => {
+                reviewRef.current = e.target.checked;
+                setReviewSpeech(e.target.checked);
+              }} />
+              {callLive.reviewSpeech}
+            </label>
+            <p className="muted">{callLive.reviewHint}</p>
             <Button
               variant="primary"
               size="lg"
@@ -465,7 +620,7 @@ export function CallView(props: Props) {
               data-testid="start-call"
               icon={<Phone size={20} />}
             >
-              {callLive.start}
+              {props.started ? callLive.resume : callLive.start}
             </Button>
           </Card>
         )}
@@ -474,12 +629,31 @@ export function CallView(props: Props) {
           <>
             <CallStatus state={state} sub={statusSub} />
 
+            {phase === "live" && (
+              <div className="stack-sm">
+                <div className="row" style={{ flexWrap: "wrap" }}>
+                  {support.tts && <Button onClick={replay} disabled={busy || Boolean(interim)} icon={<Volume2 size={18} />}>{callLive.replay}</Button>}
+                  {(support.stt || fallbackNotice) && <Button onClick={retryMic} disabled={editingSpeech} icon={<Mic size={18} />}>{speaking && support.duplex === false ? callLive.speakNow : callLive.retryMic}</Button>}
+                </div>
+                <label className="row">
+                  <input type="checkbox" checked={reviewSpeech} onChange={(e) => {
+                    reviewRef.current = e.target.checked;
+                    setReviewSpeech(e.target.checked);
+                    if (!editingRef.current) utteranceRef.current?.setAutomatic(!e.target.checked);
+                  }} />
+                  {callLive.reviewSpeech}
+                </label>
+                <small className="muted">{reviewSpeech ? callLive.reviewHint : callLive.pauseHint}</small>
+              </div>
+            )}
+
             {!support.stt && (
               <StatusMessage tone="info">
                 {fallbackNotice ?? callLive.textModeNotice}
-                {!support.tts ? ` ${callLive.noTtsNotice}` : ""}
               </StatusMessage>
             )}
+            {!support.tts && <StatusMessage tone="info">{callLive.noTtsNotice}</StatusMessage>}
+            {playbackNotice && <StatusMessage tone="warning" polite>{playbackNotice}</StatusMessage>}
 
             {warn && (
               <StatusMessage tone="warning" polite data-testid="one-minute">
@@ -528,6 +702,25 @@ export function CallView(props: Props) {
               </div>
             </div>
 
+            {phase === "live" && (interim || editingSpeech) && (
+              <div className="stack-sm" data-testid="speech-draft">
+                {editingSpeech ? (
+                  <form className="call-text-form" onSubmit={(e) => { e.preventDefault(); sendSpeech(); }}>
+                    <label htmlFor="speech-draft-input" className="sr-only">{callLive.draftLabel}</label>
+                    <textarea id="speech-draft-input" lang="en" autoCorrect="off" autoCapitalize="off" spellCheck={false}
+                      rows={2} value={draftInput} onChange={(e) => setDraftInput(e.target.value)} autoFocus />
+                    <Button type="submit" disabled={!draftInput.trim()} icon={<Send size={18} />}>{callLive.sendSpeech}</Button>
+                  </form>
+                ) : (
+                  <div className="row" style={{ flexWrap: "wrap" }}>
+                    <Button onClick={() => sendSpeech()} icon={<Send size={18} />}>{callLive.sendSpeech}</Button>
+                    <Button onClick={editSpeech}>{callLive.editSpeech}</Button>
+                  </div>
+                )}
+                <Button onClick={() => sendSpeech(true)}>{callLive.discardSpeech}</Button>
+              </div>
+            )}
+
             {voiceNotice && (
               <StatusMessage tone="warning" polite>
                 {voiceNotice}
@@ -568,8 +761,14 @@ export function CallView(props: Props) {
                 id="call-text"
                 ref={textInputRef}
                 lang="en"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
                 value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
+                onChange={(e) => {
+                  textValueRef.current = e.target.value;
+                  setTextInput(e.target.value);
+                }}
                 rows={2}
                 placeholder={callLive.textInputPlaceholder}
                 onKeyDown={(e) => {

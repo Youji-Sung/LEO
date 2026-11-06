@@ -1,9 +1,11 @@
 // 음성 입출력 추상화. Web Speech 구현과 테스트용 가짜 구현이 있고, 외부 제공자로 교체할 수 있다.
-export type VoiceSupport = { stt: boolean; tts: boolean };
+export type VoiceSupport = { stt: boolean; tts: boolean; duplex?: boolean };
 
 export type VoiceInfo = { id: string; name: string; lang: string };
 
 export type ListenHandlers = {
+  onStart?: () => void;
+  onSpeechStart?: () => void;
   onInterim?: (text: string) => void;
   onFinal: (text: string) => void;
   // fatal 이면 다시 시작해도 소용없는 오류(권한 거부, 마이크 없음)
@@ -17,9 +19,11 @@ export type SpeakOptions = { voiceId?: string | null; rate?: number };
 export interface VoiceAdapter {
   readonly name: string;
   isSupported(): VoiceSupport;
+  // 새 문서를 연 뒤 사용자의 탭에서 오디오 재생 권한을 활성화한다.
+  activateAudio?(): void;
   startListening(handlers: ListenHandlers): void;
   stopListening(): void;
-  // 끝나면 resolve. cancelSpeech 로 끊겨도 resolve 한다.
+  // 끝나거나 의도적으로 취소하면 resolve. 실제 재생 오류는 reject 한다.
   speak(text: string, options?: SpeakOptions): Promise<void>;
   cancelSpeech(): void;
   isSpeaking(): boolean;
@@ -47,4 +51,7 @@ export type FakeVoiceControls = {
   setSupport(support: VoiceSupport): void;
   // 인식 오류가 났다고 가정 (권한 거부·마이크 없음은 fatal)
   fail(message: string, fatal?: boolean): void;
+  interim(text: string): void;
+  end(): void;
+  failPlayback(): void;
 };

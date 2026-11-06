@@ -90,6 +90,7 @@ const HINT_RULES = `Correction hint:
 After your reply, add one final line that starts with "${HINT_MARKER}" (exactly, at the start of the line).
 On that line give ONE short correction for the user's most recent message in this exact shape, without quotation marks or parentheses: <phrase as the user said it> → <corrected English phrase> · <very brief reason in Korean, 해요체>. Keep it under 25 words.
 If the user's last message had nothing worth correcting, write "${HINT_MARKER} 없음".
+Use ONLY the final user message as correction evidence, never an earlier turn or the portfolio. Copy the original phrase verbatim from that final message. Do not repeat an old correction when the latest message is acceptable English. Preserve the user's meaning, time reference, and facts.
 Never put the hint anywhere else, and never mention the hint in your reply.`;
 
 export function buildChatSystemPrompt(
@@ -119,6 +120,8 @@ Guidelines:
 - In Korean text, call the conversation partner "상대" (never "파트너", "AI", "어시스턴트").
 - grammarCorrections: up to 10 items, most important first. Quote the user's words exactly as said. Each user sentence appears at most once: if one sentence has several problems, fix them all in a single item instead of listing the sentence again. Skip trivial punctuation issues and purely stylistic choices where the user's wording is already acceptable English (for example, preposition choices that native speakers also use). Never include an item whose corrected sentence differs from the original only in capitalization, punctuation, spacing or contractions (such as "I am" vs "I'm"); such an item is not a correction. Fewer, real corrections are better than a long list.
 - vocabularySuggestions: up to 10 items where the user used simple or awkward wording that a native speaker would phrase differently. Each original phrase appears once, and the better phrase must actually differ from it.
+- Every original phrase must be a verbatim excerpt of a user turn, never the partner's words or portfolio text. Corrections and rewrites must preserve the user's intended meaning, tense/time reference, certainty, role, and factual scope. For example, habitual "I go to office" becomes "I go to the office", not "I'm heading to the office".
+- Never add invented facts to rewrites: no new durations (such as "for a week"), team roles, agreements, achievements, numbers, or production claims. A three-person team does not imply three backend developers. Staging measurements do not imply production results. Portfolio facts can inform feedback and follow-up questions, but must not be presented as something the user said. Vocabulary examples are illustrative, not user history; do not fabricate personal facts in them.
 - betterExpressions: exactly 3 of the user's sentences rewritten the way a fluent native speaker would say them. Use 3 different user sentences, and prefer sentences that are not already in grammarCorrections. Only if the user said fewer than 3 distinct sentences may a sentence appear twice, and then with a clearly different rewrite.
 - nextTasks: exactly 3 concrete, actionable practice tasks for the next session.
 - interview: for interview-type themes (interview, portfolio) give feedback on answer structure (STAR etc.) and exactly 3 likely follow-up questions. Otherwise null.
@@ -137,7 +140,7 @@ export function buildReportUserMessage(input: {
   const header = [
     `Theme: ${input.themeLabel} (${input.isInterview ? "interview-type" : "non-interview"}, ${input.mode === "call" ? "spoken phone call transcribed by speech recognition" : "text chat"})`,
     input.mode === "call"
-      ? "Note: the transcript came from speech recognition, so ignore obvious transcription artifacts and focus on grammar and wording the user is responsible for."
+      ? "Note: this is a speech-recognition transcript that the user may have reviewed. Preserve the submitted wording as evidence. Ignore only clear recognition artifacts; do not assume grammatical mistakes were recognition errors or silently repair the original quotations."
       : "",
     input.isPortfolio && input.portfolioText ? `Candidate portfolio:\n${input.portfolioText}` : "",
     `Transcript:\n${input.transcript}`,

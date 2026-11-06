@@ -1,5 +1,5 @@
 import { HINT_MARKER } from "@/services/claude/prompts/themes";
-import { HintSplitter } from "@/services/claude/hint-splitter";
+import { HintSplitter, hintForMessage } from "@/services/claude/hint-splitter";
 import { parseReportJson, type Report } from "@/services/claude/schemas/report";
 import { THEMES } from "@/services/claude/prompts/themes";
 import type {
@@ -17,6 +17,7 @@ export const MOCK_TRIGGERS = {
   refusal: "MOCK_REFUSAL",
   invalidReport: "MOCK_INVALID_REPORT",
   error: "MOCK_ERROR",
+  slowReport: "MOCK_SLOW_REPORT",
 } as const;
 
 const REPLIES = [
@@ -142,8 +143,9 @@ export class MockClaudeProvider implements ClaudeProvider {
       };
     }
     const reply = REPLIES[(userCount - 1) % REPLIES.length] ?? REPLIES[0]!;
+    const hintText = HINTS.find((hint) => hintForMessage(hint, lastUser)) ?? "없음";
     const full = input.hints
-      ? `${reply}\n${HINT_MARKER} ${HINTS[(userCount - 1) % HINTS.length]}`
+      ? `${reply}\n${HINT_MARKER} ${hintText}`
       : reply;
     const splitter = new HintSplitter(onDelta);
     // 실제 스트리밍처럼 몇 글자씩 나눠 보낸다.
@@ -167,6 +169,7 @@ export class MockClaudeProvider implements ClaudeProvider {
     const started = Date.now();
     // 트리거는 마지막 사용자 발화만 본다(재시도 시나리오: 정상 발화를 하나 더 보내면 성공).
     const joined = [...input.transcript].reverse().find((m) => m.role === "user")?.content ?? "";
+    if (joined.includes(MOCK_TRIGGERS.slowReport)) await sleep(8000);
     const usage = {
       inputTokens: 900 + input.transcript.length * 30,
       outputTokens: 1200,

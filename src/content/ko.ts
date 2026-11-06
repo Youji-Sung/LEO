@@ -132,6 +132,7 @@ export const chat = {
   remakeConfirmBody: "지금 리포트는 새 리포트로 바뀌어요. 보통 1분 안에 끝나요.",
   remakeConfirmAction: "다시 만들기",
   makingReport: "리포트를 만드는 중",
+  reportPending: "리포트를 만들고 있어요. 새로고침해도 생성은 계속되고, 완료되면 리포트로 이동해요.",
   viewReport: "리포트 보기",
   endedNotice: "끝난 대화예요.",
   endedAction: "새 채팅 시작",
@@ -173,15 +174,32 @@ export const callLive = {
   totalDuration: (duration: string) => `${duration} 통화`,
   timerLabel: "남은 시간",
   idleTitle: "통화를 시작할 준비가 됐어요",
+  resumeTitle: "진행 중인 통화를 이어 갈 수 있어요",
+  resumeBody: "이전 대화와 남은 시간을 이어 가요. 화면을 나가 있는 동안에도 통화 시간은 흘러요.",
+  resume: "통화 이어 하기",
   idleBody: "상대가 먼저 인사해요. 편하게 영어로 답하면 돼요.",
   idleTips: [
-    "상대가 말하는 중에 말을 시작하면 상대가 멈추고 들어요.",
+    "아이폰에서는 상대가 말한 뒤 마이크가 켜져요. ‘내가 말하기’로 먼저 말할 수도 있어요.",
     "끝나기 1분 전에 10분 연장 버튼이 나타나요.",
     "통화가 끝나면 교정 리포트가 만들어져요.",
   ],
   start: "통화 시작하기",
   textModeNotice: "이 브라우저는 음성 인식을 지원하지 않아 글로 대화해요.",
   noTtsNotice: "소리 재생도 지원하지 않아 상대 답변은 글로만 보여요.",
+  pauseHint: "잠깐 쉬어도 괜찮아요. 말이 끝난 뒤 3초 기다렸다 보내요.",
+  reviewSpeech: "인식된 말 확인 후 보내기",
+  reviewHint: "브라우저가 단어나 문법을 바꿀 수 있어요. 실제 말한 표현으로 수정해 보내면 그 내용으로 리포트를 만들어요.",
+  editSpeech: "인식된 말 수정",
+  draftLabel: "실제로 말한 내용",
+  sendSpeech: "말 보내기",
+  discardSpeech: "지우고 다시 말하기",
+  retryMic: "마이크 다시 켜기",
+  replay: "상대 답변 다시 듣기",
+  speakNow: "내가 말하기",
+  exclusiveHint: "답변이 끝나면 마이크가 켜져요. 먼저 말하려면 ‘내가 말하기’를 눌러 주세요.",
+  duplexHint: "상대가 말하는 중에 말을 시작하면 상대가 멈추고 들어요.",
+  micStarting: "마이크를 연결하는 중이에요. 연결되지 않으면 ‘마이크 다시 켜기’를 눌러 주세요.",
+  playbackError: "음성을 재생하지 못했어요. ‘상대 답변 다시 듣기’를 눌러 소리를 켜 주세요.",
   status: {
     listening: "듣는 중",
     speaking: "상대가 말하는 중",
@@ -209,6 +227,9 @@ export const callLive = {
 } as const;
 
 export const report = {
+  interrupted: "리포트 생성을 완료하지 못했어요. 다시 만들기를 눌러 주세요.",
+  statusError: "리포트 상태를 확인하지 못했어요. 화면을 새로고침해 확인해 주세요.",
+  limitedEvidence: "발화가 적어 평가 근거가 충분하지 않아요. 점수는 이번 대화에서 확인한 내용만 참고해 주세요.",
   pageTitle: "리포트",
   transcript: "대화 내용",
   backToChat: "채팅으로",
@@ -252,6 +273,12 @@ export const report = {
   making: "리포트를 만드는 중",
   makingHint: "보통 1분 안에 끝나요.",
   corrupted: "저장된 리포트를 읽을 수 없어요. 다시 만들 수 있어요.",
+} as const;
+
+export const notFound = {
+  title: "페이지를 찾을 수 없어요",
+  body: "주소가 올바른지 확인하거나 홈에서 다시 시작해 주세요.",
+  home: "홈으로 돌아가기",
 } as const;
 
 export const transcript = {
@@ -445,6 +472,8 @@ export const errors = {
     noMic: "마이크를 찾지 못했어요. 글로 이어서 대화할 수 있어요.",
     unsupported: "이 브라우저는 음성 인식을 지원하지 않아요.",
     generic: "음성 인식에 문제가 생겼어요. 잠시 후 다시 들어요.",
+    startTimeout: "마이크가 시작되지 않았어요. ‘마이크 다시 켜기’를 눌러 주세요.",
+    playback: "음성을 재생하지 못했어요. 다시 듣기를 눌러 주세요.",
   },
 } as const;
 

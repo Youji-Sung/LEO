@@ -1,4 +1,4 @@
-import { ButtonLink, Card, DiffText, ScoreGauge } from "@/components/ui";
+import { ButtonLink, Card, DiffText, ScoreGauge, StatusMessage } from "@/components/ui";
 import { ReportToc } from "@/components/report/ReportToc";
 import { report as text } from "@/content/ko";
 import type { Report } from "@/services/claude/schemas/report";
@@ -12,10 +12,12 @@ export function ReportView({
   report,
   isInterview,
   kind,
+  limitedEvidence = false,
 }: {
   report: Report;
   isInterview: boolean;
   kind: "chat" | "call";
+  limitedEvidence?: boolean;
 }) {
   const interview = isInterview ? report.interview : null;
   const sections: { id: SectionId; title: string }[] = [
@@ -52,6 +54,7 @@ export function ReportView({
       </Card>
 
       <Card as="section" id="scores" title={text.sections.scores} titleId={titleId("scores")}>
+        {limitedEvidence && <StatusMessage tone="info">{text.limitedEvidence}</StatusMessage>}
         <div className="scores">
           {scoreItems.map((s, i) => (
             <ScoreGauge

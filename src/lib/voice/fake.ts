@@ -14,6 +14,7 @@ export class FakeVoiceAdapter implements VoiceAdapter {
   private support: VoiceSupport = { stt: true, tts: true };
   private handlers: ListenHandlers | null = null;
   private spokenTexts: string[] = [];
+  private playbackFailure = false;
   private pending = new Set<{ timer: ReturnType<typeof setTimeout>; finish: () => void }>();
 
   constructor() {
@@ -30,6 +31,9 @@ export class FakeVoiceAdapter implements VoiceAdapter {
       listening: () => this.listening(),
       setSupport: (support) => this.setSupport(support),
       fail: (message, fatal) => this.handlers?.onError?.(message, fatal),
+      interim: (text) => this.handlers?.onInterim?.(text),
+      end: () => { const handlers = this.handlers; this.handlers = null; handlers?.onEnd?.(); },
+      failPlayback: () => { this.playbackFailure = true; },
     };
   }
 
@@ -61,6 +65,7 @@ export class FakeVoiceAdapter implements VoiceAdapter {
 
   startListening(handlers: ListenHandlers): void {
     this.handlers = handlers;
+    handlers.onStart?.();
   }
 
   stopListening(): void {
@@ -68,6 +73,10 @@ export class FakeVoiceAdapter implements VoiceAdapter {
   }
 
   speak(text: string, _options?: SpeakOptions): Promise<void> {
+    if (this.playbackFailure) {
+      this.playbackFailure = false;
+      return Promise.reject(new Error("Playback blocked"));
+    }
     this.spokenTexts.push(text);
     return new Promise<void>((resolve) => {
       const entry = {

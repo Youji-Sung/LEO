@@ -1,10 +1,11 @@
+import { createHash } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { HttpError } from "@/lib/http";
 import { getClaudeProvider } from "@/services/claude";
 import { describeClaudeError } from "@/services/claude/errors";
 import { recordUsage } from "@/services/claude/usage";
 import { reportSchema, type Report } from "@/services/claude/schemas/report";
-import type { ChatMessage, ThemeId } from "@/services/claude/types";
+import type { ChatMessage, ReportInput, ThemeId } from "@/services/claude/types";
 import { getOwnedConversation, toChatMessages } from "@/services/conversation";
 import { errors } from "@/content/ko";
 
@@ -32,22 +33,52 @@ export class ReportGenerationError extends Error {
   }
 }
 
-export async function generateAndSaveReport(userId: string, conversationId: string): Promise<{ id: string; report: Report }> {
+type SavedReport = { id: string; report: Report };
+
+// 생성 중인 동일 입력만 공유한다. 완료·실패 후에는 제거해 명시적 재생성과 재시도를 유지한다.
+const pendingReports = new Map<string, { userId: string; conversationId: string; work: Promise<SavedReport> }>();
+
+// 소유권을 확인한 GET에서만 사용한다. 상태 조회는 모델을 호출하지 않는다.
+export function isReportGenerating(userId: string, conversationId: string): boolean {
+  return [...pendingReports.values()].some((job) => job.userId === userId && job.conversationId === conversationId);
+}
+
+export async function generateAndSaveReport(userId: string, conversationId: string): Promise<SavedReport> {
   const conv = await getOwnedConversation(userId, conversationId);
   const messages = toChatMessages(conv.messages);
   if (!messages.some((m) => m.role === "user")) {
     throw new ReportGenerationError(errors.report.empty, "empty");
   }
   const { transcript } = trimTranscript(messages);
+  const input: ReportInput = {
+    theme: conv.theme as ThemeId,
+    mode: conv.kind === "call" ? "call" : "chat",
+    transcript,
+    portfolioText: conv.portfolio?.content ?? null,
+  };
+  const key = createHash("sha256").update(JSON.stringify([userId, conversationId, input])).digest("hex");
+  const pending = pendingReports.get(key);
+  if (pending) return pending.work;
+
+  const work = generateAndSaveSnapshot(conv, input);
+  pendingReports.set(key, { userId, conversationId, work });
+  try {
+    return await work;
+  } finally {
+    if (pendingReports.get(key)?.work === work) pendingReports.delete(key);
+  }
+}
+
+async function generateAndSaveSnapshot(
+  conv: Awaited<ReturnType<typeof getOwnedConversation>>,
+  input: ReportInput,
+): Promise<SavedReport> {
+  const userId = conv.userId;
+  const conversationId = conv.id;
   const provider = getClaudeProvider();
   let result: Awaited<ReturnType<typeof provider.generateReport>>;
   try {
-    result = await provider.generateReport({
-      theme: conv.theme as ThemeId,
-      mode: conv.kind === "call" ? "call" : "chat",
-      transcript,
-      portfolioText: conv.portfolio?.content ?? null,
-    });
+    result = await provider.generateReport(input);
   } catch (e) {
     console.error("generateReport failed", e);
     throw new ReportGenerationError(errors.report.provider(describeClaudeError(e)), "provider");

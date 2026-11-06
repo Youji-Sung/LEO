@@ -23,6 +23,9 @@ export default async function CallPage({ params }: { params: Promise<{ id: strin
   const theme = THEMES[conv.theme as keyof typeof THEMES];
   // 통화를 시작하면 상대의 첫 인사가 index 0 의 assistant 메시지로 저장된다. 화면에서는 따로 그리므로 목록에서 뺀다.
   const opening = conv.messages[0]?.role === "assistant" ? conv.messages[0] : null;
+  // 인증된 요청마다 실행되는 서버 컴포넌트의 시각을 내려 보내 hydration 시 값도 일치시킨다.
+  // eslint-disable-next-line react-hooks/purity
+  const requestTime = Date.now();
   return (
     <CallView
       conversationId={conv.id}
@@ -30,6 +33,9 @@ export default async function CallPage({ params }: { params: Promise<{ id: strin
       openingLine={opening?.content ?? theme?.openingLine ?? "Hello! Let's get started."}
       durationSec={conv.durationSec ?? 600}
       startedAtMs={conv.startedAt.getTime()}
+      initialRemainingSec={conv.messages.length > 0
+        ? Math.max(0, (conv.durationSec ?? 600) - Math.floor((requestTime - conv.startedAt.getTime()) / 1000))
+        : conv.durationSec ?? 600}
       started={conv.messages.length > 0}
       extendable={canExtend(conv.durationSec ?? 600)}
       ttsVoice={settings?.ttsVoice ?? null}

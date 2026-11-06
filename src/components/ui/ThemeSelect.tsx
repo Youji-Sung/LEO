@@ -1,7 +1,6 @@
 "use client";
 
 import { Monitor, Moon, Sun } from "lucide-react";
-import { useState } from "react";
 import { settings as text } from "@/content/ko";
 import { Choice, ChoiceGroup } from "@/components/ui/Choice";
 import { applyThemeToDocument, THEME_MODES, type ThemeMode } from "@/lib/theme";
@@ -16,9 +15,7 @@ export function ThemeSelect({
   value: ThemeMode;
   onChange: (mode: ThemeMode) => void;
 }) {
-  const [current, setCurrent] = useState<ThemeMode>(value);
   function pick(mode: ThemeMode) {
-    setCurrent(mode);
     applyThemeToDocument(mode);
     onChange(mode);
   }
@@ -33,7 +30,7 @@ export function ThemeSelect({
             name="theme"
             value={mode}
             compact
-            checked={current === mode}
+            checked={value === mode}
             onChange={() => pick(mode)}
             title={text.themeOptions[mode]}
             icon={<Icon size={16} aria-hidden="true" />}

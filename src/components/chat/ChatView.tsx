@@ -2,11 +2,11 @@
 
 import { Send } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { chat, common } from "@/content/ko";
 import { ApiError, apiJson } from "@/lib/client-fetch";
 import { streamMessage } from "@/lib/ndjson-client";
-import type { Report } from "@/services/claude/schemas/report";
+import { useReportJob } from "@/lib/use-report-job";
 import {
   Badge,
   Bubble,
@@ -42,16 +42,23 @@ export function ChatView(props: Props) {
   const [hints, setHints] = useState(props.initialHints);
   const [streaming, setStreaming] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const busyRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [lastFailed, setLastFailed] = useState<string | null>(null);
   const [errorTone, setErrorTone] = useState<"error" | "info">("error");
   const [failedId, setFailedId] = useState<string | null>(null);
-  const [reportBusy, setReportBusy] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [ended, setEnded] = useState(props.ended);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const reportHref = `/history/${props.conversationId}/report`;
+  const reportReady = useCallback(() => {
+    setEnded(true);
+    router.replace(reportHref);
+  }, [router, reportHref]);
+  const reportJob = useReportJob(props.conversationId, reportReady);
+  const { busy: reportBusy, busyRef: reportBusyRef } = reportJob;
+  const hasReport = props.hasReport || reportJob.hasReport;
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
@@ -66,6 +73,9 @@ export function ChatView(props: Props) {
   }, [input]);
 
   async function send(content: string) {
+    // React가 disabled를 그리기 전 같은 틱의 연속 submit도 동기적으로 막는다.
+    if (busyRef.current || reportBusyRef.current || ended) return;
+    busyRef.current = true;
     setBusy(true);
     setError(null);
     setErrorTone("error");
@@ -117,6 +127,7 @@ export function ChatView(props: Props) {
       }
     } finally {
       setStreaming(null);
+      busyRef.current = false;
       setBusy(false);
       // 오류일 때는 포커스가 오류 메시지로 가므로 성공했을 때만 입력창으로 돌아간다.
       if (ok) inputRef.current?.focus();
@@ -126,7 +137,7 @@ export function ChatView(props: Props) {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     const content = input.trim();
-    if (!content || busy) return;
+    if (!content || busyRef.current || reportBusyRef.current || ended) return;
     setInput("");
     await send(content);
   }
@@ -152,25 +163,15 @@ export function ChatView(props: Props) {
   }
 
   async function makeReport() {
-    setReportBusy(true);
+    if (busyRef.current) return;
     setError(null);
-    try {
-      await apiJson<{ report: Report }>(`/api/conversations/${props.conversationId}/report`, {
-        method: "POST",
-      });
-      setEnded(true);
-      router.push(reportHref);
-    } catch (e) {
-      setError((e as Error).message);
-      setConfirmOpen(false);
-    } finally {
-      setReportBusy(false);
-    }
+    await reportJob.generate();
+    setConfirmOpen(false);
   }
 
   // 보내지 못한 말풍선은 서버에 없으므로 리포트 대상에서 뺀다.
   const userCount = messages.filter((m) => m.role === "user" && m.id !== failedId).length;
-  const reportDisabled = reportBusy || busy || userCount === 0;
+  const reportDisabled = reportJob.checking || reportBusy || busy || userCount === 0;
 
   return (
     <div className="chat">
@@ -198,22 +199,22 @@ export function ChatView(props: Props) {
           <span>{chat.hintsToggle}</span>
         </label>
         <Button
-          variant={props.hasReport ? "ghost" : "secondary"}
-          onClick={props.hasReport ? () => setConfirmOpen(true) : makeReport}
+          variant={hasReport ? "ghost" : "secondary"}
+          onClick={hasReport ? () => setConfirmOpen(true) : makeReport}
           disabled={reportDisabled}
           loading={reportBusy}
           loadingLabel={chat.makingReport}
         >
-          {props.hasReport ? chat.remakeReport : chat.makeReport}
+          {hasReport ? chat.remakeReport : chat.makeReport}
         </Button>
-        {props.hasReport && (
+        {hasReport && (
           <ButtonLink href={reportHref} variant="secondary">
             {chat.viewReport}
           </ButtonLink>
         )}
       </div>
 
-      {props.hasReport && (
+      {hasReport && (
         <Dialog
           open={confirmOpen}
           title={chat.remakeConfirmTitle}
@@ -224,6 +225,9 @@ export function ChatView(props: Props) {
           busy={reportBusy}
         />
       )}
+
+      {reportBusy && <StatusMessage tone="info" polite>{chat.reportPending}</StatusMessage>}
+      {reportJob.error && <StatusMessage tone="error">{reportJob.error}</StatusMessage>}
 
       <div className="chat-messages" role="log" aria-label={chat.logLabel}>
         {messages.length === 0 && (
@@ -281,7 +285,7 @@ export function ChatView(props: Props) {
         </StatusMessage>
       )}
 
-      {ended ? (
+      {ended || hasReport ? (
         <StatusMessage
           tone="info"
           action={
@@ -306,12 +310,13 @@ export function ChatView(props: Props) {
             onKeyDown={onKeyDown}
             placeholder={chat.inputPlaceholder}
             rows={1}
+            disabled={reportBusy || reportJob.checking}
           />
           <Button
             type="submit"
             variant="primary"
             icon={<Send size={18} />}
-            disabled={busy || !input.trim()}
+            disabled={busy || reportBusy || reportJob.checking || !input.trim()}
           >
             {chat.send}
           </Button>

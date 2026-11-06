@@ -8,6 +8,7 @@ import { recordUsage } from "@/services/claude/usage";
 import type { ChatMessage, ConversationMode, ThemeId } from "@/services/claude/types";
 import { THEME_IDS } from "@/services/claude/types";
 import { errors } from "@/content/ko";
+import { hintForMessage } from "@/services/claude/hint-splitter";
 
 export type ConversationKind = ConversationMode;
 
@@ -272,7 +273,7 @@ async function* sendMessageLocked(input: {
         conversationId: conv.id,
         role: "assistant",
         content: r.text,
-        hint: r.hint,
+        hint: conv.hintsEnabled ? hintForMessage(r.hint, content) : null,
         index: userMessage.index + 1,
       },
     });

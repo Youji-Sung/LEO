@@ -58,6 +58,11 @@ export function SettingsForm({
     return () => applyThemeToDocument(savedThemeRef.current);
   }, []);
 
+  // 디자인 갱신은 저장된 테마로 서버 HTML을 갱신하므로 미저장 미리보기를 다시 적용한다.
+  useEffect(() => {
+    applyThemeToDocument(form.theme);
+  }, [direction, form.theme]);
+
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -79,7 +84,7 @@ export function SettingsForm({
     adapter.cancelSpeech();
     void adapter.speak("Hi! This is how I sound. Let's practice some English together.", {
       voiceId: form.ttsVoice,
-    });
+    }).catch((err) => setError((err as Error).message));
   }
 
   return (

@@ -3,7 +3,7 @@
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LogoutButton } from "@/components/LogoutButton";
 import { Button } from "@/components/ui/Button";
 import { banner, common, nav } from "@/content/ko";
@@ -34,8 +34,20 @@ export function SiteHeader({
 }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      setOpen(false);
+      headerRef.current?.querySelector<HTMLButtonElement>(".menu-toggle")?.focus();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
   return (
-    <header className="site-header" data-open={open ? "true" : "false"}>
+    <header ref={headerRef} className="site-header" data-open={open ? "true" : "false"}>
       <div className="container">
         <Link href="/" className="brand">
           {common.brand}

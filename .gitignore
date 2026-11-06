@@ -6,6 +6,8 @@ node_modules/
 .next/
 .next-e2e/
 .next-shots-*/
+.next-release-*/
+.leo-runtime/
 out/
 dist/
 build/

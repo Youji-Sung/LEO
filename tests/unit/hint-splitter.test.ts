@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { HintSplitter, splitHint } from "@/services/claude/hint-splitter";
+import { HintSplitter, splitHint, hintForMessage } from "@/services/claude/hint-splitter";
 
 function run(chunks: string[]) {
   const seen: string[] = [];
@@ -32,5 +32,26 @@ describe("HintSplitter", () => {
     const r = run(["I like [HIN"]);
     expect(r.text).toBe("I like [HIN");
     expect(r.hint).toBeNull();
+  });
+});
+
+describe("hint evidence", () => {
+  const hint = "I go there yesterday → I went there yesterday · 지난 일은 과거형으로 써요";
+  it("rejects an old correction on a new, correct message", () => {
+    expect(hintForMessage(hint, "A flat white, please.")).toBeNull();
+    expect(hintForMessage(hint, "Does the cake contain nuts?")).toBeNull();
+    expect(hintForMessage(hint, "I go there yesterday.")).toBe(hint);
+  });
+  it("accepts excerpts with whitespace and typographic apostrophe differences", () => {
+    const correction = "He don't → He doesn't · 주어에 맞춰요";
+    expect(hintForMessage(correction, "He  don’t understand my question.")).toBe(correction);
+    expect(hintForMessage('"I go" → "I went" · 과거형', "I go there yesterday.")).not.toBeNull();
+  });
+  it("rejects partial word matches and missing original phrases", () => {
+    expect(hintForMessage("go → went · 과거형", "The algorithm worked.")).toBeNull();
+    expect(hintForMessage("He don't → He doesn't", "She don't understand.")).toBeNull();
+    expect(hintForMessage("없음", "Hi.")).toBeNull();
+    expect(hintForMessage(" → went", "I go.")).toBeNull();
+    expect(hintForMessage("I go → ", "I go.")).toBeNull();
   });
 });

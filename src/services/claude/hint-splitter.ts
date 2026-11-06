@@ -59,3 +59,24 @@ export function splitHint(full: string): { text: string; hint: string | null } {
   splitter.push(full);
   return splitter.finish();
 }
+
+// 지난 턴의 교정을 재사용한 모델 출력은 저장하지 않는다. 의미를 추측하거나 새 호출을 하지 않는다.
+export function hintForMessage(hint: string | null, content: string): string | null {
+  if (!hint) return null;
+  const arrow = hint.indexOf("→");
+  if (arrow <= 0) return null;
+  const normalize = (text: string) => text.normalize("NFKC").replace(/[‘’]/g, "'").replace(/\s+/g, " ").trim().toLowerCase();
+  const original = normalize(hint.slice(0, arrow).trim().replace(/^["“]|["”]$/g, ""));
+  if (!original || !hint.slice(arrow + 1).trim()) return null;
+  const message = normalize(content);
+  const wordChar = /[\p{L}\p{N}']/u;
+  let at = message.indexOf(original);
+  while (at >= 0) {
+    const before = message[at - 1];
+    const after = message[at + original.length];
+    if ((!before || !wordChar.test(before) || !wordChar.test(original[0]!)) &&
+        (!after || !wordChar.test(after) || !wordChar.test(original.at(-1)!))) return hint;
+    at = message.indexOf(original, at + 1);
+  }
+  return null;
+}

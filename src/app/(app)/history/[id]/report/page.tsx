@@ -22,6 +22,8 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
   const { conversation, report } = data;
   const theme = THEMES[conversation.theme as keyof typeof THEMES];
   const kind = conversation.kind === "call" ? "call" : "chat";
+  const userMessages = conversation.messages.filter((message) => message.role === "user");
+  const wordCount = userMessages.reduce((count, message) => count + (message.content.match(/\S+/g)?.length ?? 0), 0);
   const backHref = kind === "chat" ? `/chat/${conversation.id}` : `/history/${conversation.id}`;
   const meta = [
     theme?.label ?? conversation.theme,
@@ -47,7 +49,8 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
       {report ? (
-        <ReportView report={report} isInterview={Boolean(theme?.isInterview)} kind={kind} />
+        <ReportView report={report} isInterview={Boolean(theme?.isInterview)} kind={kind}
+          limitedEvidence={userMessages.length < 3 || wordCount < 50} />
       ) : (
         <ReportRetry
           conversationId={conversation.id}

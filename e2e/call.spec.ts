@@ -140,3 +140,74 @@ test("음성 인식 미지원 브라우저는 텍스트 입력으로 대체한�
   await page.getByRole("button", { name: callLive.say }).click();
   await expect(page.getByTestId("msg-assistant")).toHaveCount(1, { timeout: 15_000 });
 });
+
+async function openCall(page: Page, review = false) {
+  await login(page);
+  await page.goto("/call");
+  await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
+  await page.getByRole("button", { name: callSetup.next }).click();
+  await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
+  if (review) await page.getByLabel(callLive.reviewSpeech).check();
+  await page.getByTestId("start-call").click();
+  await expect.poll(() => page.evaluate(() => window.__leoFakeVoice!.listening())).toBe(true);
+}
+
+test("짧게 쉬거나 인식기가 재시작해도 말을 한 번으로 모아서 보낸다", async ({ page }) => {
+  await openCall(page);
+  await say(page, "I go");
+  await expect(page.getByTestId("interim")).toContainText("I go");
+  await page.waitForTimeout(1500);
+  await expect(page.getByTestId("msg-user")).toHaveCount(0);
+  await page.evaluate(() => window.__leoFakeVoice!.end());
+  await expect.poll(() => page.evaluate(() => window.__leoFakeVoice!.listening())).toBe(true);
+  await say(page, "to school yesterday.");
+  await expect(page.getByTestId("msg-user")).toHaveCount(1);
+  await expect(page.getByTestId("msg-user")).toHaveText("I go to school yesterday.");
+  await expect(page.getByTestId("msg-assistant")).toHaveCount(1);
+});
+
+test("인식 내용을 실제 말한 문법으로 수정해 보내고 리포트 전사에 남긴다", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await openCall(page, true);
+  await say(page, "I went to school yesterday.");
+  await page.waitForTimeout(3500);
+  await expect(page.getByTestId("msg-user")).toHaveCount(0);
+  await page.getByRole("button", { name: callLive.editSpeech }).click();
+  const draft = page.getByLabel(callLive.draftLabel);
+  await expect(draft).toHaveAttribute("autocorrect", "off");
+  await expect(draft).toHaveAttribute("spellcheck", "false");
+  await draft.fill("I go to school yesterday.");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.screenshot({ path: "test-results/voice-review-mobile.png", fullPage: true });
+  await page.getByRole("button", { name: callLive.sendSpeech }).click();
+  await expect(page.getByTestId("msg-user")).toHaveText("I go to school yesterday.");
+  await expect(page.getByTestId("msg-assistant")).toHaveCount(1);
+  await expect(page.getByTestId("hangup")).toBeInViewport();
+  const id = page.url().split("/").at(-1)!;
+  await page.getByTestId("hangup").click();
+  await expect(page).toHaveURL(/\/report$/);
+  await page.goto(`/history/${id}`);
+  await expect(page.getByRole("log")).toContainText("I go to school yesterday.");
+});
+
+test("아이폰 방식의 재생 실패와 마이크 오류를 화면 이동 없이 복구한다", async ({ page }) => {
+  await page.addInitScript(() => { window.__LEO_FAKE_VOICE_SUPPORT = { stt: true, tts: true, duplex: false }; });
+  await openCall(page);
+  const url = page.url();
+  await page.evaluate(() => window.__leoFakeVoice!.failPlayback());
+  await page.getByRole("button", { name: callLive.replay }).click();
+  await expect(page.getByText(callLive.playbackError)).toBeVisible();
+  await page.getByRole("button", { name: callLive.replay }).click();
+  await expect(page.getByText(callLive.playbackError)).toHaveCount(0);
+  await expect.poll(() => page.evaluate(() => window.__leoFakeVoice!.listening())).toBe(true);
+  await page.evaluate((message) => window.__leoFakeVoice!.fail(message, true), errors.voice.permissionDenied);
+  await expect(page.getByLabel(callLive.textInputLabel)).toBeVisible();
+  await page.getByRole("button", { name: callLive.retryMic }).click();
+  await expect.poll(() => page.evaluate(() => window.__leoFakeVoice!.listening())).toBe(true);
+  await expect(page.getByLabel(callLive.textInputLabel)).toHaveCount(0);
+  await expect(page).toHaveURL(url);
+  await say(page, "There was very much people.");
+  await page.getByRole("button", { name: callLive.sendSpeech }).click();
+  await expect(page.getByTestId("msg-user")).toHaveText("There was very much people.");
+  await expect(page.getByTestId("msg-assistant")).toHaveCount(1);
+});

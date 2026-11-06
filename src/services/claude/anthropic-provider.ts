@@ -83,6 +83,8 @@ export class AnthropicProvider implements ClaudeProvider {
       fallbacks: "default",
       thinking: { type: "adaptive" },
       output_config: { effort: "low" },
+      // 대화 원문을 유지하면서 이전 턴까지 재사용한다. 시스템 블록의 캐시와 함께 동작한다.
+      cache_control: { type: "ephemeral" },
       system: systemBlocks(buildChatSystemPrompt(input.theme, input.mode, input.hints), input.portfolioText),
       messages: input.messages.map((m) => ({ role: m.role, content: m.content })),
     });
