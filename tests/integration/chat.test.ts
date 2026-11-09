@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { POST as signup } from "@/app/api/auth/signup/route";
 import {
   GET as listConversations,
@@ -231,8 +231,9 @@ describe("chat API", () => {
       ),
     );
     const res = await postReport(req(`/api/conversations/${id}/report`), ctx(id));
-    expect(res.status).toBe(200);
-    const body = (await res.json()) as { report: { summary: string; interview: unknown } };
+    expect(res.status).toBe(202);
+    await vi.waitFor(async () => expect((await getReport(req(`/api/conversations/${id}/report`, { method: "GET" }), ctx(id))).status).toBe(200));
+    const body = (await (await getReport(req(`/api/conversations/${id}/report`, { method: "GET" }), ctx(id))).json()) as { report: { summary: string; interview: unknown } };
     expect(body.report.summary).toContain("면접");
     expect(body.report.interview).not.toBeNull();
     const got = await getReport(req(`/api/conversations/${id}/report`, { method: "GET" }), ctx(id));
@@ -259,8 +260,8 @@ describe("chat API", () => {
       ),
     );
     const bad = await postReport(req(`/api/conversations/${id}/report`), ctx(id));
-    expect(bad.status).toBe(502);
-    expect(((await bad.json()) as { error: { code: string } }).error.code).toBe("report_invalid");
+    expect(bad.status).toBe(202);
+    await vi.waitFor(async () => expect((await getReport(req(`/api/conversations/${id}/report`, { method: "GET" }), ctx(id))).status).toBe(409));
     expect(await prisma.report.findUnique({ where: { conversationId: id } })).toBeNull();
   });
 });

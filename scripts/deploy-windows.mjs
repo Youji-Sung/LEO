@@ -26,6 +26,7 @@ export function realServices(root = projectRoot, requestedUrl) {
   const runtime = join(root, ".leo-runtime");
   const processScript = join(root, "scripts/deploy-process.ps1");
   let release;
+  let publicUrl;
   const snapshot = async () => JSON.parse((await exec("powershell.exe", [...flags, processScript, "-Action", "snapshot"], { windowsHide: true, maxBuffer: 4_000_000 })).stdout);
   const stop = async (process, port = 0) => {
     await exec("powershell.exe", [...flags, processScript, "-Action", "stop", "-TargetPid", String(process.pid), "-ExpectedStartedAt", process.startedAt, "-ExpectedPort", String(port)], { windowsHide: true });
@@ -106,7 +107,7 @@ export function realServices(root = projectRoot, requestedUrl) {
     let child;
     try {
       child = spawn(process.execPath, [join(root, "node_modules/next/dist/bin/next"), "start", "-H", "127.0.0.1", "-p", String(port)], {
-        cwd: root, env: deploymentEnv(process.env, desc), detached: true, windowsHide: true, stdio: ["ignore", fd, fd],
+        cwd: root, env: deploymentEnv(process.env, desc, publicUrl), detached: true, windowsHide: true, stdio: ["ignore", fd, fd],
       });
       await new Promise((done, reject) => { child.once("spawn", done); child.once("error", reject); });
     } finally { closeSync(fd); }
@@ -123,7 +124,7 @@ export function realServices(root = projectRoot, requestedUrl) {
   return {
     say: (text) => console.log(text),
     check: async () => {
-      if (process.platform !== "win32" || Number(process.versions.node.split(".")[0]) < 22) throw new Error("Windows와 Node.js 22 이상이 필요합니다.");
+      if (process.platform !== "win32" || Number(process.versions.node.split(".")[0]) < 24) throw new Error("Windows와 Node.js 24 이상이 필요합니다.");
       for (const path of [".env", "node_modules/next/dist/bin/next", "src/generated/prisma/client.ts"]) await access(join(root, path));
     },
     lock: async () => {
@@ -158,18 +159,20 @@ export function realServices(root = projectRoot, requestedUrl) {
       }
       const choices = available.filter((item) => !pinned || item.url === pinned);
       if (choices.length !== 1) throw new Error(pinned ? `기존 터널 ${pinned}을 찾지 못했습니다. 새 주소는 만들지 않습니다.` : `기존 터널 하나를 지정해 주세요: deploy.bat --url <기존 주소>\n${available.map((item) => item.url).join("\n")}`);
+      publicUrl = choices[0].url;
       return choices[0];
     },
     previous: findApp,
     prepare: async () => { release = await prepareRelease(root); return release; },
-    build: () => launch(process.execPath, [join(root, "node_modules/next/dist/bin/next"), "build"], { root, env: deploymentEnv(process.env, release), logFile: join(release.runDir, "build.log"), echo: true }),
+    build: () => launch(process.execPath, [join(root, "node_modules/next/dist/bin/next"), "build"], { root, env: deploymentEnv(process.env, release, publicUrl), logFile: join(release.runDir, "build.log"), echo: true }),
     stage: async () => {
+      await exec(process.execPath, ["--import", "tsx", "scripts/check-schema.ts"], { cwd: root, windowsHide: true, timeout: 30_000 });
       const inventory = await snapshot();
       const reserved = inventory.processes.map((item) => originPort(item.command));
       let port = 3300;
       while (port <= 3399) { port = await findFreePort(port, 3399); if (!reserved.includes(port)) break; port++; }
       if (port > 3399) throw new Error("사전 검증용 빈 포트가 없습니다.");
-      const app = launch(process.execPath, [join(root, "node_modules/next/dist/bin/next"), "start", "-H", "127.0.0.1", "-p", String(port)], { root, env: deploymentEnv(process.env, release), logFile: join(release.runDir, "stage.log") });
+      const app = launch(process.execPath, [join(root, "node_modules/next/dist/bin/next"), "start", "-H", "127.0.0.1", "-p", String(port)], { root, env: deploymentEnv(process.env, release, publicUrl), logFile: join(release.runDir, "stage.log") });
       // Keep the live process object: output and exit state are updated by launch().
       app.port = port;
       return app;

@@ -1,0 +1,35 @@
+name: Verify release
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24.22.2'
+          cache: npm
+      - run: npm ci
+      - run: npm audit --audit-level=moderate
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - run: docker build -t leo:${{ github.sha }} .
+      - run: node --test tests/deployment/production-image.test.mjs tests/deployment/linux-release.test.mjs
+        env:
+          LEO_TEST_IMAGE: leo:${{ github.sha }}
+      - if: github.event_name == 'workflow_dispatch'
+        run: docker save leo:${{ github.sha }} | gzip > leo-image.tar.gz
+      - if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: leo-image-${{ github.sha }}
+          path: leo-image.tar.gz
+          retention-days: 3

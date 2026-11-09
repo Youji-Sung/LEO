@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { apiAttemptContext } from "@/lib/api-attempt-context";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { TokenUsage } from "@/config/pricing";
 import { HintSplitter } from "@/services/claude/hint-splitter";
@@ -34,7 +35,11 @@ export function createAnthropicClient(): Anthropic {
   if (!apiKey) {
     throw new ClaudeConfigError("LEO_ANTHROPIC_API_KEY 가 설정되지 않았습니다.");
   }
-  return new Anthropic({ apiKey, maxRetries: 2, timeout: 10 * 60 * 1000 });
+  return new Anthropic({ apiKey, maxRetries: 2, timeout: 10 * 60 * 1000, fetch: (...args) => {
+    const context = apiAttemptContext.getStore();
+    if (context) context.attempts++;
+    return globalThis.fetch(...args);
+  } });
 }
 
 function toUsage(u: Anthropic.Beta.BetaUsage): TokenUsage {

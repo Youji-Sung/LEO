@@ -29,20 +29,22 @@
 
 ## 설치와 실행
 
-요구 사항: Node.js 22 이상, npm.
+요구 사항: Node.js 24 이상, npm. 정식 배포 이미지는 Node 24.22.2를 사용한다.
 
 ```bash
 bash scripts/bootstrap.sh   # .env 생성(AUTH_SECRET 자동), npm install, prisma generate, migrate, 시드
 npm run dev                 # http://localhost:3000
 ```
 
-시드 계정: `dev1@leo.local`, `dev2@leo.local` (비밀번호는 `.env`의 `SEED_USER_PASSWORD`, 기본 `leo-pass-1234`). 회원가입 화면도 있다.
+시드 계정은 개발·테스트 전용이다: `dev1@leo.local`, `dev2@leo.local` (비밀번호는 `.env`의 `SEED_USER_PASSWORD`, 기본 `leo-pass-1234`). 공개 가입은 기본 차단이며 로컬 테스트에서만 명시적으로 `LEO_ALLOW_SIGNUP=1`로 연다. 초대 운영은 아래 배포 안내를 따른다.
 
-프로덕션:
+로컬 프로덕션 빌드 확인:
 
 ```bash
 npm run build && npm start
 ```
+
+정식 초대 운영은 [배포 안내의 정식 배포 절차](docs/DEPLOY_TUNNEL.md#정식-초대-운영-배포)를 따른다. `deploy/compose.yaml`, `deploy/release.sh`, `deploy/production.env.example`을 사용하며 공개 포트를 열지 않는다. 계정 발급·정지 도구는 `npm run users -- ...`, 예산 점검은 `npm run ops -- budget`, DB 백업·복원 검증은 `npm run backup` / `npm run restore:check -- <백업 경로>`다.
 
 Windows에서 기존 외부 접속 주소에 업데이트하려면 **`deploy.bat`를 더블클릭**한다. 별도 빌드 → 임시 포트에서 사전 검사 → 기존 포트의 앱 교체 → 같은 외부 주소에서 새 빌드 확인까지 진행한다. **기존 Cloudflare 터널과 주소를 유지하며 새 터널은 만들지 않는다.** 앱 교체 순간에는 짧은 접속 중단이 있고, 실패하면 이전 앱 복구를 시도한다. 배포 완료 후 창을 닫아도 앱과 터널은 계속 실행된다. 처음 주소를 지정하는 방법과 터널이 꺼졌을 때의 제한은 [배포 안내](docs/DEPLOY_TUNNEL.md)를 참고한다.
 

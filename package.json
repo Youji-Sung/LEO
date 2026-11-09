@@ -12,12 +12,17 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "test:deploy": "node --test tests/deployment/deploy-tunnel.test.mjs tests/deployment/deploy-update.test.mjs",
+    "test:deploy": "node --test tests/deployment/deploy-tunnel.test.mjs tests/deployment/deploy-update.test.mjs tests/deployment/backup.test.mjs",
     "check": "npm run lint && npm run typecheck && npm run test && npm run test:deploy && npm run build",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "users": "tsx scripts/users.ts",
+    "ops": "tsx scripts/operations.ts",
+    "start:production": "tsx scripts/start-production.ts",
+    "backup": "node scripts/backup.mjs",
+    "restore:check": "node scripts/restore-check.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -26,11 +31,14 @@
     "@prisma/client": "7.10.1",
     "better-sqlite3": "13.0.3",
     "dotenv": "^18.0.9",
+    "jose": "^6.2.16",
     "lucide-react": "1.67.0",
     "next": "16.4.4",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "unpdf": "2.1.0",
+    "prisma": "7.10.1",
+    "tsx": "4.23.15",
     "zod": "4.6.7"
   },
   "devDependencies": {
@@ -44,12 +52,14 @@
     "eslint-config-next": "16.4.4",
     "eslint-config-prettier": "10.1.8",
     "prettier": "3.9.10",
-    "prisma": "7.10.1",
-    "tsx": "4.23.15",
     "typescript": "5.9.3",
     "vitest": "4.1.12"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24"
+  },
+  "overrides": {
+    "better-sqlite3": "$better-sqlite3",
+    "@typescript-eslint/typescript-estree": { "minimatch": "^11.0.1" }
   }
 }

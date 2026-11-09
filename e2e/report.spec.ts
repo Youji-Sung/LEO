@@ -67,13 +67,14 @@ test("스키마 검증 실패 시 오류와 재시도 버튼을 보여 주고, �
   });
   await expect(page).toHaveURL(new RegExp(`/chat/${id}$`));
 
-  // 리포트 페이지에서도 오류 + 재시도
+  // 저장된 실패 상태를 바로 복원한다. 페이지 이동만으로 모델을 재호출하지 않는다.
   await page.goto(`/history/${id}/report`);
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await page.getByRole("button", { name: report.make }).click();
   const retry = page.getByTestId("report-retry");
   await expect(retry.getByRole("alert")).toContainText(errors.report.invalid, { timeout: 30_000 });
   await expect(retry.getByRole("button", { name: common.retry })).toBeVisible();
+  await retry.getByRole("button", { name: common.retry }).click();
+  await expect(retry.getByRole("alert")).toContainText(errors.report.invalid, { timeout: 30_000 });
 
   // 정상 발화를 하나 더 보낸 뒤 재시도하면 성공
   await page.goto(`/chat/${id}`);
@@ -81,7 +82,7 @@ test("스키마 검증 실패 시 오류와 재시도 버튼을 보여 주고, �
   await sendAndWait(page, "Okay, let me say it properly this time.", 2);
   await page.goto(`/history/${id}/report`);
   await page.waitForFunction(() => document.documentElement.dataset.hydrated === "1");
-  await page.getByRole("button", { name: report.make }).click();
+  await page.getByRole("button", { name: common.retry }).click();
   await expect(page.getByRole("heading", { name: report.sections.summary })).toBeVisible({
     timeout: 30_000,
   });

@@ -1,0 +1,49 @@
+name: leo
+services:
+  app:
+    image: ${LEO_IMAGE:?Set an immutable release image}
+    env_file: /etc/leo/production.env
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 768m
+    stop_grace_period: 35m
+    volumes:
+      - /var/lib/leo:/data
+      - /var/backups/leo:/backups
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+      - /app/.next/cache:size=32m,uid=1000,gid=1000
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+  gateway:
+    image: ${NGINX_IMAGE:?Set a pinned nginx image digest}
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      app: { condition: service_healthy }
+    mem_limit: 64m
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+  tunnel:
+    image: ${CLOUDFLARED_IMAGE:?Set a pinned cloudflared image digest}
+    command: tunnel --no-autoupdate run --token-file /run/secrets/tunnel_token
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    secrets: [tunnel_token]
+    depends_on: [gateway]
+    mem_limit: 128m
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+secrets:
+  tunnel_token:
+    file: /etc/leo/tunnel-token
+# No published ports: the app is reachable only through the authenticated tunnel.

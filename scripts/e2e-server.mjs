@@ -20,6 +20,11 @@ const env = {
   SEED_USER_PASSWORD: process.env.SEED_USER_PASSWORD ?? "leo-pass-1234",
   LEO_ALLOW_SHORT_CALLS: "1",
   LEO_ALLOW_SIGNUP: "1",
+  LEO_INVITE_ONLY: "0",
+  LEO_PRODUCTION: "0",
+  LEO_REQUIRE_ACCESS: "0",
+  LEO_API_MONTHLY_USD: "",
+  APP_URL: `http://localhost:${port}`,
   NEXT_DIST_DIR: ".next-e2e",
 };
 

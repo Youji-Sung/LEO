@@ -1,0 +1,9 @@
+[Unit]
+Description=LEO verified SQLite backup
+Requires=docker.service
+After=docker.service
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/leo/deploy
+EnvironmentFile=/etc/leo/images.env
+ExecStart=/usr/bin/docker compose -f compose.yaml exec -T app npm run backup

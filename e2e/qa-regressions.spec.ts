@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { callLive, chat, nav, notFound, report, settings } from "../src/content/ko";
+import { callLive, chat, nav, notFound, report, settings, errors } from "../src/content/ko";
 import { gotoHydrated, login } from "./helpers";
 
 async function create(page: Page, kind: "chat" | "call") {
@@ -99,7 +99,7 @@ test("D2 새로고침 뒤 생성이 실패하면 자동 재생성 없이 안내�
   await page.getByRole("button", { name: chat.makeReport, exact: true }).click();
   await expect.poll(async () => (await page.request.get(`/api/conversations/${id}/report`)).status()).toBe(202);
   await page.reload();
-  await expect(page.getByText(report.interrupted)).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText(errors.report.invalid)).toBeVisible({ timeout: 30_000 });
   await expect(page.getByRole("button", { name: chat.makeReport, exact: true })).toBeEnabled();
   await expect(page.getByLabel(chat.inputLabel)).toBeEnabled();
   expect(posts).toBe(1);

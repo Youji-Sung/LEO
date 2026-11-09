@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/db";
 import { USAGE_FEATURES, type UsageFeature } from "@/services/claude/usage";
 import { usage } from "@/content/ko";
+import { canUseAccount } from "@/lib/auth/account-policy";
+import { HttpError } from "@/lib/http-error";
 
 export const USAGE_PERIODS = ["today", "7d", "30d", "all"] as const;
 export type UsagePeriod = (typeof USAGE_PERIODS)[number];
@@ -70,7 +72,7 @@ export type UsageSummary = {
 };
 
 export type GetUsageSummaryInput = {
-  // 운영자가 한 키로 비용을 내므로 모든 사용자가 전체 사용량을 본다. 뷰어 ID 는 호출 의도를 명시하기 위한 값이다.
+  // The database role, not request parameters, determines aggregate visibility.
   viewerUserId: string;
   period: UsagePeriod;
   userId?: string;
@@ -89,9 +91,15 @@ const EMPTY_TOTALS: UsageTotals = {
 };
 
 export async function getUsageSummary(input: GetUsageSummaryInput): Promise<UsageSummary> {
+  const viewer = await prisma.user.findUnique({ where: { id: input.viewerUserId } });
+  if (!viewer || !canUseAccount(viewer)) throw new HttpError(401, "로그인이 필요합니다.", "unauthorized");
+  const admin = viewer.role === "admin";
+  if (!admin && input.userId && input.userId !== viewer.id) throw new HttpError(403, "본인의 사용량만 볼 수 있습니다.", "forbidden");
+  const selectedId = admin ? input.userId : viewer.id;
+  const visibleUsers = admin ? {} : { userId: viewer.id };
   const since = periodStart(input.period, input.now);
   const timeWhere = since ? { createdAt: { gte: since } } : {};
-  const where = { ...timeWhere, ...(input.userId ? { userId: input.userId } : {}) };
+  const where = { ...timeWhere, ...(selectedId ? { userId: selectedId } : {}) };
 
   const [agg, userGroups, users, featureGroups, recentRows] = await Promise.all([
     prisma.usageRecord.aggregate({
@@ -101,11 +109,11 @@ export async function getUsageSummary(input: GetUsageSummaryInput): Promise<Usag
     }),
     prisma.usageRecord.groupBy({
       by: ["userId"],
-      where: timeWhere,
+      where: { ...timeWhere, ...visibleUsers },
       _count: { _all: true },
       _sum: { inputTokens: true, outputTokens: true, cacheReadTokens: true, cacheWriteTokens: true, costUsd: true },
     }),
-    prisma.user.findMany({ select: { id: true, name: true, email: true }, orderBy: { createdAt: "asc" } }),
+    prisma.user.findMany({ where: admin ? {} : { id: viewer.id }, select: { id: true, name: true, email: true }, orderBy: { createdAt: "asc" } }),
     prisma.usageRecord.groupBy({
       by: ["feature"],
       where,

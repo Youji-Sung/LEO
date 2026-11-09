@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { POST as signup } from "@/app/api/auth/signup/route";
 import {
   GET as listConversations,
@@ -144,7 +144,8 @@ describe("call opening line (외부 피드백 1)", () => {
     ).json()) as { conversations: Array<{ id: string; messageCount: number }> };
     expect(list.conversations.find((c) => c.id === id)?.messageCount).toBe(3);
     const report = await postReport(req(`/api/conversations/${id}/report`), ctx(id));
-    expect(report.status).toBe(200);
+    expect(report.status).toBe(202);
+    await vi.waitFor(async () => expect((await prisma.reportJob.findUnique({ where: { conversationId: id } }))?.status).toBe("complete"));
   });
 
   it("refuses to start a chat as a call", async () => {

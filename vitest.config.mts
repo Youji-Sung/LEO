@@ -15,6 +15,7 @@ export default defineConfig({
       AUTH_SECRET: "test-secret-test-secret-test-secret",
       LEO_ALLOW_SHORT_CALLS: "1",
       LEO_ALLOW_SIGNUP: "1",
+      LEO_INVITE_ONLY: "0",
     },
     fileParallelism: false,
   },

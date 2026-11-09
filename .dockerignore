@@ -1,0 +1,16 @@
+node_modules
+.next*
+.leo-runtime
+.git
+.env*
+**/*.db*
+**/*.sqlite*
+**/*.log
+backups
+test-results
+playwright-report
+coverage
+docs
+e2e
+tests
+.github

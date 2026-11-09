@@ -4,8 +4,8 @@ import type { Prisma } from "@/generated/prisma/client";
 import { getClaudeProvider } from "@/services/claude";
 import { describeClaudeError } from "@/services/claude/errors";
 import { assertTurnAllowed, TurnCapError } from "@/services/claude/turn-cap";
-import { recordUsage } from "@/services/claude/usage";
-import type { ChatMessage, ConversationMode, ThemeId } from "@/services/claude/types";
+import { runMetered } from "@/services/claude/budget";
+import type { ChatMessage, ChatTurnInput, ConversationMode, ThemeId } from "@/services/claude/types";
 import { THEME_IDS } from "@/services/claude/types";
 import { errors } from "@/content/ko";
 import { hintForMessage } from "@/services/claude/hint-splitter";
@@ -246,23 +246,14 @@ async function* sendMessageLocked(input: {
   };
 
   const work = async () => {
-    const r = await provider.chatTurn(
-      {
+    const request: ChatTurnInput = {
         theme: conv.theme as ThemeId,
         mode,
         hints: conv.hintsEnabled,
         portfolioText: conv.portfolio?.content ?? null,
         messages: [...history, { role: "user", content }],
-      },
-      (text) => push({ type: "delta", text }),
-    );
-    await recordUsage({
-      userId: input.userId,
-      feature: mode === "call" ? "call" : "chat",
-      model: r.model,
-      usage: r.usage,
-      latencyMs: r.latencyMs,
-    });
+      };
+    const r = await runMetered(input.userId, mode, request, () => provider.chatTurn(request, (text) => push({ type: "delta", text })));
     if (r.stopReason === "refusal") {
       await dropUserTurn();
       push({ type: "error", message: errors.conversation.refusal, code: "refusal" });
@@ -294,7 +285,7 @@ async function* sendMessageLocked(input: {
     .catch(async (e: unknown) => {
       console.error("chatTurn failed", e);
       await dropUserTurn();
-      push({ type: "error", message: describeClaudeError(e), code: "provider_error" });
+      push({ type: "error", message: e instanceof HttpError ? e.message : describeClaudeError(e), code: e instanceof HttpError ? e.code || "error" : "provider_error" });
     })
     .finally(() => {
       finished = true;

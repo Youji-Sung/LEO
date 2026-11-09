@@ -20,6 +20,7 @@ export function useReportJob(conversationId: string, onReady: () => void, openEx
   const [checking, setChecking] = useState(true);
   const [hasReport, setHasReport] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [generation, setGeneration] = useState(0);
   const busyRef = useRef(true);
   const activeRef = useRef(false);
   const url = `/api/conversations/${conversationId}/report`;
@@ -69,7 +70,10 @@ export function useReportJob(conversationId: string, onReady: () => void, openEx
         if (missing) {
           marker(key, false);
           if (recovering) setError(text.interrupted);
-        } else setError(text.statusError);
+        } else {
+          if (err instanceof ApiError && err.code === "report_failed") marker(key, false);
+          setError(err instanceof ApiError ? err.message : text.statusError);
+        }
       } finally {
         if (!stopped) setChecking(false);
       }
@@ -81,7 +85,7 @@ export function useReportJob(conversationId: string, onReady: () => void, openEx
       controller.abort();
       clearTimeout(timer);
     };
-  }, [key, url, onReady, openExisting]);
+  }, [key, url, onReady, openExisting, generation]);
 
   async function generate() {
     if (busyRef.current) return;
@@ -89,8 +93,14 @@ export function useReportJob(conversationId: string, onReady: () => void, openEx
     setBusy(true);
     setError(null);
     marker(key, true);
+    let accepted = false;
     try {
-      await apiJson(url, { method: "POST" });
+      const result = await apiJson<{ status?: string }>(url, { method: "POST" });
+      if (result.status === "generating") {
+        accepted = true;
+        if (activeRef.current) setGeneration((value) => value + 1);
+        return;
+      }
       marker(key, false);
       if (activeRef.current) {
         setHasReport(true);
@@ -101,8 +111,10 @@ export function useReportJob(conversationId: string, onReady: () => void, openEx
       if (err instanceof ApiError) marker(key, false);
       if (activeRef.current) setError((err as Error).message);
     } finally {
-      busyRef.current = false;
-      if (activeRef.current) setBusy(false);
+      if (!accepted) {
+        busyRef.current = false;
+        if (activeRef.current) setBusy(false);
+      }
     }
   }
 

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { HttpError } from "@/lib/http";
 import { getClaudeProvider } from "@/services/claude";
 import { describeClaudeError } from "@/services/claude/errors";
-import { recordUsage } from "@/services/claude/usage";
+import { runMetered } from "@/services/claude/budget";
 import { reportSchema, type Report } from "@/services/claude/schemas/report";
 import type { ChatMessage, ReportInput, ThemeId } from "@/services/claude/types";
 import { getOwnedConversation, toChatMessages } from "@/services/conversation";
@@ -34,6 +34,41 @@ export class ReportGenerationError extends Error {
 }
 
 type SavedReport = { id: string; report: Report };
+
+// Only one application process owns the SQLite database in production.
+// Restart recovery marks interrupted jobs, but never silently repeats a paid request.
+export async function recoverInterruptedReports() {
+  await prisma.reportJob.updateMany({ where: { status: "generating" }, data: { status: "failed", error: "서버가 다시 시작되어 리포트 생성이 중단됐어요. 다시 만들기를 눌러 주세요." } });
+  await prisma.apiReservation.updateMany({ where: { status: "active" }, data: { status: "uncertain" } });
+}
+
+export async function enqueueReport(userId: string, conversationId: string) {
+  const conv = await getOwnedConversation(userId, conversationId);
+  if (!conv.messages.some((m) => m.role === "user")) throw new ReportGenerationError(errors.report.empty, "empty");
+  const previous = await prisma.reportJob.findUnique({ where: { conversationId } });
+  if (previous?.status === "generating") return;
+  // Claim with a single conditional write, so two same-tick POSTs cannot start two jobs.
+  try {
+    if (!previous) await prisma.reportJob.create({ data: { conversationId, userId, status: "generating" } });
+    else {
+      const claimed = await prisma.reportJob.updateMany({ where: { conversationId, status: { not: "generating" } }, data: { status: "generating", error: null } });
+      if (!claimed.count) return;
+    }
+  } catch (e) {
+    if ((e as { code?: string }).code === "P2002") return;
+    throw e;
+  }
+  void generateAndSaveReport(userId, conversationId)
+    .then(() => prisma.reportJob.update({ where: { conversationId }, data: { status: "complete", error: null } }))
+    .catch(async (e: unknown) => {
+      const message = e instanceof HttpError || e instanceof ReportGenerationError ? e.message : "리포트를 만들지 못했어요. 다시 시도해 주세요.";
+      await prisma.reportJob.update({ where: { conversationId }, data: { status: "failed", error: message } });
+    }).catch(() => console.error("Could not persist report job status"));
+}
+
+export async function reportJobState(userId: string, conversationId: string) {
+  return prisma.reportJob.findFirst({ where: { conversationId, userId } });
+}
 
 // 생성 중인 동일 입력만 공유한다. 완료·실패 후에는 제거해 명시적 재생성과 재시도를 유지한다.
 const pendingReports = new Map<string, { userId: string; conversationId: string; work: Promise<SavedReport> }>();
@@ -78,12 +113,12 @@ async function generateAndSaveSnapshot(
   const provider = getClaudeProvider();
   let result: Awaited<ReturnType<typeof provider.generateReport>>;
   try {
-    result = await provider.generateReport(input);
+    result = await runMetered(userId, "report", input, () => provider.generateReport(input));
   } catch (e) {
+    if (e instanceof HttpError) throw e;
     console.error("generateReport failed", e);
     throw new ReportGenerationError(errors.report.provider(describeClaudeError(e)), "provider");
   }
-  await recordUsage({ userId, feature: "report", model: result.model, usage: result.usage, latencyMs: result.latencyMs });
   if (result.stopReason === "refusal") {
     throw new ReportGenerationError(errors.report.refusal, "refusal");
   }

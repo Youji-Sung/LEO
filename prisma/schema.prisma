@@ -14,11 +14,63 @@ model User {
   passwordHash  String
   name          String
   createdAt     DateTime       @default(now())
+  status        String         @default("active")
+  provisioned   Boolean        @default(false)
+  credentialVersion Int        @default(0)
+  role          String         @default("member")
   sessions      Session[]
   conversations Conversation[]
   usageRecords  UsageRecord[]
   portfolios    Portfolio[]
   settings      UserSettings?
+  invitations   AccountInvitation[]
+}
+
+model AccountInvitation {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+
+model AuditEvent {
+  id        String   @id @default(cuid())
+  action    String
+  userId    String?
+  createdAt DateTime @default(now())
+}
+
+model ApiReservation {
+  id           String   @id
+  userId       String
+  feature      String
+  amountMicros Int
+  status       String   @default("active")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  @@index([status, userId])
+}
+
+model LoginAttempt {
+  key       String   @id
+  count     Int
+  expiresAt DateTime
+}
+
+model RuntimeControl {
+  key String @id
+  value String
+}
+
+model ReportJob {
+  conversationId String @id
+  userId         String
+  status         String
+  error          String?
+  updatedAt      DateTime @updatedAt
 }
 
 model Session {

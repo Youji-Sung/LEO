@@ -54,9 +54,11 @@ test("Windows process cleanup stops the owned fixture and leaves a separate fixt
 test("child environment preserves the model and database without modifying the parent", () => {
   const base = { APP_URL: "http://localhost:3000", LEO_CLAUDE_MODEL: "claude-opus-5", DATABASE_URL: "file:./dev.db", LEO_ALLOW_SIGNUP: "1", CLAUDE_MOCK: "1" };
   const before = structuredClone(base);
-  const env = deploymentEnv(base, { distDir: ".next-release-unique", tsconfigPath: ".leo-runtime/unique/tsconfig.json" });
+  const release = { distDir: ".next-release-unique", tsconfigPath: ".leo-runtime/unique/tsconfig.json" };
+  const env = deploymentEnv(base, release);
   assert.deepEqual(base, before);
   assert.equal(env.APP_URL, "https://tunnel");
+  assert.equal(deploymentEnv(base, release, "https://existing-address.trycloudflare.com").APP_URL, "https://existing-address.trycloudflare.com");
   assert.equal(env.LEO_ALLOW_SIGNUP, "0");
   assert.equal(env.CLAUDE_MOCK, "0");
   assert.equal(env.LEO_CLAUDE_MODEL, before.LEO_CLAUDE_MODEL);

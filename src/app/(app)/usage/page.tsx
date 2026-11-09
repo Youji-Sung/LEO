@@ -32,7 +32,7 @@ export default async function UsagePage({
   const summary = await getUsageSummary({
     viewerUserId: user.id,
     period,
-    userId: params.userId || undefined,
+    userId: user.role === "admin" ? params.userId || undefined : user.id,
   });
   const selectedUserId = summary.byUser.some((u) => u.userId === params.userId)
     ? params.userId
@@ -47,7 +47,7 @@ export default async function UsagePage({
       <div className="page-head">
         <div>
           <h1>{text.pageTitle}</h1>
-          <p>{text.intro}</p>
+          <p>{user.role === "admin" ? text.intro : "내 대화와 리포트의 API 사용량을 확인해요."}</p>
         </div>
       </div>
 
@@ -61,7 +61,7 @@ export default async function UsagePage({
             href: href(p, selectedUserId),
           }))}
         />
-        <Segmented
+        {user.role === "admin" ? <Segmented
           label={text.userLabel}
           value={selectedUserId ?? "all"}
           items={[
@@ -72,7 +72,7 @@ export default async function UsagePage({
               href: href(period, u.userId),
             })),
           ]}
-        />
+        /> : null}
       </div>
 
       <Card as="section" title={totalsTitle} titleId="usage-totals-title" className="stack-sm">

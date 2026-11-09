@@ -10,12 +10,12 @@ if errorlevel 1 (
 )
 where node.exe >nul 2>nul
 if errorlevel 1 (
-  echo Node.js 22 or later is required. Install Node.js and try again.
+  echo Node.js 24 or later is required. Install Node.js and try again.
   pause
   popd
   exit /b 1
 )
-node "%~dp0scripts\deploy-tunnel.mjs" %*
+node "%~dp0scripts\launch-deploy.mjs" %*
 set "LEO_DEPLOY_EXIT=%ERRORLEVEL%"
 popd
 if not "%LEO_DEPLOY_EXIT%"=="0" pause

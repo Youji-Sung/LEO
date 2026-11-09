@@ -23,6 +23,12 @@ test-results/
 # database
 *.db
 *.db-journal
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+backups/
+.env.production.local
 *.sqlite
 *.sqlite-journal
 prisma/dev.db*

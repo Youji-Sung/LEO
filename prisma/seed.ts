@@ -8,6 +8,9 @@ const USERS = [
 ];
 
 async function main() {
+  if (process.env.NODE_ENV === "production" || process.env.LEO_PRODUCTION === "1" || process.env.LEO_INVITE_ONLY === "1") {
+    throw new Error("운영 환경에서 개발 계정을 만들 수 없습니다. npm run users를 사용하세요.");
+  }
   const password = process.env.SEED_USER_PASSWORD || "leo-pass-1234";
   const passwordHash = await hashPassword(password);
   for (const u of USERS) {

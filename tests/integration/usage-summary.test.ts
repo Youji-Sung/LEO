@@ -31,7 +31,7 @@ beforeAll(async () => {
   await prisma.usageRecord.deleteMany({});
   const stamp = Date.now();
   const alice = await prisma.user.create({
-    data: { email: `alice-${stamp}@test.local`, name: "앨리스", passwordHash: await hashPassword("password-123") },
+    data: { email: `alice-${stamp}@test.local`, name: "앨리스", role: "admin", passwordHash: await hashPassword("password-123") },
   });
   const bob = await prisma.user.create({
     data: { email: `bob-${stamp}@test.local`, name: "밥", passwordHash: await hashPassword("password-123") },
@@ -196,13 +196,12 @@ describe("GET /api/usage", () => {
     expect(ok.status).toBe(200);
     const body = (await ok.json()) as { period: string; totals: { calls: number }; byUser: unknown[]; recent: unknown[] };
     expect(body.period).toBe("all");
-    expect(body.totals.calls).toBe(6 + 55);
-    expect(body.byUser.length).toBeGreaterThanOrEqual(3);
-    expect(body.recent).toHaveLength(50);
+    expect(body.totals.calls).toBe(0);
+    expect(body.byUser).toHaveLength(1);
+    expect(body.recent).toHaveLength(0);
 
     const filtered = await usageGet(get(`?period=all&userId=${bobId}`, cookie), {});
-    const fb = (await filtered.json()) as { totals: { calls: number } };
-    expect(fb.totals.calls).toBe(3);
+    expect(filtered.status).toBe(403);
 
     const dflt = await usageGet(get("", cookie), {});
     const db = (await dflt.json()) as { period: string };

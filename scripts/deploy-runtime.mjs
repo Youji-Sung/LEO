@@ -32,13 +32,13 @@ export function tunnelUrl(text) {
   return text.match(/https:\/\/[a-z0-9]+(?:-[a-z0-9]+)*\.trycloudflare\.com(?=[\s/]|$)/i)?.[0] ?? null;
 }
 
-export function deploymentEnv(base, release) {
+export function deploymentEnv(base, release, publicUrl = "https://tunnel") {
   return {
     ...base,
     NODE_ENV: "production",
     NEXT_DIST_DIR: release.distDir,
     LEO_TSCONFIG_PATH: release.tsconfigPath,
-    APP_URL: "https://tunnel",
+    APP_URL: publicUrl,
     LEO_ALLOW_SIGNUP: "0",
     CLAUDE_MOCK: "0",
   };
