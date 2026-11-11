@@ -25,7 +25,7 @@ export const GET = handler(async (req: NextRequest, ctx: Ctx) => {
   const { id } = await ctx.params;
   const { report } = await getOwnedReport(user.id, id);
   const job = await reportJobState(user.id, id);
-  if (isReportGenerating(user.id, id) || job?.status === "generating") {
+  if (job?.status === "generating" || (!job && isReportGenerating(user.id, id))) {
     return Response.json({ status: "generating" }, { status: 202, headers: { "Cache-Control": "no-store" } });
   }
   if (job?.status === "failed") return errorResponse(409, job.error || errors.report.notFound, "report_failed");

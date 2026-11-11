@@ -1,0 +1,2 @@
+ALTER TABLE "ReportJob" ADD COLUMN "leaseToken" TEXT;
+CREATE TABLE "WorkLease" ("key" TEXT NOT NULL PRIMARY KEY, "token" TEXT NOT NULL, "expiresAt" DATETIME NOT NULL);

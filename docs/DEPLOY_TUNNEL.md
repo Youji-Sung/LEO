@@ -1,6 +1,44 @@
 # 배포 안내
 
-정식 초대 운영은 문서 하단의 **정식 초대 운영 배포** 절차를 사용한다. 아래 Windows quick tunnel 절차는 기존 테스트 주소를 유지하는 용도다. 2026-11-09 이후 코드는 Node 24와 신규 DB 마이그레이션이 필요하다. 운영 DB에는 자동 적용하지 않으며, 백업 후 명시적으로 적용해야 한다.
+현재 무료 배포는 **Render + Turso** 절차를 사용한다. 자체 서버와 Cloudflare Access를 사용할 때는 문서 하단의 **정식 초대 운영 배포** 절차를 사용한다. Windows quick tunnel 절차는 기존 테스트 주소를 유지하는 용도다. Node 24와 최신 DB 마이그레이션이 필요하며, 운영 DB 변경은 백업 후 명시적으로 적용한다.
+
+## 무료 배포: Render + Turso
+
+Render Free 웹 서비스 1개와 Turso Free DB 1개를 사용한다. Render가 제공하는 고정 `https://이름.onrender.com` 주소를 쓰므로 도메인을 구매할 필요가 없다. 15분간 접속이 없으면 서버가 잠들고 첫 접속에 약 1분 걸릴 수 있다. 사용자가 이 대기를 허용했다. 서비스 이름을 유지하면 일반적인 업데이트로 주소가 바뀌지 않는다. Claude API 사용료는 서버 비용과 별도이며 모델·원문·추론 설정·출력 상한은 변경하지 않았다.
+
+무료 플랜에는 가용성 보장이 없다. Render는 무료 서비스를 예고 없이 재시작할 수 있으며 무료 한도나 과도한 외부 트래픽으로 서비스가 정지될 수 있다. 이 구성은 소규모 초대 시험 운영을 위한 것이다. 유료 전환·초과 과금을 자동으로 활성화하지 않는다. Render 화면이 유료 인스턴스를 기본 선택할 수 있으므로 반드시 **Free ($0)**를 확인한다. 공식 조건: [Render Free](https://render.com/docs/free), [Turso Free](https://turso.tech/pricing).
+
+### 최초 배포
+
+1. Turso Free에서 Render와 가까운 지역(현재 Singapore)에 새 DB를 만든다. 해당 DB의 읽기·쓰기 토큰과 `libsql://...turso.io` 주소를 준비한다. 기존 PC의 DB는 자동으로 이전하지 않는다.
+2. 로컬의 Git 제외 경로 `.leo-runtime/free-hosting/production.env`에 DB 연결 정보와 운영 환경 값을 보관한다. 실제 값을 Git이나 보고서에 넣지 않는다. Node 24로 `node --env-file=.leo-runtime/free-hosting/production.env scripts/migrate-remote.mjs`를 실행해 빈 DB를 준비한다.
+3. Git에 검증한 소스를 올리고 Render의 Blueprint로 루트 `render.yaml`을 적용한다. 웹 서비스 1개, **Free**, Singapore, Node 24이며 별도 디스크·DB·워커·유료 예약 작업을 추가하지 않는다. GitHub 자동 배포는 끄고 검증 후 수동으로 배포한다.
+4. Render 환경에 `DATABASE_URL`, `TURSO_AUTH_TOKEN`, 서버용 `LEO_ANTHROPIC_API_KEY`를 입력한다. `AUTH_SECRET`와 `LEO_HEALTH_TOKEN`은 독립적인 난수로 만들고 이후 배포에도 유지한다. 나머지 초대 운영·예산 설정은 Blueprint에 있다. Render 런타임의 `RENDER_EXTERNAL_URL`을 `APP_URL`로 사용한다.
+5. 서비스가 시작되면 비회원 API 차단, 가입 차단, 발급 계정 로그인, 계정 정지, 대화·리포트 저장과 재시작을 확인한다. 운영자 CLI가 사용하는 로컬 `production.env`에도 실제 `APP_URL`과 같은 `AUTH_SECRET`를 저장한다.
+
+이 경로에서는 구매 도메인/Cloudflare Access를 사용하지 않으며 앱 자체의 발급 계정 검증을 모든 유료 API에 적용한다. `LEO_DEPLOYMENT_PROFILE=render-free`는 Render의 실제 HTTPS 주소, 외부 Turso DB, 공개 가입 차단, 초대 운영과 비용 설정을 요구한다. 일반 서버 프로필에서 Cloudflare Access 요구를 제거한 것은 아니다. 플랫폼 상태 검사용 `/api/health`는 본문 없는 204/503만 공개하고 계정·DB·API 정보는 반환하지 않는다.
+
+### 회원 발급·백업
+
+아래 명령은 로컬 PC에서 실행한다. Render Free의 웹 셸이나 예약 작업에 의존하지 않는다. 공개 회원가입은 계속 차단한다. 발급 링크는 24시간 내 1회만 사용할 수 있고, 사용자가 자신의 비밀번호를 정한다.
+
+```powershell
+node --env-file=.leo-runtime/free-hosting/production.env --import tsx scripts/users.ts issue member@example.com "회원 이름"
+node --env-file=.leo-runtime/free-hosting/production.env --import tsx scripts/users.ts issue operator@example.com "운영자" --admin
+node --env-file=.leo-runtime/free-hosting/production.env --import tsx scripts/users.ts suspend member@example.com
+node --env-file=.leo-runtime/free-hosting/production.env scripts/backup-remote.mjs
+node scripts/restore-check.mjs backups/remote/백업파일.sqlite
+```
+
+백업은 읽기 트랜잭션의 동일 시점 데이터를 로컬 SQLite로 내보내고 무결성·체크섬을 검사한다. 실패한 백업은 성공 파일로 남기지 않는다. Turso의 무료 복구 보관 기간 외에 중요한 사용 후와 업데이트 전 로컬 백업을 남긴다. 이 명령은 자동 일정이 아니므로 실제 일정 운영은 별도로 연결해야 한다.
+
+### 업데이트와 중단 복구
+
+업데이트 전 로컬 백업 → `scripts/operations.ts drain`으로 진행 중인 작업 확인 → `scripts/migrate-remote.mjs`로 호환 가능한 DB 변경 → Render의 Manual Deploy → 상태 검사 → `scripts/operations.ts resume` 순서다. 운영 명령에는 위와 같은 `--env-file`과 `--import tsx`를 사용한다. 작업이 진행 중이면 drain이 거부하고 기존 서버를 유지한다. 배포 실패로 기존 버전을 계속 쓸 때도 resume으로 새 요청을 다시 허용한다. DB를 이전 스키마로 자동 되돌리지는 않는다.
+
+새 프로세스가 시작돼도 이전 프로세스가 정상 처리 중인 리포트를 실패로 바꾸지 않는다. DB의 작업 임대와 주기적 갱신으로 중복 실행을 막고, 연결이 끊긴 작업은 최대 약 3분 뒤 실패 안내로 전환한다. 이미 완성된 결과는 Turso에 남는다. 중단된 유료 요청은 자동 재호출하지 않으며 미확정 비용 예약을 유지한다. 사용자가 명시적으로 재시도할 때만 새 모델 호출이 가능하다. 무료 호스팅의 강제 종료 중에도 진행 중인 AI 응답이 반드시 완료된다는 보장은 없다.
+
+## Windows 테스트 배포
 
 테스트용. PC가 켜져 있고 터널 프로세스가 살아 있는 동안만 접속된다. "quick tunnel"은 **터널을 새로 만들 때** 임의 주소를 발급한다. `deploy.bat`는 기존 터널을 재사용하므로 앱 업데이트로 주소가 바뀌지 않는다.
 

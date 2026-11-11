@@ -4,13 +4,14 @@ import { withOperationsDb } from "../src/lib/sqlite-operations";
 async function main() {
   const [command, id, amount] = process.argv.slice(2);
   if (command === "drain") {
-    const busy = withOperationsDb((db) => db.transaction(() => {
-      db.prepare('INSERT INTO "RuntimeControl" ("key", "value") VALUES (\'maintenance\', \'1\') ON CONFLICT("key") DO UPDATE SET "value" = \'1\'').run();
-      const active = db.prepare('SELECT COUNT(*) AS n FROM "ApiReservation" WHERE "status" = \'active\'').get() as { n: number };
-      const reports = db.prepare('SELECT COUNT(*) AS n FROM "ReportJob" WHERE "status" = \'generating\'').get() as { n: number };
-      if (active.n + reports.n) db.prepare('UPDATE "RuntimeControl" SET "value" = \'0\' WHERE "key" = \'maintenance\'').run();
-      return active.n + reports.n;
-    }).immediate());
+    const busy = await withOperationsDb(async (db) => {
+      await db.run('INSERT INTO "RuntimeControl" ("key", "value") VALUES (\'maintenance\', \'1\') ON CONFLICT("key") DO UPDATE SET "value" = \'1\'');
+      const active = await db.get<{ n: number }>('SELECT COUNT(*) AS n FROM "ApiReservation" WHERE "status" = \'active\'');
+      const reports = await db.get<{ n: number }>('SELECT COUNT(*) AS n FROM "ReportJob" WHERE "status" = \'generating\'');
+      const count = Number(active?.n || 0) + Number(reports?.n || 0);
+      if (count) await db.run('UPDATE "RuntimeControl" SET "value" = \'0\' WHERE "key" = \'maintenance\'');
+      return count;
+    });
     if (busy) throw new Error("진행 중인 API 작업이 있습니다. 기존 서버를 유지합니다. 완료 후 다시 배포하세요.");
     console.log("새 AI 요청을 잠시 차단했습니다. 진행 중인 작업 없음.");
   } else if (command === "resume") {

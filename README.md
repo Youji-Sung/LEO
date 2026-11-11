@@ -6,6 +6,7 @@
 - 결정 기록: `docs/DECISIONS.md`
 - 구현 계획: `docs/PLAN.md`
 - 진행 기록(단계별 검증 결과, 미확인 항목): `docs/PROGRESS.md`
+- 무료 서버 배포(Render + Turso, 도메인 불필요): [배포 안내](docs/DEPLOY_TUNNEL.md#무료-배포-render--turso)
 - UI/UX 개선(디자인 시스템·문구·화면별 근거·스크린샷): `docs/design/README.md`
 - 디자인 4종(기본·서재·무대·콘솔)의 비교·상태·남은 과제: `docs/design/directions/README.md`, 다듬기 기록 `docs/design/POLISH_PROGRESS.md`
 
@@ -22,7 +23,7 @@
 ## 기술 스택
 
 - Next.js 16 (App Router, React 19) — 프론트와 API 라우트가 한 프로세스
-- Prisma 7 + SQLite (`better-sqlite3` 어댑터). 스키마는 Postgres 호환
+- Prisma 7 + SQLite (로컬 `better-sqlite3`, 무료 배포 `libSQL`/Turso). 스키마는 Postgres 호환
 - `@anthropic-ai/sdk` 1.x — 모델 `claude-opus-5`, 스트리밍, 구조화 출력, 프롬프트 캐싱, 서버 측 refusal fallback
 - Vitest(단위·통합), Playwright(E2E, 가짜 VoiceAdapter 주입), `@axe-core/playwright`(접근성 자동 점검)
 - UI: 전역 CSS + 디자인 토큰(`src/design/tokens.ts` → `src/app/tokens.css`, 라이트·다크), 디자인 4종(`src/design/directions.ts` → `src/app/directions/tokens.css` + `src/app/directions/<디자인>.css`), 컴포넌트 `src/components/ui/`, 문구 `src/content/ko.ts`, 서체 Pretendard Variable(jsDelivr 다이나믹 서브셋; 서재·콘솔은 Google Fonts 추가), 아이콘 `lucide-react`
@@ -58,6 +59,7 @@ Windows에서 기존 외부 접속 주소에 업데이트하려면 **`deploy.bat
 | `LEO_CLAUDE_MODEL` | 아니오 | 기본 `claude-opus-5`. 날짜 접미사 없는 모델 ID |
 | `CLAUDE_MOCK` | 아니오 | `1`이면 API를 호출하지 않고 결정적인 가짜 응답. 테스트와 UI 작업용. 헤더에 "모의 모드" 칩 표시 |
 | `DATABASE_URL` | 예 | 기본 `file:./dev.db` (프로젝트 루트 기준) |
+| `TURSO_AUTH_TOKEN` | 무료 배포 | 해당 DB에만 접근하는 토큰. `DATABASE_URL=libsql://...turso.io`와 함께 설정 |
 | `AUTH_SECRET` | 예 | 세션 토큰 해시용 비밀값, 32자 이상. `bootstrap.sh`가 생성 |
 | `APP_URL` | 아니오 | 공개 URL. `https://`로 시작하면 세션 쿠키에 `Secure` |
 | `SEED_USER_PASSWORD` | 아니오 | 시드 사용자 비밀번호 |
@@ -84,6 +86,8 @@ Claude 사용 단가는 `src/config/pricing.ts`에서 바꾼다.
 | `npm run test:deploy` | 주소 유지·교체 순서·실패 복구·프로세스 소유권 테스트(공개 터널·유료 API 호출 없음) |
 | `npm run check` | lint → typecheck → test → test:deploy → build |
 | `npm run db:migrate` | `prisma migrate deploy` |
+| `npm run db:migrate:remote` | Turso에 기존 SQL 마이그레이션 적용. 완료 이력·체크섬 확인, 실패 시 해당 마이그레이션 롤백 |
+| `npm run backup:remote` | Turso의 읽기 트랜잭션으로 일관된 로컬 SQLite 백업 생성. 기본 `backups/remote` |
 | `npm run db:migrate:dev` | `prisma migrate dev` (스키마 변경 시) |
 | `npm run db:seed` | 개발용 사용자 2명 시드 |
 | `npx tsx scripts/smoke-claude.ts` | 실제 API 로 리포트 생성 1회 호출해 키·모델 확인(비용 발생, 약 $0.1) |

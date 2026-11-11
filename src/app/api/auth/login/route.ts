@@ -34,7 +34,7 @@ export const POST = handler(async (req: NextRequest) => {
   }
   loginLimiter.reset(key);
   const { token, expiresAt } = await createSession(user.id, user.credentialVersion);
-  resetSuccessfulLogin(email);
+  await resetSuccessfulLogin(email);
   // 다른 브라우저에서 로그인해도 저장된 테마·디자인 시안이 첫 화면부터 적용되게 쿠키를 함께 내린다.
   const settings = await prisma.userSettings.findUnique({ where: { userId: user.id } });
   const headers = new Headers({ "Set-Cookie": sessionCookieHeader(token, expiresAt) });

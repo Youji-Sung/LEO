@@ -70,7 +70,14 @@ model ReportJob {
   userId         String
   status         String
   error          String?
+  leaseToken     String?
   updatedAt      DateTime @updatedAt
+}
+
+model WorkLease {
+  key       String   @id
+  token     String
+  expiresAt DateTime
 }
 
 model Session {

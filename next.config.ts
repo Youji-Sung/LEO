@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   // 배포용 임시 타입 경로가 원본 tsconfig.json에 추가되지 않게 한다.
   typescript: { tsconfigPath: process.env.LEO_TSCONFIG_PATH || "tsconfig.json" },
-  serverExternalPackages: ["better-sqlite3", "@prisma/adapter-better-sqlite3", "unpdf"],
+  serverExternalPackages: ["better-sqlite3", "@prisma/adapter-better-sqlite3", "@prisma/adapter-libsql", "@libsql/client", "unpdf"],
   // 개발 서버를 127.0.0.1 로 열어도 HMR·RSC 요청이 차단되지 않게 한다.
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   async headers() {

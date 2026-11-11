@@ -18,15 +18,15 @@ beforeEach(async () => {
 afterEach(() => { vi.unstubAllEnvs(); vi.restoreAllMocks(); });
 
 it("counts outstanding reservations atomically against the monthly cap", async () => {
-  const code = "import { reserveApi } from './src/services/claude/budget.ts'; try { reserveApi(process.argv[1], 'chat', 110000000); } catch { process.exitCode = 1; }";
+  const code = "import { reserveApi } from './src/services/claude/budget.ts'; import { prisma } from './src/lib/db.ts'; try { await reserveApi(process.argv[1], 'chat', 110000000); } catch { process.exitCode = 1; } finally { await prisma.$disconnect(); }";
   const calls = await Promise.allSettled(Array.from({ length: 3 }, () => promisify(execFile)(process.execPath, ["--import", "tsx", "--input-type=module", "-e", code, userId], { env: process.env })));
   expect(calls.filter((r) => r.status === "fulfilled")).toHaveLength(1);
   expect(await prisma.apiReservation.count()).toBe(1);
 });
 it("keeps unknown costs across restarts and releases concurrency only", async () => {
-  reserveApi(userId, "chat", 190_000_000);
+  await reserveApi(userId, "chat", 190_000_000);
   await recoverInterruptedReports();
-  expect(() => reserveApi(userId, "chat", 20_000_000)).toThrow(/한도/);
+  await expect(reserveApi(userId, "chat", 20_000_000)).rejects.toThrow(/한도/);
   expect((await prisma.apiReservation.findFirst())?.status).toBe("uncertain");
 });
 it("settles usage and reservation together", async () => {
@@ -53,9 +53,9 @@ it("retains uncertain cost on transport failure", async () => {
   const held = await prisma.apiReservation.findFirst();
   expect(held?.status).toBe("uncertain"); expect(held!.amountMicros).toBeGreaterThan(0);
 });
-it("requires a budget and known model price in production", () => {
+it("requires a budget and known model price in production", async () => {
   vi.stubEnv("LEO_API_MONTHLY_USD", ""); vi.stubEnv("LEO_PRODUCTION", "1");
-  expect(() => reserveApi(userId, "chat", 1)).toThrow(/설정/);
+  await expect(reserveApi(userId, "chat", 1)).rejects.toThrow(/설정/);
   vi.stubEnv("LEO_CLAUDE_MODEL", "unknown-model");
   expect(() => maximumAttemptMicros(input)).toThrow(/요금/);
 });

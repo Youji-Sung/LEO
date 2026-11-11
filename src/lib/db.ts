@@ -1,5 +1,6 @@
 import path from "node:path";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
 import { PrismaClient } from "@/generated/prisma/client";
 
 // Prisma CLI 는 `file:./x.db` 를 프로젝트 루트(cwd) 기준으로 해석한다. 런타임도 같은 파일을 쓰도록 맞춘다.
@@ -12,8 +13,11 @@ export function resolveSqlitePath(databaseUrl: string): string {
 
 function createClient(): PrismaClient {
   const url = process.env.DATABASE_URL ?? "file:./dev.db";
-  const adapter = new PrismaBetterSqlite3({ url: resolveSqlitePath(url) });
-  return new PrismaClient({ adapter });
+  const remote = !url.startsWith("file:") || process.env.LEO_DB_DRIVER === "libsql";
+  const adapter = remote
+    ? new PrismaLibSql({ url, authToken: process.env.TURSO_AUTH_TOKEN }, { timestampFormat: "iso8601" })
+    : new PrismaBetterSqlite3({ url: resolveSqlitePath(url) });
+  return new PrismaClient({ adapter, transactionOptions: { maxWait: 10_000, timeout: 10_000 } });
 }
 
 const globalForPrisma = globalThis as unknown as { leoPrisma?: PrismaClient };

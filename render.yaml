@@ -1,0 +1,48 @@
+# The Free instance is explicit; Render's manual form may default to a paid plan.
+services:
+  - type: web
+    name: leo-free
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --include=dev && npm run build && npm prune --omit=dev
+    startCommand: npm run start:production
+    healthCheckPath: /api/health
+    autoDeployTrigger: off
+    envVars:
+      - key: NODE_VERSION
+        value: 24.22.2
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NODE_ENV
+        value: production
+      - key: LEO_DEPLOYMENT_PROFILE
+        value: render-free
+      - key: LEO_PRODUCTION
+        value: "1"
+      - key: LEO_INVITE_ONLY
+        value: "1"
+      - key: LEO_ALLOW_SIGNUP
+        value: "0"
+      - key: LEO_REQUIRE_ACCESS
+        value: "0"
+      - key: CLAUDE_MOCK
+        value: "0"
+      - key: DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: AUTH_SECRET
+        generateValue: true
+      - key: LEO_HEALTH_TOKEN
+        generateValue: true
+      - key: LEO_ANTHROPIC_API_KEY
+        sync: false
+      - key: LEO_API_MONTHLY_USD
+        value: "200"
+      - key: LEO_API_USER_DAILY_USD
+        value: "20"
+      - key: LEO_API_CONCURRENCY
+        value: "5"
+      - key: LEO_BILLING_LIMIT_CONFIRMED
+        value: "1"

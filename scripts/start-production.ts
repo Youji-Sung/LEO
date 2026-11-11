@@ -5,9 +5,10 @@ import { prisma } from "../src/lib/db";
 
 async function main() {
   if (Number(process.versions.node.split(".")[0]) < 24) throw new Error("Node 24 이상이 필요합니다.");
+  if (process.env.LEO_DEPLOYMENT_PROFILE === "render-free") process.env.APP_URL = process.env.RENDER_EXTERNAL_URL;
   assertProductionConfig();
   await prisma.$queryRaw`SELECT 1`;
-  if (process.env.LEO_CANDIDATE !== "1") await recoverInterruptedReports();
+  if (process.env.LEO_CANDIDATE !== "1") await recoverInterruptedReports(process.env.LEO_DEPLOYMENT_PROFILE === "render-free");
   await prisma.$disconnect();
   const child = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-H", "0.0.0.0", "-p", process.env.PORT || "3000"], { stdio: "inherit", env: process.env });
   for (const signal of ["SIGTERM", "SIGINT"] as const) process.on(signal, () => child.kill(signal));

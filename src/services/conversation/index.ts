@@ -9,6 +9,7 @@ import type { ChatMessage, ChatTurnInput, ConversationMode, ThemeId } from "@/se
 import { THEME_IDS } from "@/services/claude/types";
 import { errors } from "@/content/ko";
 import { hintForMessage } from "@/services/claude/hint-splitter";
+import { acquireWorkLease, assertWorkLease, type WorkLease } from "@/lib/work-lease";
 
 export type ConversationKind = ConversationMode;
 
@@ -133,7 +134,7 @@ export async function startCall(userId: string, id: string, openingLine: string)
     });
     return prisma.conversation.update({ where: { id }, data: { startedAt: new Date() } });
   } finally {
-    release();
+    await release();
   }
 }
 
@@ -144,7 +145,8 @@ export const hasContentWhere: Prisma.ConversationWhereInput = {
 
 // 같은 대화에 대한 동시 전송을 직렬화한다(단일 프로세스). 메시지 index 충돌과 턴 상한 우회를 막는다.
 const conversationLocks = new Map<string, Promise<void>>();
-async function acquireConversationLock(id: string): Promise<() => void> {
+type ConversationRelease = (() => Promise<void>) & { lease?: WorkLease };
+async function acquireConversationLock(id: string): Promise<ConversationRelease> {
   const previous = conversationLocks.get(id) ?? Promise.resolve();
   let release!: () => void;
   const current = new Promise<void>((resolve) => {
@@ -153,10 +155,19 @@ async function acquireConversationLock(id: string): Promise<() => void> {
   const chained = previous.then(() => current);
   conversationLocks.set(id, chained);
   await previous;
-  return () => {
+  const releaseLocal = () => {
     release();
     if (conversationLocks.get(id) === chained) conversationLocks.delete(id);
   };
+  let lease: WorkLease | undefined;
+  try {
+    if (process.env.LEO_DEPLOYMENT_PROFILE === "render-free" || /^(libsql|https):/.test(process.env.DATABASE_URL || "")) lease = await acquireWorkLease(`conversation:${id}`);
+  } catch (e) { releaseLocal(); throw e; }
+  const done: ConversationRelease = async () => {
+    try { if (lease) await lease.release(); } finally { releaseLocal(); }
+  };
+  done.lease = lease;
+  return done;
 }
 
 export type StreamEvent =
@@ -182,14 +193,14 @@ export async function* sendMessage(input: {
 }): AsyncGenerator<StreamEvent> {
   const release = await acquireConversationLock(input.conversationId);
   let locked = true;
-  const unlock = () => {
-    if (locked) release();
+  const unlock = async () => {
+    if (locked) await release();
     locked = false;
   };
   try {
-    yield* sendMessageLocked(input);
+    yield* sendMessageLocked(input, release.lease);
   } finally {
-    unlock();
+    await unlock();
   }
 }
 
@@ -197,7 +208,7 @@ async function* sendMessageLocked(input: {
   userId: string;
   conversationId: string;
   content: string;
-}): AsyncGenerator<StreamEvent> {
+}, lease?: WorkLease): AsyncGenerator<StreamEvent> {
   const conv = await getOwnedConversation(input.userId, input.conversationId);
   if (conv.endedAt) throw new HttpError(409, errors.conversation.ended, "conversation_ended");
   const content = input.content.trim();
@@ -253,13 +264,16 @@ async function* sendMessageLocked(input: {
         portfolioText: conv.portfolio?.content ?? null,
         messages: [...history, { role: "user", content }],
       };
+    if (lease) await assertWorkLease(lease);
     const r = await runMetered(input.userId, mode, request, () => provider.chatTurn(request, (text) => push({ type: "delta", text })));
     if (r.stopReason === "refusal") {
       await dropUserTurn();
       push({ type: "error", message: errors.conversation.refusal, code: "refusal" });
       return;
     }
-    const assistant = await prisma.message.create({
+    const assistant = await prisma.$transaction(async (tx) => {
+      if (lease) await assertWorkLease(lease, tx);
+      return tx.message.create({
       data: {
         conversationId: conv.id,
         role: "assistant",
@@ -267,6 +281,7 @@ async function* sendMessageLocked(input: {
         hint: conv.hintsEnabled ? hintForMessage(r.hint, content) : null,
         index: userMessage.index + 1,
       },
+      });
     });
     push({
       type: "done",
@@ -281,7 +296,7 @@ async function* sendMessageLocked(input: {
     });
   };
 
-  void work()
+  const workPromise = work()
     .catch(async (e: unknown) => {
       console.error("chatTurn failed", e);
       await dropUserTurn();
@@ -293,32 +308,34 @@ async function* sendMessageLocked(input: {
       wakeUp = null;
     });
 
-  while (true) {
-    while (queue.length > 0) yield queue.shift()!;
-    if (finished) break;
-    await new Promise<void>((resolve) => {
-      wakeUp = resolve;
-    });
-  }
+  try {
+    while (true) {
+      while (queue.length > 0) yield queue.shift()!;
+      if (finished) break;
+      await new Promise<void>((resolve) => { wakeUp = resolve; });
+    }
+  } finally { await workPromise; }
 }
 
 export function streamEventsToResponse(events: AsyncIterable<StreamEvent>): Response {
   const encoder = new TextEncoder();
+  let cancelled = false;
   const body = new ReadableStream<Uint8Array>({
+    cancel() { cancelled = true; },
     async start(controller) {
       try {
         for await (const ev of events) {
-          controller.enqueue(encoder.encode(`${JSON.stringify(ev)}\n`));
+          if (!cancelled) controller.enqueue(encoder.encode(`${JSON.stringify(ev)}\n`));
         }
       } catch (e) {
         const status = e instanceof HttpError ? (e.code ?? "error") : "internal";
         const message = e instanceof HttpError ? e.message : errors.internal;
         if (!(e instanceof HttpError)) console.error(e);
-        controller.enqueue(
+        if (!cancelled) controller.enqueue(
           encoder.encode(`${JSON.stringify({ type: "error", message, code: status })}\n`),
         );
       } finally {
-        controller.close();
+        if (!cancelled) controller.close();
       }
     },
   });
