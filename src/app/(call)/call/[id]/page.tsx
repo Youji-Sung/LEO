@@ -30,12 +30,21 @@ export default async function CallPage({ params }: { params: Promise<{ id: strin
     <CallView
       conversationId={conv.id}
       themeLabel={theme?.label ?? conv.theme}
-      openingLine={opening?.content ?? theme?.openingLine ?? "Hello! Let's get started."}
+      openingLine={
+        opening?.content ?? conv.openingLine ?? theme?.openingLine ?? "Hello! Let's get started."
+      }
+      speechTerms={settings?.speechTerms ?? ""}
       durationSec={conv.durationSec ?? 600}
       startedAtMs={conv.startedAt.getTime()}
-      initialRemainingSec={conv.messages.length > 0
-        ? Math.max(0, (conv.durationSec ?? 600) - Math.floor((requestTime - conv.startedAt.getTime()) / 1000))
-        : conv.durationSec ?? 600}
+      initialRemainingSec={
+        conv.messages.length > 0
+          ? Math.max(
+              0,
+              (conv.durationSec ?? 600) -
+                Math.floor((requestTime - conv.startedAt.getTime()) / 1000),
+            )
+          : (conv.durationSec ?? 600)
+      }
       started={conv.messages.length > 0}
       extendable={canExtend(conv.durationSec ?? 600)}
       ttsVoice={settings?.ttsVoice ?? null}

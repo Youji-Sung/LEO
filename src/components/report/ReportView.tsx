@@ -2,6 +2,7 @@ import { ButtonLink, Card, DiffText, ScoreGauge, StatusMessage } from "@/compone
 import { ReportToc } from "@/components/report/ReportToc";
 import { report as text } from "@/content/ko";
 import type { Report } from "@/services/claude/schemas/report";
+import { SaveExpression } from "@/components/learning/SaveExpression";
 
 type SectionId = "summary" | "scores" | "interview" | "grammar" | "vocabulary" | "better" | "tasks";
 
@@ -13,11 +14,17 @@ export function ReportView({
   isInterview,
   kind,
   limitedEvidence = false,
+  conversationId,
+  uncertainTranscription = false,
+  savedExpressions = [],
 }: {
   report: Report;
   isInterview: boolean;
   kind: "chat" | "call";
   limitedEvidence?: boolean;
+  conversationId?: string;
+  uncertainTranscription?: boolean;
+  savedExpressions?: Array<{ original: string; phrase: string }>;
 }) {
   const interview = isInterview ? report.interview : null;
   const sections: { id: SectionId; title: string }[] = [
@@ -55,17 +62,25 @@ export function ReportView({
 
       <Card as="section" id="scores" title={text.sections.scores} titleId={titleId("scores")}>
         {limitedEvidence && <StatusMessage tone="info">{text.limitedEvidence}</StatusMessage>}
-        <div className="scores">
-          {scoreItems.map((s, i) => (
-            <ScoreGauge
-              key={s.label}
-              label={s.label}
-              score={s.score}
-              comment={s.comment}
-              lowest={i === lowestIndex}
-            />
-          ))}
-        </div>
+        {uncertainTranscription && (
+          <StatusMessage tone="warning">
+            인식 확인이 필요한 표현이 있어 점수를 표시하지 않아요. 해당 표현은 교정과 학습 후보에서
+            제외했어요. 다음 통화에서는 표시된 인식 후보를 확인해 주세요.
+          </StatusMessage>
+        )}
+        {!uncertainTranscription && (
+          <div className="scores">
+            {scoreItems.map((s, i) => (
+              <ScoreGauge
+                key={s.label}
+                label={s.label}
+                score={s.score}
+                comment={s.comment}
+                lowest={i === lowestIndex}
+              />
+            ))}
+          </div>
+        )}
       </Card>
 
       {interview && (
@@ -129,6 +144,16 @@ export function ReportView({
                   meaning={v.meaning}
                   example={v.example}
                 />
+                {conversationId && (
+                  <SaveExpression
+                    conversationId={conversationId}
+                    kind="vocabulary"
+                    index={i}
+                    initiallySaved={savedExpressions.some(
+                      (item) => item.original === v.original && item.phrase === v.better,
+                    )}
+                  />
+                )}
               </li>
             ))}
           </ul>
@@ -140,6 +165,16 @@ export function ReportView({
           {report.betterExpressions.map((b, i) => (
             <li key={i}>
               <DiffText tone="suggest" original={b.original} corrected={b.native} />
+              {conversationId && (
+                <SaveExpression
+                  conversationId={conversationId}
+                  kind="expression"
+                  index={i}
+                  initiallySaved={savedExpressions.some(
+                    (item) => item.original === b.original && item.phrase === b.native,
+                  )}
+                />
+              )}
             </li>
           ))}
         </ul>

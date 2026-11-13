@@ -1,11 +1,12 @@
 import type { TokenUsage } from "@/config/pricing";
 import type { Report } from "@/services/claude/schemas/report";
+import type { SpeechSubmission } from "@/lib/transcription";
 
 export const THEME_IDS = ["free", "interview", "daily", "work", "business", "portfolio"] as const;
 export type ThemeId = (typeof THEME_IDS)[number];
 
 export type ChatRole = "user" | "assistant";
-export type ChatMessage = { role: ChatRole; content: string };
+export type ChatMessage = { role: ChatRole; content: string; speech?: SpeechSubmission };
 export type ConversationMode = "chat" | "call";
 
 export type StopReason = "end_turn" | "max_tokens" | "refusal" | "other";
@@ -15,6 +16,7 @@ export type ChatTurnInput = {
   mode: ConversationMode;
   messages: ChatMessage[];
   hints: boolean;
+  conversationContext?: string;
   portfolioText?: string | null;
 };
 

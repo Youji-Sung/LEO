@@ -1,6 +1,7 @@
 import type { StreamEvent } from "@/services/conversation";
 import { toApiError } from "@/lib/client-fetch";
 import { errors } from "@/content/ko";
+import type { SpeechSubmission } from "@/lib/transcription";
 
 // 메시지 전송 → NDJSON 스트림을 이벤트 단위로 넘겨준다. 비정상 HTTP 상태는 ApiError(code 포함)로 던진다.
 export async function streamMessage(
@@ -8,11 +9,12 @@ export async function streamMessage(
   content: string,
   onEvent: (ev: StreamEvent) => void,
   signal?: AbortSignal,
+  speech?: SpeechSubmission,
 ): Promise<void> {
   const res = await fetch(`/api/conversations/${conversationId}/messages`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ content, ...(speech ? { speech } : {}) }),
     signal,
   });
   if (!res.ok) throw await toApiError(res);

@@ -24,6 +24,7 @@ model User {
   portfolios    Portfolio[]
   settings      UserSettings?
   invitations   AccountInvitation[]
+  learningItems LearningItem[]
 }
 
 model AccountInvitation {
@@ -103,12 +104,15 @@ model Conversation {
   startedAt    DateTime   @default(now())
   endedAt      DateTime?
   portfolioId  String?
+  openingLine  String?
+  learningTargets String?
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   portfolio    Portfolio? @relation(fields: [portfolioId], references: [id], onDelete: SetNull)
   messages     Message[]
   report       Report?
+  learningItems LearningItem[]
 
   @@index([userId, updatedAt])
 }
@@ -120,11 +124,37 @@ model Message {
   role           String
   content        String
   hint           String?
+  speech         String?
   index          Int
   createdAt      DateTime     @default(now())
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@unique([conversationId, index])
+}
+
+model LearningItem {
+  id String @id @default(cuid())
+  userId String
+  sourceConversationId String
+  sourceKey String
+  phrase String
+  original String
+  explanation String
+  example String
+  stage Int @default(0)
+  reviewCount Int @default(0)
+  dueAt DateTime @default(now())
+  lastAnswer String @default("")
+  lastOutcome String?
+  lastUsedAt DateTime?
+  lastUseConversationId String?
+  lastUseText String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceConversation Conversation @relation(fields: [sourceConversationId], references: [id], onDelete: Cascade)
+  @@unique([userId, sourceKey])
+  @@index([userId, dueAt])
 }
 
 model Report {
@@ -170,6 +200,7 @@ model UserSettings {
   userId             String  @unique
   hintsDefault       Boolean @default(false)
   ttsVoice           String?
+  speechTerms        String  @default("")
   defaultCallMinutes Int     @default(10)
   // system | light | dark (docs/design/SYSTEM.md 1.3)
   theme              String  @default("system")

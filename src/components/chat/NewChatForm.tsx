@@ -8,7 +8,17 @@ import { Button, Card, CheckRow, Choice, ChoiceGroup, StatusMessage } from "@/co
 
 type Theme = { id: string; label: string; description: string };
 
-export function NewChatForm({ themes, hintsDefault }: { themes: Theme[]; hintsDefault: boolean }) {
+export function NewChatForm({
+  themes,
+  hintsDefault,
+  learningItemIds = [],
+  learningPhrases = [],
+}: {
+  themes: Theme[];
+  hintsDefault: boolean;
+  learningItemIds?: string[];
+  learningPhrases?: string[];
+}) {
   const router = useRouter();
   const [theme, setTheme] = useState("free");
   const [hints, setHints] = useState(hintsDefault);
@@ -24,7 +34,7 @@ export function NewChatForm({ themes, hintsDefault }: { themes: Theme[]; hintsDe
         "/api/conversations",
         {
           method: "POST",
-          body: JSON.stringify({ kind: "chat", theme, hintsEnabled: hints }),
+          body: JSON.stringify({ kind: "chat", theme, hintsEnabled: hints, learningItemIds }),
         },
       );
       router.push(`/chat/${conversation.id}`);
@@ -36,6 +46,11 @@ export function NewChatForm({ themes, hintsDefault }: { themes: Theme[]; hintsDe
 
   return (
     <form onSubmit={onSubmit} aria-label={chat.newChatForm}>
+      {learningPhrases.length > 0 && (
+        <StatusMessage tone="info">
+          이어 연습할 표현: {learningPhrases.join(" · ")}. 대화 중 자연스럽게 써 보세요.
+        </StatusMessage>
+      )}
       <Card as="section" className="stack">
         <ChoiceGroup legend={themeText.legend} stack>
           {themes.map((t) => (

@@ -7,11 +7,21 @@ import { chat, common, home } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { listConversations } from "@/services/conversation";
 import { formatDateTime } from "@/lib/format";
+import { learningSnapshot } from "@/services/learning";
 
 export const metadata = { title: common.pageTitle(chat.pageTitle) };
 
-export default async function ChatListPage() {
+export default async function ChatListPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ learn?: string }>;
+}) {
   const user = await requireUser();
+  const learn = (await searchParams).learn;
+  const targets =
+    typeof learn === "string"
+      ? await learningSnapshot(user.id, learn.split(",").slice(0, 3)).catch(() => [])
+      : [];
   const [settings, conversations] = await Promise.all([
     prisma.userSettings.findUnique({ where: { userId: user.id } }),
     // 시작만 하고 아무 말도 하지 않은 채팅은 기록·홈과 같은 기준으로 숨긴다(외부 피드백 3).
@@ -26,7 +36,12 @@ export default async function ChatListPage() {
       <div className="page-head" style={{ marginBottom: 0 }}>
         <h1>{chat.pageTitle}</h1>
       </div>
-      <NewChatForm themes={themes} hintsDefault={settings?.hintsDefault ?? false} />
+      <NewChatForm
+        themes={themes}
+        hintsDefault={settings?.hintsDefault ?? false}
+        learningItemIds={targets.map((target) => target.id)}
+        learningPhrases={targets.map((target) => target.phrase)}
+      />
       <section className="stack">
         <h2>{chat.previousTitle}</h2>
         {conversations.length === 0 ? (

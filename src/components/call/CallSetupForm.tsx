@@ -24,11 +24,15 @@ export function CallSetupForm({
   portfolios,
   defaultMinutes,
   durationOptions,
+  learningItemIds = [],
+  learningPhrases = [],
 }: {
   themes: Theme[];
   portfolios: Portfolio[];
   defaultMinutes: number;
   durationOptions: number[];
+  learningItemIds?: string[];
+  learningPhrases?: string[];
 }) {
   const router = useRouter();
   const [theme, setTheme] = useState("interview");
@@ -88,6 +92,7 @@ export function CallSetupForm({
             theme,
             durationMin: minutes,
             portfolioId: theme === "portfolio" ? portfolioId || null : null,
+            learningItemIds,
           }),
         },
       );
@@ -112,6 +117,11 @@ export function CallSetupForm({
 
   return (
     <form onSubmit={onSubmit} className="stack-lg" aria-label={callSetup.formLabel}>
+      {learningPhrases.length > 0 && (
+        <StatusMessage tone="info">
+          이어 연습할 표현: {learningPhrases.join(" · ")}. 대화 중 자연스럽게 써 보세요.
+        </StatusMessage>
+      )}
       <Card as="section">
         <ChoiceGroup legend={themeText.legend} stack>
           {themes.map((t) => (
@@ -194,7 +204,11 @@ export function CallSetupForm({
         {!sttSupported && <StatusMessage tone="warning">{callSetup.sttUnsupported}</StatusMessage>}
       </Card>
 
-      {error && <StatusMessage tone="error" focus>{error}</StatusMessage>}
+      {error && (
+        <StatusMessage tone="error" focus>
+          {error}
+        </StatusMessage>
+      )}
 
       <div className="row">
         <Button

@@ -14,6 +14,7 @@ const NAV = [
   { href: "/chat", label: nav.chat },
   { href: "/call", label: nav.call },
   { href: "/history", label: nav.history },
+  { href: "/learn", label: "표현 익히기" },
   { href: "/portfolios", label: nav.portfolios },
   { href: "/usage", label: nav.usage },
   { href: "/settings", label: nav.settings },

@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { readSpeech } from "@/lib/transcription";
 import { requireUser } from "@/lib/auth/current-user";
 import { Bubble, ButtonLink, EmptyState } from "@/components/ui";
 import { common, transcript } from "@/content/ko";
@@ -63,6 +64,17 @@ export default async function TranscriptPage({ params }: { params: Promise<{ id:
               hintLabel={transcript.hintLabel}
             >
               {m.content}
+              {m.role === "user" && m.speech && (
+                <details className="muted">
+                  <summary>음성 인식 기록</summary>
+                  <p>
+                    {readSpeech(m.speech)?.reviewed
+                      ? "전송 전에 확인한 문장이에요."
+                      : "자동 전송된 인식 결과예요."}
+                  </p>
+                  <p lang="en">인식 원문: {readSpeech(m.speech)?.rawText}</p>
+                </details>
+              )}
             </Bubble>
           ))}
         </div>

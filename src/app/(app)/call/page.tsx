@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { CallSetupForm } from "@/components/call/CallSetupForm";
 import { callSetup, common } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
+import { learningSnapshot } from "@/services/learning";
 import {
   allowShortCalls,
   CALL_DURATION_OPTIONS_MIN,
@@ -11,8 +12,17 @@ import {
 
 export const metadata = { title: common.pageTitle(callSetup.pageTitle) };
 
-export default async function CallSetupPage() {
+export default async function CallSetupPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ learn?: string }>;
+}) {
   const user = await requireUser();
+  const learn = (await searchParams).learn;
+  const targets =
+    typeof learn === "string"
+      ? await learningSnapshot(user.id, learn.split(",").slice(0, 3)).catch(() => [])
+      : [];
   const [settings, portfolios] = await Promise.all([
     prisma.userSettings.findUnique({ where: { userId: user.id } }),
     prisma.portfolio.findMany({
@@ -37,6 +47,8 @@ export default async function CallSetupPage() {
         </div>
       </div>
       <CallSetupForm
+        learningItemIds={targets.map((target) => target.id)}
+        learningPhrases={targets.map((target) => target.phrase)}
         themes={themes}
         portfolios={portfolios}
         defaultMinutes={settings?.defaultCallMinutes ?? DEFAULT_CALL_MINUTES}

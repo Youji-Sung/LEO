@@ -7,6 +7,8 @@ import { common, report as text } from "@/content/ko";
 import { THEMES } from "@/services/claude/prompts/themes";
 import { getOwnedReport } from "@/services/report";
 import { formatDateTime } from "@/lib/format";
+import { reportEvidence } from "@/services/report/evidence";
+import { prisma } from "@/lib/db";
 
 export const metadata = { title: common.pageTitle(text.pageTitle) };
 
@@ -20,10 +22,19 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
     notFound();
   }
   const { conversation, report } = data;
+  const savedExpressions = report
+    ? await prisma.learningItem.findMany({
+        where: { userId: user.id, sourceConversationId: id },
+        select: { original: true, phrase: true },
+      })
+    : [];
   const theme = THEMES[conversation.theme as keyof typeof THEMES];
   const kind = conversation.kind === "call" ? "call" : "chat";
   const userMessages = conversation.messages.filter((message) => message.role === "user");
-  const wordCount = userMessages.reduce((count, message) => count + (message.content.match(/\S+/g)?.length ?? 0), 0);
+  const wordCount = userMessages.reduce(
+    (count, message) => count + (message.content.match(/\S+/g)?.length ?? 0),
+    0,
+  );
   const backHref = kind === "chat" ? `/chat/${conversation.id}` : `/history/${conversation.id}`;
   const meta = [
     theme?.label ?? conversation.theme,
@@ -49,8 +60,15 @@ export default async function ReportPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
       {report ? (
-        <ReportView report={report} isInterview={Boolean(theme?.isInterview)} kind={kind}
-          limitedEvidence={userMessages.length < 3 || wordCount < 50} />
+        <ReportView
+          report={report}
+          isInterview={Boolean(theme?.isInterview)}
+          kind={kind}
+          conversationId={conversation.id}
+          savedExpressions={savedExpressions}
+          uncertainTranscription={reportEvidence(report, kind, conversation.messages).uncertain}
+          limitedEvidence={userMessages.length < 3 || wordCount < 50}
+        />
       ) : (
         <ReportRetry
           conversationId={conversation.id}

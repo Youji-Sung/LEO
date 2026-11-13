@@ -28,6 +28,7 @@ interface SpeechRecognitionLike {
   continuous: boolean;
   interimResults: boolean;
   maxAlternatives: number;
+  phrases?: unknown[];
   onstart: (() => void) | null;
   onspeechstart: (() => void) | null;
   onresult: ((event: SpeechRecognitionEventLike) => void) | null;
@@ -80,14 +81,21 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
   private handlers: ListenHandlers | null = null;
   private startTimer: ReturnType<typeof setTimeout> | null = null;
   private speaking = 0;
+  private biasSupported = true;
   // Chrome 은 참조가 끊긴 utterance 를 GC 해서 end 가 안 오므로 끝날 때까지 붙잡는다.
   private pendingUtterances = new Map<SpeechSynthesisUtterance, () => void>();
 
   isSupported(): VoiceSupport {
     if (typeof window === "undefined") return { stt: false, tts: false };
     const nav = window.navigator;
-    const ios = /iPhone|iPad|iPod/.test(nav?.userAgent ?? "") || (nav?.platform === "MacIntel" && nav.maxTouchPoints > 1);
-    return { stt: getRecognitionCtor() !== undefined, tts: getSynthesis() !== undefined, duplex: !ios };
+    const ios =
+      /iPhone|iPad|iPod/.test(nav?.userAgent ?? "") ||
+      (nav?.platform === "MacIntel" && nav.maxTouchPoints > 1);
+    return {
+      stt: getRecognitionCtor() !== undefined,
+      tts: getSynthesis() !== undefined,
+      duplex: !ios,
+    };
   }
 
   activateAudio(): void {
@@ -111,7 +119,19 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
     recognition.lang = "en-US";
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
+    recognition.maxAlternatives = 3;
+    const Phrase = (
+      window as unknown as {
+        SpeechRecognitionPhrase?: new (phrase: string, boost: number) => unknown;
+      }
+    ).SpeechRecognitionPhrase;
+    if (this.biasSupported && Phrase && "phrases" in recognition && handlers.phrases?.length) {
+      try {
+        recognition.phrases = handlers.phrases.slice(0, 40).map((term) => new Phrase(term, 3));
+      } catch {
+        /* Optional browser capability. */
+      }
+    }
     this.recognition = recognition;
     this.handlers = handlers;
     const delivered = new Set<number>();
@@ -135,7 +155,13 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
           if (delivered.has(i)) continue;
           delivered.add(i);
           const text = transcript.trim();
-          if (text) this.handlers?.onFinal(text);
+          if (text) {
+            const alternatives = Array.from(
+              { length: Math.min(result.length, 3) },
+              (_, n) => result[n]?.transcript?.trim() ?? "",
+            ).filter(Boolean);
+            this.handlers?.onFinal(text, alternatives);
+          }
         } else {
           interim += ` ${transcript}`;
         }
@@ -145,6 +171,12 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
     };
     recognition.onerror = (event) => {
       if (this.recognition !== recognition) return;
+      if (event.error === "phrases-not-supported") {
+        this.biasSupported = false;
+        this.stopListening();
+        handlers.onEnd?.();
+        return;
+      }
       const mapped = errorMessage(event.error);
       if (mapped) {
         this.stopListening();
@@ -210,7 +242,10 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
       utterance.lang = "en-US";
       utterance.rate = options.rate ?? 1;
       const voice = this.pickVoice(synth, options.voiceId);
-      if (voice) { utterance.voice = voice; utterance.lang = voice.lang; }
+      if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang;
+      }
 
       let settled = false;
       let timer: ReturnType<typeof setTimeout>;
@@ -226,15 +261,21 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
         if (error) reject(error);
         else resolve();
       };
-      const timedOut = () => { finish(new Error(errors.voice.playback)); synth.cancel(); };
+      const timedOut = () => {
+        finish(new Error(errors.voice.playback));
+        synth.cancel();
+      };
       utterance.onstart = () => {
         clearTimeout(timer);
         timer = setTimeout(timedOut, Math.max(60_000, text.length * 150));
       };
       utterance.onend = () => finish();
-      utterance.onerror = (event) => finish(
-        event.error === "canceled" || event.error === "interrupted" ? undefined : new Error(errors.voice.playback),
-      );
+      utterance.onerror = (event) =>
+        finish(
+          event.error === "canceled" || event.error === "interrupted"
+            ? undefined
+            : new Error(errors.voice.playback),
+        );
 
       this.pendingUtterances.set(utterance, finish);
       this.speaking += 1;
@@ -242,7 +283,9 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
       try {
         if (synth.paused) synth.resume();
         synth.speak(utterance);
-      } catch { finish(new Error(errors.voice.playback)); }
+      } catch {
+        finish(new Error(errors.voice.playback));
+      }
     });
   }
 
@@ -281,7 +324,14 @@ export class WebSpeechVoiceAdapter implements VoiceAdapter {
     }
     const english = voices.filter((v) => isEnglish(v.lang));
     // 설치된 고품질 음성이 브라우저에 공개된 경우 우선한다. 저장된 선택은 위에서 그대로 존중한다.
-    const natural = english.find((v) => /premium|enhanced|natural|neural|siri/i.test(`${v.name} ${v.voiceURI}`));
-    return natural ?? english.find((v) => v.lang === "en-US" && v.default) ?? english.find((v) => v.lang === "en-US") ?? english[0];
+    const natural = english.find((v) =>
+      /premium|enhanced|natural|neural|siri/i.test(`${v.name} ${v.voiceURI}`),
+    );
+    return (
+      natural ??
+      english.find((v) => v.lang === "en-US" && v.default) ??
+      english.find((v) => v.lang === "en-US") ??
+      english[0]
+    );
   }
 }

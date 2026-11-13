@@ -11,12 +11,16 @@ const createSchema = z.object({
   hintsEnabled: z.boolean().optional(),
   durationMin: z.number().int().optional(),
   portfolioId: z.string().nullable().optional(),
+  learningItemIds: z.array(z.string().max(100)).max(3).optional(),
 });
 
 export const GET = handler(async (req: NextRequest) => {
   const user = await requireRequestUser(req);
   const kind = req.nextUrl.searchParams.get("kind");
-  const list = await listConversations(user.id, kind === "chat" || kind === "call" ? kind : undefined);
+  const list = await listConversations(
+    user.id,
+    kind === "chat" || kind === "call" ? kind : undefined,
+  );
   return Response.json({
     conversations: list.map((c) => ({
       id: c.id,
@@ -42,6 +46,7 @@ export const POST = handler(async (req: NextRequest) => {
     hintsEnabled: body.hintsEnabled,
     durationSec: body.kind === "call" ? normalizeCallDurationSec(body.durationMin) : null,
     portfolioId: body.portfolioId ?? null,
+    learningItemIds: body.learningItemIds,
   });
   return Response.json({ conversation: conv }, { status: 201 });
 });

@@ -22,6 +22,7 @@ import {
 type Settings = {
   hintsDefault: boolean;
   ttsVoice: string | null;
+  speechTerms?: string;
   defaultCallMinutes: number;
   theme: ThemeMode;
 };
@@ -82,14 +83,21 @@ export function SettingsForm({
   function preview() {
     const adapter = getVoiceAdapter();
     adapter.cancelSpeech();
-    void adapter.speak("Hi! This is how I sound. Let's practice some English together.", {
-      voiceId: form.ttsVoice,
-    }).catch((err) => setError((err as Error).message));
+    void adapter
+      .speak("Hi! This is how I sound. Let's practice some English together.", {
+        voiceId: form.ttsVoice,
+      })
+      .catch((err) => setError((err as Error).message));
   }
 
   return (
     <form onSubmit={onSubmit} className="stack-lg" aria-label={text.formLabel}>
-      <Card as="section" title={text.appearanceTitle} titleId="settings-appearance" className="stack">
+      <Card
+        as="section"
+        title={text.appearanceTitle}
+        titleId="settings-appearance"
+        className="stack"
+      >
         <ThemeSelect value={form.theme} onChange={(theme) => setForm((f) => ({ ...f, theme }))} />
         <DirectionSelect value={direction} />
       </Card>
@@ -104,6 +112,19 @@ export function SettingsForm({
       </Card>
 
       <Card as="section" title={text.callTitle} titleId="settings-call" className="stack">
+        <label htmlFor="speech-terms">자주 쓰는 기술 용어</label>
+        <textarea
+          id="speech-terms"
+          rows={3}
+          maxLength={1500}
+          value={form.speechTerms ?? ""}
+          onChange={(e) => setForm({ ...form, speechTerms: e.target.value })}
+          placeholder="예: frontend engineer, PostgreSQL, 프로젝트 이름"
+        />
+        <p className="muted">
+          쉼표나 줄바꿈으로 구분해 주세요. 인식 후보에서 용어를 확인하는 데 활용해요. 지원하는
+          브라우저에는 인식 힌트도 전달해요.
+        </p>
         <div className="row" style={{ alignItems: "flex-end" }}>
           <div style={{ flex: "1 1 14rem" }}>
             <Select

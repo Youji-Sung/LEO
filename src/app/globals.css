@@ -1516,6 +1516,11 @@ fieldset.field > legend {
   }
 }
 
+.learning-space { max-width: 56rem; }
+.learning-space p, .learning-space strong { overflow-wrap: anywhere; }
+.learning-actions { flex-wrap: wrap; }
+.learning-space textarea { width: 100%; }
+
 /* ---------- reduced motion ---------- */
 @media (prefers-reduced-motion: reduce) {
   *,

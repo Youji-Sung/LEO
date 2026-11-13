@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { WebSpeechVoiceAdapter } from "@/lib/voice/web-speech";
 
-type ResultEvent = { resultIndex: number; results: { isFinal: boolean; length: number; 0: { transcript: string } }[] };
+type ResultEvent = {
+  resultIndex: number;
+  results: { isFinal: boolean; length: number; 0: { transcript: string } }[];
+};
 class Recognition {
   static instances: Recognition[] = [];
   static throwOnStart = false;
@@ -9,13 +12,18 @@ class Recognition {
   continuous = false;
   interimResults = false;
   maxAlternatives = 0;
+  phrases: unknown[] = [];
   onstart: (() => void) | null = null;
   onspeechstart: (() => void) | null = null;
   onresult: ((event: ResultEvent) => void) | null = null;
   onerror: ((event: { error: string }) => void) | null = null;
   onend: (() => void) | null = null;
-  constructor() { Recognition.instances.push(this); }
-  start() { if (Recognition.throwOnStart) throw new Error("recognizer still stopping"); }
+  constructor() {
+    Recognition.instances.push(this);
+  }
+  start() {
+    if (Recognition.throwOnStart) throw new Error("recognizer still stopping");
+  }
   stop = vi.fn();
   abort = vi.fn();
 }
@@ -29,7 +37,13 @@ class Utterance {
   onerror: ((event: { error: string }) => void) | null = null;
   constructor(readonly text: string) {}
 }
-const voice = (name: string) => ({ name, voiceURI: name, lang: "en-US", default: false, localService: true });
+const voice = (name: string) => ({
+  name,
+  voiceURI: name,
+  lang: "en-US",
+  default: false,
+  localService: true,
+});
 const synth = {
   paused: false,
   speak: vi.fn<(utterance: Utterance) => void>(),
@@ -47,47 +61,87 @@ describe("native Web Speech integration", () => {
     synth.getVoices.mockReturnValue([voice("Compact"), voice("Samantha Enhanced")]);
     vi.stubGlobal("SpeechSynthesisUtterance", Utterance);
     vi.stubGlobal("window", {
-      navigator: { userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) CriOS/130", platform: "iPhone" },
+      navigator: {
+        userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) CriOS/130",
+        platform: "iPhone",
+      },
       webkitSpeechRecognition: Recognition,
       speechSynthesis: synth,
     });
   });
-  afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+  });
 
   it("waits for actual recognition start, reports speech onset and keeps each final only once", () => {
     const adapter = new WebSpeechVoiceAdapter();
-    const onStart = vi.fn(), onSpeechStart = vi.fn(), onFinal = vi.fn(), onInterim = vi.fn();
+    const onStart = vi.fn(),
+      onSpeechStart = vi.fn(),
+      onFinal = vi.fn(),
+      onInterim = vi.fn();
     adapter.startListening({ onStart, onSpeechStart, onFinal, onInterim });
     expect(onStart).not.toHaveBeenCalled();
     const rec = Recognition.instances[0]!;
-    rec.onstart!(); rec.onspeechstart!();
-    expect(onStart).toHaveBeenCalledOnce(); expect(onSpeechStart).toHaveBeenCalledOnce();
+    rec.onstart!();
+    rec.onspeechstart!();
+    expect(onStart).toHaveBeenCalledOnce();
+    expect(onSpeechStart).toHaveBeenCalledOnce();
     const final = { isFinal: true, length: 1, 0: { transcript: "I go yesterday." } };
     rec.onresult!({ resultIndex: 0, results: [final] });
     rec.onresult!({ resultIndex: 0, results: [final] });
-    expect(onFinal).toHaveBeenCalledExactlyOnceWith("I go yesterday.");
+    expect(onFinal).toHaveBeenCalledExactlyOnceWith("I go yesterday.", ["I go yesterday."]);
+    expect(rec.maxAlternatives).toBe(3);
     expect(onInterim).toHaveBeenLastCalledWith("");
     adapter.stopListening();
     expect(rec.abort).toHaveBeenCalledOnce();
   });
 
   it("reads all interim fragments even when resultIndex points into the middle", () => {
-    const adapter = new WebSpeechVoiceAdapter(); const onInterim = vi.fn();
+    const adapter = new WebSpeechVoiceAdapter();
+    const onInterim = vi.fn();
     adapter.startListening({ onFinal: vi.fn(), onInterim });
-    Recognition.instances[0]!.onresult!({ resultIndex: 1, results: [
-      { isFinal: false, length: 1, 0: { transcript: "I am" } },
-      { isFinal: false, length: 1, 0: { transcript: "developer" } },
-    ] });
+    Recognition.instances[0]!.onresult!({
+      resultIndex: 1,
+      results: [
+        { isFinal: false, length: 1, 0: { transcript: "I am" } },
+        { isFinal: false, length: 1, 0: { transcript: "developer" } },
+      ],
+    });
     expect(onInterim).toHaveBeenLastCalledWith("I am developer");
+    adapter.stopListening();
+  });
+
+  it("restarts without optional phrase bias when the recognizer rejects it", () => {
+    Object.assign(window, {
+      SpeechRecognitionPhrase: class {
+        constructor(readonly phrase: string) {}
+      },
+    });
+    const adapter = new WebSpeechVoiceAdapter();
+    const onError = vi.fn(),
+      onEnd = vi.fn();
+    const handlers = { onFinal: vi.fn(), onError, onEnd, phrases: ["frontend engineer"] };
+    adapter.startListening(handlers);
+    expect(Recognition.instances[0]!.phrases).toHaveLength(1);
+    Recognition.instances[0]!.onerror!({ error: "phrases-not-supported" });
+    expect(onError).not.toHaveBeenCalled();
+    expect(onEnd).toHaveBeenCalledOnce();
+    adapter.startListening(handlers);
+    expect(Recognition.instances[1]!.phrases).toHaveLength(0);
     adapter.stopListening();
   });
 
   it("makes a synchronous startup failure recoverable without navigating away", () => {
     vi.spyOn(console, "warn").mockImplementation(() => {});
-    const adapter = new WebSpeechVoiceAdapter(); const onEnd = vi.fn(); const onError = vi.fn();
+    const adapter = new WebSpeechVoiceAdapter();
+    const onEnd = vi.fn();
+    const onError = vi.fn();
     Recognition.throwOnStart = true;
     adapter.startListening({ onFinal: vi.fn(), onEnd, onError });
-    expect(onError).toHaveBeenCalledOnce(); expect(onEnd).toHaveBeenCalledOnce();
+    expect(onError).toHaveBeenCalledOnce();
+    expect(onEnd).toHaveBeenCalledOnce();
     Recognition.throwOnStart = false;
     const onStart = vi.fn();
     adapter.startListening({ onFinal: vi.fn(), onStart });
@@ -97,21 +151,29 @@ describe("native Web Speech integration", () => {
   });
 
   it("does not remain silently stuck when the recognizer never starts", () => {
-    const adapter = new WebSpeechVoiceAdapter(); const onError = vi.fn(), onEnd = vi.fn();
+    const adapter = new WebSpeechVoiceAdapter();
+    const onError = vi.fn(),
+      onEnd = vi.fn();
     adapter.startListening({ onFinal: vi.fn(), onError, onEnd });
     vi.advanceTimersByTime(8000);
-    expect(onError).toHaveBeenCalledOnce(); expect(onEnd).toHaveBeenCalledOnce();
+    expect(onError).toHaveBeenCalledOnce();
+    expect(onEnd).toHaveBeenCalledOnce();
     expect(Recognition.instances[0]!.abort).toHaveBeenCalledOnce();
   });
 
   it("ignores late results from a stopped recognizer and treats permission denial as fatal", () => {
-    const adapter = new WebSpeechVoiceAdapter(); const onFinal = vi.fn(), onError = vi.fn(), onEnd = vi.fn();
+    const adapter = new WebSpeechVoiceAdapter();
+    const onFinal = vi.fn(),
+      onError = vi.fn(),
+      onEnd = vi.fn();
     adapter.startListening({ onFinal, onError, onEnd });
-    const rec = Recognition.instances[0]!; const late = rec.onresult!;
+    const rec = Recognition.instances[0]!;
+    const late = rec.onresult!;
     rec.onerror!({ error: "not-allowed" });
     late({ resultIndex: 0, results: [{ isFinal: true, length: 1, 0: { transcript: "late" } }] });
     expect(onError).toHaveBeenCalledWith(expect.any(String), true);
-    expect(onFinal).not.toHaveBeenCalled(); expect(onEnd).not.toHaveBeenCalled();
+    expect(onFinal).not.toHaveBeenCalled();
+    expect(onEnd).not.toHaveBeenCalled();
   });
 
   it("calls synthesis synchronously in the tap even when voices have not loaded", async () => {
@@ -127,10 +189,12 @@ describe("native Web Speech integration", () => {
     const adapter = new WebSpeechVoiceAdapter();
     const first = adapter.speak("Hello.");
     expect(synth.speak.mock.calls[0]![0].voice?.voiceURI).toBe("Samantha Enhanced");
-    adapter.cancelSpeech(); await first;
+    adapter.cancelSpeech();
+    await first;
     const second = adapter.speak("Again.", { voiceId: "Compact" });
     expect(synth.speak.mock.calls[1]![0].voice?.voiceURI).toBe("Compact");
-    adapter.cancelSpeech(); await second;
+    adapter.cancelSpeech();
+    await second;
   });
 
   it("reports blocked audio rather than pretending playback completed", async () => {

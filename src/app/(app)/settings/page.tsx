@@ -24,6 +24,7 @@ export default async function SettingsPage() {
         initial={{
           hintsDefault: settings.hintsDefault,
           ttsVoice: settings.ttsVoice,
+          speechTerms: settings.speechTerms,
           defaultCallMinutes: settings.defaultCallMinutes,
           theme: isThemeMode(settings.theme) ? settings.theme : "system",
         }}

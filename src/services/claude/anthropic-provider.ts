@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { apiAttemptContext } from "@/lib/api-attempt-context";
+import { speechAnnotation } from "@/lib/transcription";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { TokenUsage } from "@/config/pricing";
 import { HintSplitter } from "@/services/claude/hint-splitter";
@@ -35,11 +36,16 @@ export function createAnthropicClient(): Anthropic {
   if (!apiKey) {
     throw new ClaudeConfigError("LEO_ANTHROPIC_API_KEY 가 설정되지 않았습니다.");
   }
-  return new Anthropic({ apiKey, maxRetries: 2, timeout: 10 * 60 * 1000, fetch: (...args) => {
-    const context = apiAttemptContext.getStore();
-    if (context) context.attempts++;
-    return globalThis.fetch(...args);
-  } });
+  return new Anthropic({
+    apiKey,
+    maxRetries: 2,
+    timeout: 10 * 60 * 1000,
+    fetch: (...args) => {
+      const context = apiAttemptContext.getStore();
+      if (context) context.attempts++;
+      return globalThis.fetch(...args);
+    },
+  });
 }
 
 function toUsage(u: Anthropic.Beta.BetaUsage): TokenUsage {
@@ -56,13 +62,20 @@ function toStopReason(reason: Anthropic.Beta.BetaMessage["stop_reason"]): StopRe
   return "other";
 }
 
-function systemBlocks(fixed: string, portfolioText?: string | null): Anthropic.Beta.BetaTextBlockParam[] {
+function systemBlocks(
+  fixed: string,
+  portfolioText?: string | null,
+): Anthropic.Beta.BetaTextBlockParam[] {
   // 고정 프롬프트가 먼저, 포트폴리오는 그 뒤 고정 위치. 둘 다 캐시 브레이크포인트.
   const blocks: Anthropic.Beta.BetaTextBlockParam[] = [
     { type: "text", text: fixed, cache_control: { type: "ephemeral" } },
   ];
   if (portfolioText) {
-    blocks.push({ type: "text", text: buildPortfolioBlock(portfolioText), cache_control: { type: "ephemeral" } });
+    blocks.push({
+      type: "text",
+      text: buildPortfolioBlock(portfolioText),
+      cache_control: { type: "ephemeral" },
+    });
   }
   return blocks;
 }
@@ -90,7 +103,15 @@ export class AnthropicProvider implements ClaudeProvider {
       output_config: { effort: "low" },
       // 대화 원문을 유지하면서 이전 턴까지 재사용한다. 시스템 블록의 캐시와 함께 동작한다.
       cache_control: { type: "ephemeral" },
-      system: systemBlocks(buildChatSystemPrompt(input.theme, input.mode, input.hints), input.portfolioText),
+      system: [
+        ...systemBlocks(
+          buildChatSystemPrompt(input.theme, input.mode, input.hints),
+          input.portfolioText,
+        ),
+        ...(input.conversationContext
+          ? [{ type: "text" as const, text: input.conversationContext }]
+          : []),
+      ],
       messages: input.messages.map((m) => ({ role: m.role, content: m.content })),
     });
     for await (const event of stream) {
@@ -116,7 +137,10 @@ export class AnthropicProvider implements ClaudeProvider {
     const started = Date.now();
     const theme = THEMES[input.theme];
     const transcript = input.transcript
-      .map((m) => `${m.role === "user" ? "User" : "Partner"}: ${m.content}`)
+      .map(
+        (m) =>
+          `${m.role === "user" ? "User" : "Partner"}: ${m.content}${input.mode === "call" && m.role === "user" ? `\n[Transcription evidence: ${m.speech?.reviewed ? "user reviewed the submitted text" : "not verified by the user"}. ${speechAnnotation(m.content, m.speech)}]` : ""}`,
+      )
       .join("\n");
     const stream = this.getClient().beta.messages.stream({
       model: this.model,
@@ -146,7 +170,10 @@ export class AnthropicProvider implements ClaudeProvider {
       .filter((b): b is Anthropic.Beta.BetaTextBlock => b.type === "text")
       .map((b) => b.text)
       .join("");
-    const parsed = stopReason === "refusal" ? { report: null, error: "모델이 요청을 거부했습니다." } : parseReportJson(rawText);
+    const parsed =
+      stopReason === "refusal"
+        ? { report: null, error: "모델이 요청을 거부했습니다." }
+        : parseReportJson(rawText);
     return {
       report: parsed.report,
       rawText,

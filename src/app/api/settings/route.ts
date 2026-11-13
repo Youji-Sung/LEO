@@ -10,6 +10,7 @@ import { DIRECTION_CHOICES, directionCookieHeader } from "@/lib/direction";
 const schema = z.object({
   hintsDefault: z.boolean().optional(),
   ttsVoice: z.string().max(200).nullable().optional(),
+  speechTerms: z.string().max(1500).optional(),
   defaultCallMinutes: z
     .number()
     .int()
